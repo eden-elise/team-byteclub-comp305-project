@@ -9,6 +9,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<aside class="inventory-sidebar inventory-sidebar--open" aria-label="Inventory">
+    <h3 class="inventory-sidebar__title">Inventory</h3>
+    <ul class="inventory-sidebar__list">
+        <li class="inventory-sidebar__item inventory-sidebar__item--empty">
+            Empty
+        </li>
+    </ul>
+</aside>
+
+<aside class="memory-index memory-index--open" aria-label="Memory Index">
+    <h3 class="memory-index__title">Memory Fragments</h3>
+    <ul class="memory-index__list">
+        <li class="memory-index__item memory-index__item--locked">
+            <span class="memory-index__icon">🔒</span>
+            <span class="memory-index__text">???</span>
+        </li>
+        <li class="memory-index__item memory-index__item--locked">
+            <span class="memory-index__icon">🔒</span>
+            <span class="memory-index__text">???</span>
+        </li>
+        <li class="memory-index__item memory-index__item--locked">
+            <span class="memory-index__icon">🔒</span>
+            <span class="memory-index__text">???</span>
+        </li>
+        <li class="memory-index__item memory-index__item--locked">
+            <span class="memory-index__icon">🔒</span>
+            <span class="memory-index__text">???</span>
+        </li>
+        <li class="memory-index__item memory-index__item--locked">
+            <span class="memory-index__icon">🔒</span>
+            <span class="memory-index__text">???</span>
+        </li>
+    </ul>
+</aside>
+
 <main id="story-screen" class="story-container">
     <header class="story-header">
         <h1 class="story-header__title">
@@ -118,41 +154,6 @@
         <button class="choice-result__back">Back to choices</button>
     </section>
 
-    <aside class="inventory-sidebar inventory-sidebar--open" aria-label="Inventory">
-        <h3 class="inventory-sidebar__title">Inventory</h3>
-        <ul class="inventory-sidebar__list">
-            <li class="inventory-sidebar__item inventory-sidebar__item--empty">
-                Empty
-            </li>
-        </ul>
-    </aside>
-
-    <aside class="memory-index memory-index--open" aria-label="Memory Index">
-        <h3 class="memory-index__title">Memory Fragments</h3>
-        <ul class="memory-index__list">
-            <li class="memory-index__item memory-index__item--locked">
-                <span class="memory-index__icon">🔒</span>
-                <span class="memory-index__text">???</span>
-            </li>
-            <li class="memory-index__item memory-index__item--locked">
-                <span class="memory-index__icon">🔒</span>
-                <span class="memory-index__text">???</span>
-            </li>
-            <li class="memory-index__item memory-index__item--locked">
-                <span class="memory-index__icon">🔒</span>
-                <span class="memory-index__text">???</span>
-            </li>
-            <li class="memory-index__item memory-index__item--locked">
-                <span class="memory-index__icon">🔒</span>
-                <span class="memory-index__text">???</span>
-            </li>
-            <li class="memory-index__item memory-index__item--locked">
-                <span class="memory-index__icon">🔒</span>
-                <span class="memory-index__text">???</span>
-            </li>
-        </ul>
-    </aside>
-
 </main>
 
 <div class="story-effects" aria-hidden="true">
@@ -160,7 +161,6 @@
     <div class="particle particle--2"></div>
     <div class="particle particle--3"></div>
 </div>
-
 
 </body>
 </html>
