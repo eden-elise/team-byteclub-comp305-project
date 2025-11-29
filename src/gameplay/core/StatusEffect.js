@@ -5,6 +5,7 @@
 export class StatusEffect {
     /**
      * @param {string} name - Name of the status effect
+     * @param {string} description - Description of the status effect
      * @param {number} duration - Number of turns the effect lasts (-1 for permanent)
      * @param {string} icon - Path to the icon image (not used by this class, for UI)
      * @param {Object} statModifiers - Object with stat modifications (e.g., { ATTACK: 5, DEFEND: -2 })
@@ -13,8 +14,9 @@ export class StatusEffect {
      * @param {Function} onApply - Callback(entity, battleEngine) called when effect is applied
      * @param {Function} onRemove - Callback(entity, battleEngine) called when effect is removed
      */
-    constructor(name, duration = -1, icon = '', statModifiers = {}, onTurnStart = null, onTurnEnd = null, onApply = null, onRemove = null) {
+    constructor(name, description, duration = -1, icon = '', statModifiers = {}, onTurnStart = null, onTurnEnd = null, onApply = null, onRemove = null) {
         this.name = name;
+        this.description = description;
         this.duration = duration; // -1 means permanent
         this.remainingTurns = duration;
         this.icon = icon; // Path to icon image (for UI use, not used by this class)

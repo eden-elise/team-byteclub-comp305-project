@@ -204,7 +204,7 @@ body {
     width: 24px;
     max-height: calc(5 * 24px + 4 * 2px);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 2px;
     z-index: 10;
     position: relative;

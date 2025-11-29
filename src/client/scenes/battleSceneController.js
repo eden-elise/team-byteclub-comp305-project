@@ -430,66 +430,42 @@ export class BattleSceneController {
             hpText.textContent = entity.currentHP;
             hpMax.textContent = entity.maxHP;
 
-            // update status effects
             const iconContainer = document.getElementById(`${prefix}-status-icons`);
             iconContainer.innerHTML = '';
+
             entity.activeEffects.forEach(effect => {
                 const icon = document.createElement('img');
                 icon.src = effect.icon;
                 icon.className = 'status-icon';
-                icon.setAttribute('data-info', effect.description);
-                
-                // add event listeners for tooltip
-                icon.addEventListener('mouseover', (event) => {
-                    const target = event.target.closest('.status-icon');
-                    const info = target ? target.getAttribute('data-info') : null;
+                icon.dataset.info = effect.description;
+
+                icon.addEventListener('mouseover', () => {
                     const tooltip = document.getElementById('status-tooltip');
+                    tooltip.textContent = effect.description;
+                    tooltip.style.display = 'block';
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
 
-                    if (info && tooltip) {
-                        tooltip.textContent = info;
-                        
-                        // Temporarily make it visible to measure its dimensions
-                        tooltip.style.display = 'block';
-                        tooltip.style.opacity = '0';
-                        tooltip.style.visibility = 'visible';
-                        
-                        const rect = target.getBoundingClientRect();
-                        const isPlayerIcon = prefix === 'player';
-                        const offset = 10; // Distance from the icon stack
-
-                        // Calculate horizontal position
-                        if (isPlayerIcon) {
-                            // Player: Tooltip placed to the right of the stack
-                            tooltip.style.left = `${rect.right + offset}px`;
-                        } else {
-                            // Enemy: Tooltip placed to the left of the stack
-                            // Need to subtract tooltip width for correct placement
-                            tooltip.style.left = `${rect.left - tooltip.offsetWidth - offset}px`;
-                        }
-                        
-                        // Center vertically with the icon
-                        tooltip.style.top = `${rect.top + (rect.height / 2) - (tooltip.offsetHeight / 2)}px`;
-                        
-                        // Apply final visible state using the CSS transition class
-                        tooltip.classList.add('is-visible');
+                    const rect = icon.getBoundingClientRect();
+                    const offset = 10;
+                    if (prefix === 'player') {
+                        tooltip.style.left = `${rect.right + offset}px`;
+                    } else {
+                        tooltip.style.left = `${rect.left - tooltip.offsetWidth - offset}px`;
                     }
+                    tooltip.style.top = `${rect.top + rect.height / 2 - tooltip.offsetHeight / 2}px`;
                 });
 
                 icon.addEventListener('mouseout', () => {
                     const tooltip = document.getElementById('status-tooltip');
-                    if (tooltip) {
-                        tooltip.classList.remove('is-visible');
-                        
-                        setTimeout(() => {
-                            if (!tooltip.classList.contains('is-visible')) {
-                                tooltip.style.display = 'none';
-                            }
-                        }, 150);
-                    }
+                    tooltip.style.display = 'none';
+                    tooltip.style.opacity = '0';
+                    tooltip.style.visibility = 'hidden';
                 });
 
                 iconContainer.appendChild(icon);
             });
+
         });
     }
 

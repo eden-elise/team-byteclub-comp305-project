@@ -1,8 +1,23 @@
 import { StatusEffect } from '../../core/StatusEffect.js';
 
+export class RegenerationStatusEffect extends StatusEffect {
+    constructor() {
+        super('Regeneration', 'Restores health over time', 3);
+        this.icon = '../../../src/assets/effects/status-icons/regeneration-icon.png';
+    }
+}
+
+
+export class AdrenalineStatusEffect extends StatusEffect {
+    constructor() {
+        super('Adrenaline', 'Boosts speed and action priority', 3);
+        this.icon = '../../../src/assets/effects/status-icons/adrenaline-icon.png';
+    }
+}
+
 export class PoisonStatusEffect extends StatusEffect {
     constructor() {
-        super('Poison', 2);
+        super('Poison', 'Inflicts 4 damage per turn', 2);
         this.icon = '../../../src/assets/effects/status-icons/poison-icon.png';
         this.onTurnStart = async (entity, battleEngine) => {
             await entity.takeDamage(4);
@@ -10,18 +25,9 @@ export class PoisonStatusEffect extends StatusEffect {
         };
     }
 }
-
-export class RegenerationStatusEffect extends StatusEffect {
-    constructor() {
-        super('Regeneration', 3);
-        this.icon = '../../../src/assets/effects/status-icons/regeneration-icon.png';
-    }
-}
-
 export class BurnStatusEffect extends StatusEffect {
     constructor() {
-        // Duration set to 4 turns (example)
-        super('Burn', 4);
+        super('Burn', 'Deals 5 damage per turn', 4);
         this.icon = '../../../src/assets/effects/status-icons/flame-icon.png';
         this.onTurnStart = async (entity, battleEngine) => {
             await entity.takeDamage(5);
@@ -32,16 +38,8 @@ export class BurnStatusEffect extends StatusEffect {
 
 export class FreezeStatusEffect extends StatusEffect {
     constructor() {
-        // Duration set to 2 turns (example)
-        super('Freeze', 2);
+        super('Freeze', 'Prevents action for a turn', 2);
         this.icon = '../../../src/assets/effects/status-icons/freeze-icon.png';
     }
 }
 
-export class AdrenalineStatusEffect extends StatusEffect {
-    constructor() {
-        // Duration set to 3 turns (example)
-        super('Adrenaline', 3);
-        this.icon = '../../../src/assets/effects/status-icons/adrenaline-icon.png';
-    }
-}
