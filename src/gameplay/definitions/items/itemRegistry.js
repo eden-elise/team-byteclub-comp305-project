@@ -118,7 +118,7 @@ export const ITEMS = {
     HEALTH_POTION: {
         id: 'health_potion',
         name: 'Health Potion',
-        spritePath: '../../assets/art/items/potions/health-potion.png',
+        spritePath: '../../src/assets/art/items/potions/health-potion.png',
         description: 'Restores 40 HP',
         data: {
             heal: 40,
@@ -128,7 +128,7 @@ export const ITEMS = {
         },
         factory: createHealthPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/health-potion.png',
+            itemImage: '../../src/assets/art/items/potions/health-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -140,7 +140,7 @@ export const ITEMS = {
     POISON_POTION: {
         id: 'poison_potion',
         name: 'Poison Potion',
-        spritePath: '../../assets/art/items/potions/poison-potion.png',
+        spritePath: '../../src/assets/art/items/potions/poison-potion.png',
         description: 'Inflicts poison (4 damage per turn for 2-5 turns)',
         data: {
             damage: 0,
@@ -150,7 +150,7 @@ export const ITEMS = {
         },
         factory: createPoisonPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/poison-potion.png',
+            itemImage: '../../src/assets/art/items/potions/poison-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -162,7 +162,7 @@ export const ITEMS = {
     FIRE_POTION: {
         id: 'fire_potion',
         name: 'Fire Potion',
-        spritePath: '../../assets/art/items/potions/fire-potion.png',
+        spritePath: '../../src/assets/art/items/potions/fire-potion.png',
         description: 'Deals 5 damage + 5 per turn for 3 turns',
         data: {
             damage: 5,
@@ -172,7 +172,7 @@ export const ITEMS = {
         },
         factory: createFirePotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/fire-potion.png',
+            itemImage: '../../src/assets/art/items/potions/fire-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -184,7 +184,7 @@ export const ITEMS = {
     MYSTERY_POTION: {
         id: 'mystery_potion',
         name: 'Mystery Potion',
-        spritePath: '../../assets/art/items/potions/mystery-potion.png',
+        spritePath: '../../src/assets/art/items/potions/mystery-potion.png',
         description: 'Random effect: Heal 150 HP or gain +10 ATK',
         data: {
             isConsumable: true,
@@ -193,7 +193,7 @@ export const ITEMS = {
         },
         factory: createMysteryPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/mystery-potion.png',
+            itemImage: '../../src/assets/art/items/potions/mystery-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -205,7 +205,7 @@ export const ITEMS = {
     MANA_POTION: {
         id: 'mana_potion',
         name: 'Mana Potion',
-        spritePath: '../../assets/art/items/potions/health-potion.png',
+        spritePath: '../../src/assets/art/items/potions/health-potion.png',
         description: 'Restores 100 MP',
         data: {
             heal: 100,
@@ -215,7 +215,7 @@ export const ITEMS = {
         },
         factory: createHealthPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/health-potion.png',
+            itemImage: '../../src/assets/art/items/potions/health-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -227,7 +227,7 @@ export const ITEMS = {
     DAMAGE_ELIXIR: {
         id: 'damage_elixir',
         name: 'Damage Elixir',
-        spritePath: '../../assets/art/items/potions/health-potion.png',
+        spritePath: '../../src/assets/art/items/potions/health-potion.png',
         description: 'Gain +20 ATK',
         data: {
             stats: { ATK: 20 },
@@ -237,7 +237,7 @@ export const ITEMS = {
         },
         factory: createHealthPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/health-potion.png',
+            itemImage: '../../src/assets/art/items/potions/health-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -249,7 +249,7 @@ export const ITEMS = {
     DEFENSE_TONIC: {
         id: 'defense_tonic',
         name: 'Defense Tonic',
-        spritePath: '../../assets/art/items/potions/health-potion.png',
+        spritePath: '../../src/assets/art/items/potions/health-potion.png',
         description: 'Gain +15 DEF',
         data: {
             stats: { DEF: 15 },
@@ -259,7 +259,7 @@ export const ITEMS = {
         },
         factory: createHealthPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/health-potion.png',
+            itemImage: '../../src/assets/art/items/potions/health-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,
@@ -271,7 +271,7 @@ export const ITEMS = {
     SPEED_SCROLL: {
         id: 'speed_scroll',
         name: 'Speed Scroll',
-        spritePath: '../../assets/art/items/potions/health-potion.png',
+        spritePath: '../../src/assets/art/items/potions/health-potion.png',
         description: 'Gain +10 SPD',
         data: {
             stats: { SPD: 10 },
@@ -281,7 +281,7 @@ export const ITEMS = {
         },
         factory: createHealthPotionInstance,
         animationCallback: createThrowAnimationCallback({
-            itemImage: '../../assets/art/items/potions/health-potion.png',
+            itemImage: '../../src/assets/art/items/potions/health-potion.png',
             startScale: 2.0,
             endScale: 0.3,
             duration: 1000,

@@ -1,6 +1,6 @@
 // Import battle system classes
-import { getAttackByName } from '../gameplay/definitions/attacks/attackRegistry.js';
-import { getItemByName } from '../gameplay/definitions/items/itemRegistry.js';
+import { getAttackByName } from '../../gameplay/definitions/attacks/attackRegistry.js';
+import { getItemByName } from '../../gameplay/definitions/items/itemRegistry.js';
 
 /**
  * BattleSceneController - Manages the UI and connects it to the battle engine

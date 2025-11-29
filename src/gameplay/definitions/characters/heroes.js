@@ -26,7 +26,7 @@ export class Knight extends Entity {
             stats,
             moves,
             items,
-            '../../../assets/art/characters/hero-1.png',
+            '../../src/assets/art/characters/hero-1.png',
             () => BaseDeathAnimation(isPlayer),
             isPlayer
         );    
@@ -59,7 +59,7 @@ export class Archer extends Entity {
             stats,
             moves,
             items,
-            '../../assets/art/characters/hero-2.png',
+            '../../src/assets/art/characters/hero-2.png',
             () => BaseDeathAnimation(isPlayer),
             isPlayer
         );

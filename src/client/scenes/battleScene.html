@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BYTECLUB - Battle Demo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/battleScene.css">
-</head>
-
-<body>
+<section>
     <main id="battle-screen" class="battle-container">
         <header id="battle-header" class="battle-header">
             <section class="combatant combatant--player" aria-label="Player Status">
@@ -74,47 +62,4 @@
             </div>
         </section>
     </main>
-
-    <script type="module">
-        // Import battle system classes
-        import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
-        import { Entity } from '../gameplay/core/Entity.js';
-        import { Knight, Archer } from '../gameplay/definitions/characters/heroes.js';
-        import { BattleSceneController } from './battleSceneController.js';
-
-        /**
-         * Demo: Create two hero entities and start battle
-         */
-        async function initDemo() {
-            
-            const player = new Knight(true);
-
-            const hero2 = new Archer(false);
-
-
-            // Create battle sequence
-            const battleSequence = new BattleSequence(player, hero2);
-
-            // Initialize the battle scene controller with inventory
-            const battleController = new BattleSceneController(battleSequence, player.items);
-            // Set a global variable to access from elsewhere
-            // in general we should try to stay away from global vars (like prof said it could have naming conflicts and is bad practice)
-            window.battleController = battleController;
-        }
-
-        // Start the demo when page loads
-        initDemo().catch(console.error);
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'r' || e.key === 'R') {
-                // nuclear option
-                localStorage.clear();
-                sessionStorage.clear();
-
-                initDemo().catch(console.error);
-            }
-        });
-    </script>
-</body>
-
-</html>
+</section>
