@@ -1,58 +1,37 @@
 import { Attack } from '../../core/Attack.js';
 import { createBaseAttackAnimationCallback } from '../../animations/AttackAnimations.js';
 
-function createBasicStrikeInstance(animationCallback) {
-    class BasicStrike extends Attack {}
-    return new BasicStrike(
-        ATTACKS.BASIC_STRIKE.name,
-        ATTACKS.BASIC_STRIKE.data,
-        animationCallback
-    );
-}
-
-function createHeavySwingInstance(animationCallback) {
-    class HeavySwing extends Attack {}
-    return new HeavySwing(
-        ATTACKS.HEAVY_SWING.name,
-        ATTACKS.HEAVY_SWING.data,
-        animationCallback
-    );
-}
-
-export const ATTACKS = {
-    BASIC_STRIKE: {
-        id: 'basic_strike',
-        name: 'Basic Strike',
-        description: 'A simple melee attack.',
-        data: {
-            basePower: 1,
-        },
-        factory: createBasicStrikeInstance,
-        animationCallback: createBaseAttackAnimationCallback({
-            lungeDistance: 40,
-            duration: 300
-        })
-    },
-    HEAVY_SWING: {
-        id: 'heavy_swing',
-        name: 'Heavy Swing',
-        description: 'A hard melee attack.',
-        data: {
-            basePower: 2,
-        },
-        factory: createHeavySwingInstance,
-        animationCallback: createBaseAttackAnimationCallback({
-            lungeDistance: 60,
-            duration: 400
-        })
+export class BasicStrike extends Attack {
+    static data = {
+        basePower: 1,
+    };
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 40,
+        duration: 300
+    });
+    constructor() {
+        super('Basic Strike', BasicStrike.data, BasicStrike.animationCallback);
     }
+}
+
+export class HeavySwing extends Attack {
+    static data = {
+        basePower: 2,
+    };
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 60,
+        duration: 400
+    });
+    constructor() {
+        super('Heavy Swing', HeavySwing.data, HeavySwing.animationCallback);
+    }
+}
+
+export const AttackMap = {
+    'Basic Strike': BasicStrike,
+    'Heavy Swing': HeavySwing
 };
 
-export function getAttackByName(attackName) {
-    for (const attack of Object.values(ATTACKS)) {
-        if (attack.name === attackName) {
-            return attack;
-        }
-    }
-    return null;
+export function getAttackByName(name) {
+    return AttackMap[name];
 }

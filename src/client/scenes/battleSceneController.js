@@ -144,7 +144,7 @@ export class BattleSceneController {
         // Simple AI: Use first available action on player
         const attackName = getAttackByName(this.enemy.moves[0]);
         if (attackName && this.player.isAlive()) {
-            const attackInstance = attackName.factory(attackName.animationCallback);
+            const attackInstance = new attackName();
             await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
             this.updateEntityStats();
 
@@ -195,12 +195,12 @@ export class BattleSceneController {
             // Add event listeners
             document.getElementById('btn-attack-1').addEventListener('click', () => { 
                 const attackName = getAttackByName(attacks[0]);
-                const attackInstance = attackName.factory(attackName.animationCallback);
+                const attackInstance = new attackName();
                 this.handleActionClick(attackInstance);
             });
             document.getElementById('btn-attack-2').addEventListener('click', () => { 
                 const attackName = getAttackByName(attacks[1]);
-                const attackInstance = attackName.factory(attackName.animationCallback);
+                const attackInstance = new attackName();
                 this.handleActionClick(attackInstance);
             });
             document.getElementById('btn-inventory').addEventListener('click', () => { this.showInventory();});

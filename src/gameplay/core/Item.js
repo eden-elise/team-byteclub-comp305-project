@@ -15,7 +15,7 @@ export class Item extends Action {
      * -defaultTarget
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {isConsumable: true, isVariableTarget: false, defaultTarget: 0}, animationCallback = null) {
+    constructor(name, data = {isConsumable: true, isVariableTarget: true}, animationCallback = null) {
         const isVariableTarget = data.isVariableTarget ?? false;
         super(name, isVariableTarget, animationCallback);
         this.data = data;
