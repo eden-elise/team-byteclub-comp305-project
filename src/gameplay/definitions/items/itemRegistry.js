@@ -1,5 +1,6 @@
-import { createThrowAnimationCallback } from '../../animations/ItemAnimations.js';
 import { Item } from '../../core/Item.js';
+
+import { createThrowAnimationCallback } from '../../animations/ItemAnimations.js';
 import { StatusEffect } from '../../core/StatusEffect.js';
 
 function createHealthPotionInstance(animationCallback) {
@@ -15,10 +16,8 @@ function createHealthPotionInstance(animationCallback) {
 function createPoisonPotionInstance(animationCallback) {
     class PoisonPotion extends Item {
         async execute(source, target, battle) {
-            if (!target.isAlive()) return Promise.resolve();
-
-            battle.logEvent(`${source.name} uses ${this.name}!`);
-
+            super.execute(source, target, battle);
+            
             const duration = Math.floor(Math.random() * 4) + 2;
             const poisonEffect = new StatusEffect(
                 'Poison',
@@ -34,9 +33,6 @@ function createPoisonPotionInstance(animationCallback) {
 
             target.addStatusEffect(poisonEffect, battle);
             battle.logEvent(`${target.name} is poisoned for ${duration} turns!`);
-
-            this.removeIfConsumable(source);
-            await this.playAnimation(source, target, battle);
         }
     }
 

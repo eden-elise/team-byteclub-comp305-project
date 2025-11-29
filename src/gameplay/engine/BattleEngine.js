@@ -54,6 +54,7 @@ export class BattleEngine {
      * @returns {Promise} Promise that resolves when the turn and animations are complete
      */
     async processTurn(entity, action, target) {
+        console.log(entity, action, target);
         if (!this.isBattleActive || !entity.isAlive()) {
             return Promise.resolve();
         }

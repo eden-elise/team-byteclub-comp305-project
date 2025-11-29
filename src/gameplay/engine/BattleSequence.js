@@ -99,15 +99,8 @@ export class BattleSequence {
      * @returns {Promise} Promise that resolves when the turn and all animations are complete
      */
     async processTurn(entity, action, target) {
-        // If action requires target selection, prompt for it
-        let finalTarget = target;
-        if (action.variableTarget && this.targetSelectionCallback) {
-            const availableTargets = [this.player, this.enemy].filter(u => u.isAlive());
-            finalTarget = await this.targetSelectionCallback(action, availableTargets);
-        }
-
-        // Process the turn (which will wait for animations)
-        await this.battleEngine.processTurn(entity, action, finalTarget);
+        console.log(entity, action, target);
+        await this.battleEngine.processTurn(entity, action, target);
     }
 
     /**

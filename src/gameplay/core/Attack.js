@@ -6,13 +6,17 @@ import { Action } from './Action.js';
 export class Attack extends Action {
     /**
      * @param {string} name - Display name of the attack
-     * @param {number} basePower - The base damage modifier
-     * @param {boolean} variableTarget - If true, requires target selection
+     * @param {object} data - attack data: 
+     * basePower - base power of attack
+     * statusEffect - optional status effect applied to target
+     * statusEffectChance - percent chance that status effect will be applied
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, basePower, variableTarget = false, animationCallback = null) {
-        super(name, variableTarget, animationCallback);
-        this.basePower = basePower;
+    constructor(name, data, animationCallback = null) {
+        super(name, data, animationCallback);
+        this.basePower = data.basePower;
+        this.statusEffect = data.statusEffect ?? null;
+        this.statusEffectChance = data.statusEffectChance ?? 0;
     }
 
     /**
@@ -38,6 +42,12 @@ export class Attack extends Action {
 
         if (!target.isAlive()) {
             battle.logEvent(`${target.name} is defeated!`);
+        }
+        
+        // Apply status effect if applicable
+        if (this.statusEffect && Math.random() < this.statusEffectChance) {
+            target.addStatusEffect(this.statusEffect, battle);
+            battle.logEvent(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
         }
 
         // Play animation and wait for it to complete

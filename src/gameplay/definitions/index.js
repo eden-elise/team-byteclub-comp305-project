@@ -9,7 +9,8 @@
 
 // Direct exports - all loaded at once when module is imported
 export * as items from './items/itemRegistry.js';
-export * as weapons from './items/weapons.js';
+export * as attacks from './attacks/attackRegistry.js';
+
 export * as heroes from './characters/heroes.js';
 export * as enemies from './characters/enemies.js';
 

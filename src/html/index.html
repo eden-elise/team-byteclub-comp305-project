@@ -79,13 +79,24 @@
         // Import battle system classes
         import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
         import { Entity } from '../gameplay/core/Entity.js';
-        import { Attack } from '../gameplay/core/Attack.js';
         import { BattleSceneController } from './battleSceneController.js';
 
         /**
          * Demo: Create two hero entities and start battle
          */
         async function initDemo() {
+            
+            // Create demo inventory with item names and quantities
+            const demoAttacks = [
+                'Basic Strike',
+                'Heavy Swing'
+            ];
+            const demoInventory = [
+                { name: 'Health Potion', quantity: 5 },
+                { name: 'Poison Potion', quantity: 2 },
+                { name: 'Fire Potion', quantity: 3 },
+                { name: 'Mystery Potion', quantity: 1 }
+            ];
             // Create Hero 1 (using hero-1.png) - Knight
             const hero1 = new Entity(
                 'Knight',
@@ -95,10 +106,8 @@
                     DEF: 12,
                     SPD: 14
                 },
-                [
-                    new Attack('Basic Strike', 0.5, false),
-                    new Attack('Heavy Slam', 0.8, false)
-                ],
+                demoAttacks,
+                demoInventory,
                 '../../assets/art/characters/hero-1.png'
             );
 
@@ -111,30 +120,31 @@
                     DEF: 8,
                     SPD: 16
                 },
-                [
-                    new Attack('Quick Slash', 0.4, false),
-                    new Attack('Precise Strike', 0.6, false)
-                ],
+                demoAttacks,
+                demoInventory,
                 '../../assets/art/characters/hero-2.png'
             );
 
-            // Create demo inventory with item names and quantities
-            const demoInventory = [
-                { name: 'Health Potion', quantity: 5 },
-                { name: 'Poison Potion', quantity: 2 },
-                { name: 'Fire Potion', quantity: 3 },
-                { name: 'Mystery Potion', quantity: 1 }
-            ];
 
             // Create battle sequence
             const battleSequence = new BattleSequence(hero1, hero2);
 
             // Initialize the battle scene controller with inventory
-            new BattleSceneController(battleSequence, demoInventory);
+            new BattleSceneController(battleSequence, hero1.items);
         }
 
         // Start the demo when page loads
         initDemo().catch(console.error);
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'r' || e.key === 'R') {
+                // nuclear option
+                localStorage.clear();
+                sessionStorage.clear();
+
+                initDemo().catch(console.error);
+            }
+        });
     </script>
 </body>
 

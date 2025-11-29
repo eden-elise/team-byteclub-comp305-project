@@ -6,21 +6,20 @@ export class Entity {
      * @param {string} name - The entity's name
      * @param {number} maxHP - Maximum Health
      * @param {Object} stats - Dictionary of core stats (e.g., ATK, DEF, SPD)
-     * @param {Array<Action>} availableActions - The pool of moves and items this entity can use
+     * @param {Array} moves - List of moves
+     * @param {Array} items - List of items
      * @param {string} image - Path to the entity's image/sprite
      */
-    constructor(name, maxHP, stats = {}, availableActions = [], image = '') {
+    constructor(name, maxHP, stats = {}, moves = [], items = [], image = '') {
         this.name = name;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
         this.stats = {
-            ATK: 10,
-            DEF: 10,
-            SPD: 10,
             ...stats
         };
         this.activeEffects = []; // List<StatusEffect>
-        this.availableActions = availableActions; // List<Action>
+        this.moves = moves;
+        this.items = items;
         this.image = image; // Path to image/sprite
     }
 

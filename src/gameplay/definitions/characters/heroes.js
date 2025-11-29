@@ -1,6 +1,5 @@
 import { Entity } from '../../core/Entity.js';
 import { createBasicStrike, createQuickSlash } from '../items/weapons.js';
-import { createHealthPotion } from '../items/potions.js';
 
 /**
  * Hero/Player character definitions
@@ -21,8 +20,7 @@ export function createHero() {
         },
         [
             createBasicStrike(),
-            createQuickSlash(),
-            createHealthPotion()
+            createQuickSlash()
         ],
         'assets/art/characters/hero-1.png'
     );
@@ -41,8 +39,7 @@ export function createWarrior() {
             SPD: 8
         },
         [
-            createBasicStrike(),
-            createHealthPotion()
+            createBasicStrike()
         ],
         'assets/art/characters/hero-1.png'
     );
@@ -61,8 +58,7 @@ export function createRogue() {
             SPD: 20
         },
         [
-            createQuickSlash(),
-            createHealthPotion()
+            createQuickSlash()
         ],
         'assets/art/characters/hero-2.png'
     );

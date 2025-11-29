@@ -67,9 +67,9 @@ export class Item extends Action {
 
     removeIfConsumable(source) {
         if (this.data.isConsumable !== false) {
-            const index = source.availableActions.indexOf(this);
+            const index = source.items.indexOf(this);
             if (index > -1) {
-                source.availableActions.splice(index, 1);
+                source.items.splice(index, 1);
             }
         }
     }

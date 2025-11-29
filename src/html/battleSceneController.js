@@ -1,5 +1,6 @@
 // Import battle system classes
 import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
+import { getAttackByName } from '../gameplay/definitions/attacks/attackRegistry.js';
 import { getItemByName } from '../gameplay/definitions/items/itemRegistry.js';
 import { Item } from '../gameplay/core/Item.js';
 import { createFloatingDamageNumber } from '../gameplay/animations/ItemAnimations.js';
@@ -147,9 +148,10 @@ export class BattleSceneController {
 
     async processEnemyTurn() {
         // Simple AI: Use first available action on player
-        const action = this.enemy.availableActions[0];
-        if (action && this.player.isAlive()) {
-            await this.battleSequence.processTurn(this.enemy, action, this.player);
+        const attackName = getAttackByName(this.enemy.moves[0]);
+        if (attackName && this.player.isAlive()) {
+            const attackInstance = attackName.factory(attackName.animationCallback);
+            await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
             this.updateEntityHP(this.enemy, 'enemy');
             this.updateEntityHP(this.player, 'player');
 
@@ -188,17 +190,10 @@ export class BattleSceneController {
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
         if (this.currentTurnEntity === this.player) {
-            const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
+            const attacks = this.player.moves;
             
-            let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">Attack</button>`;
-            let attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">Attack</button>`;
-            
-            if (attacks.length >= 1) {
-                attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0].name}</button>`;
-            }
-            if (attacks.length >= 2) {
-                attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">${attacks[1].name}</button>`;
-            }
+            let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0]}</button>`;
+            let attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">${attacks[1]}</button>`;
             
             container.innerHTML = `
                 <div class="action-buttons-container">
@@ -209,25 +204,17 @@ export class BattleSceneController {
             `;
 
             // Add event listeners
-            document.getElementById('btn-attack-1').addEventListener('click', () => {
-                const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
-                if (attacks.length >= 1) {
-                    this.handleActionClick(attacks[0]);
-                }
+            document.getElementById('btn-attack-1').addEventListener('click', () => { 
+                const attackName = getAttackByName(attacks[0]);
+                const attackInstance = attackName.factory(attackName.animationCallback);
+                this.handleActionClick(attackInstance);
             });
-
-            document.getElementById('btn-attack-2').addEventListener('click', () => {
-                const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
-                if (attacks.length >= 2) {
-                    this.handleActionClick(attacks[1]);
-                } else if (attacks.length === 1) {
-                    this.handleActionClick(attacks[0]);
-                }
+            document.getElementById('btn-attack-2').addEventListener('click', () => { 
+                const attackName = getAttackByName(attacks[1]);
+                const attackInstance = attackName.factory(attackName.animationCallback);
+                this.handleActionClick(attackInstance);
             });
-
-            document.getElementById('btn-inventory').addEventListener('click', () => {
-                this.showInventory();
-            });
+            document.getElementById('btn-inventory').addEventListener('click', () => { this.showInventory();});
         } else {
             // Show waiting message during enemy turn
             container.innerHTML = `
@@ -236,28 +223,6 @@ export class BattleSceneController {
                 </div>
             `;
         }
-    }
-
-    handleAttackClick() {
-        // Use first attack action
-        const attackAction = this.player.availableActions.find(action => {
-            // Check if it's an Attack instance
-            return action.constructor.name === 'Attack' || action.basePower !== undefined;
-        });
-        if (attackAction) {
-            this.handleActionClick(attackAction);
-        } else {
-            // Fallback: use first available action
-            if (this.player.availableActions.length > 0) {
-                this.handleActionClick(this.player.availableActions[0]);
-            }
-        }
-    }
-
-    handleDefendClick() {
-        // For now, just skip turn (defend could be implemented as a status effect)
-        this.addLogEntry(`${this.player.name} takes a defensive stance!`);
-        this.completePlayerTurn();
     }
 
     showInventory() {
@@ -300,9 +265,9 @@ export class BattleSceneController {
             `;
         } else {
             this.inventory.forEach((inventorySlot, index) => {
-                const itemDef = getItemByName(inventorySlot.name);
-                const description = this.getItemDescription(itemDef);
-                const sprite = itemDef ? itemDef.spritePath : '';
+                const itemName = getItemByName(inventorySlot.name);
+                const description = this.getItemDescription(itemName);
+                const sprite = itemName ? itemName.spritePath : '';
                 inventoryHTML += `
                     <li class="inventory-item" data-item-index="${index}">
                         <img src="${sprite}" alt="${inventorySlot.name}" class="inventory-item__icon">
@@ -342,44 +307,44 @@ export class BattleSceneController {
         }
 
         const inventorySlot = this.inventory[index];
-        const itemDef = getItemByName(inventorySlot.name);
+        const itemName = getItemByName(inventorySlot.name);
 
-        if (!itemDef) {
+        if (!itemName) {
             this.addLogEntry(`Error: Item ${inventorySlot.name} not found in registry`);
             return;
         }
 
         // Check if item needs target selection
-        if (itemDef.data.variableTarget) {
+        if (itemName.data.variableTarget) {
             this.showTargetSelection(index);
         } else {
             // Use item on default target immediately
             this.isProcessingTurn = true;
             this.disableActionButtons();
-            const defaultTarget = itemDef.data.defaultTarget === 1 ? this.enemy : this.player;
+            const defaultTarget = itemName.data.defaultTarget === 1 ? this.enemy : this.player;
             await this.executeItem(index, defaultTarget);
         }
     }
 
-    getItemDescription(itemDef) {
-        if (!itemDef) return 'Unknown item';
-        if (itemDef.description) {
-            return itemDef.description;
+    getItemDescription(itemName) {
+        if (!itemName) return 'Unknown item';
+        if (itemName.description) {
+            return itemName.description;
         }
         
         const desc = [];
-        if (itemDef.data.heal) {
-            desc.push(`Restores ${itemDef.data.heal} HP`);
+        if (itemName.data.heal) {
+            desc.push(`Restores ${itemName.data.heal} HP`);
         }
-        if (itemDef.data.damage) {
-            desc.push(`Deals ${itemDef.data.damage} damage`);
+        if (itemName.data.damage) {
+            desc.push(`Deals ${itemName.data.damage} damage`);
         }
-        if (itemDef.data.stats) {
-            for (const [stat, value] of Object.entries(itemDef.data.stats)) {
+        if (itemName.data.stats) {
+            for (const [stat, value] of Object.entries(itemName.data.stats)) {
                 desc.push(`${value >= 0 ? '+' : ''}${value} ${stat}`);
             }
         }
-        if (itemDef.variableTarget) {
+        if (itemName.variableTarget) {
             desc.push('(Select target)');
         }
         return desc.join(', ') || 'Mysterious item';
@@ -435,9 +400,9 @@ export class BattleSceneController {
         this.disableActionButtons();
 
         const inventorySlot = this.inventory[inventoryIndex];
-        const itemDef = getItemByName(inventorySlot.name);
+        const itemName = getItemByName(inventorySlot.name);
 
-        if (!itemDef) {
+        if (!itemName) {
             this.addLogEntry(`Error: Item ${inventorySlot.name} not found`);
             this.isProcessingTurn = false;
             this.showActionButtons();
@@ -445,13 +410,11 @@ export class BattleSceneController {
         }
 
         // If item doesn't require target selection, use default target
-        if (!itemDef.data.variableTarget) {
-            target = itemDef.data.defaultTarget === 0 ? this.player : this.enemy;
+        if (!itemName.data.variableTarget) {
+            target = itemName.data.defaultTarget === 0 ? this.player : this.enemy;
         }
             
-        const itemInstance = itemDef.factory
-            ? itemDef.factory(itemDef.animationCallback)
-            : new Item(itemDef.name, itemDef.data, itemDef.animationCallback);
+        const itemInstance = itemName.factory(itemName.animationCallback);
 
         // Process the turn with the item
         await this.battleSequence.processTurn(this.player, itemInstance, target);
@@ -488,15 +451,8 @@ export class BattleSceneController {
         this.isProcessingTurn = true;
         this.disableActionButtons();
 
-        // Determine target (for now, always target enemy for attacks)
-        let target = this.enemy;
-        if (action.variableTarget) {
-            // For variable target actions, prompt user (simplified: always target enemy for demo)
-            target = this.enemy;
-        }
-
         // Process the turn
-        await this.battleSequence.processTurn(this.player, action, target);
+        await this.battleSequence.processTurn(this.player, action, this.enemy);
 
         // Update UI
         this.updateEntityHP(this.player, 'player');
