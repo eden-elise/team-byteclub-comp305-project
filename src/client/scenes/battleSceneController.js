@@ -174,10 +174,6 @@ export class BattleSceneController {
         // Show combat log
         document.getElementById('combat-log').style.display = '';
 
-        // Hide target indicators
-        document.getElementById('player-target-indicator').classList.remove('active');
-        document.getElementById('enemy-target-indicator').classList.remove('active');
-
         // Remove target selection highlights
         document.getElementById('player-sprite').classList.remove('target-selectable');
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
@@ -223,10 +219,6 @@ export class BattleSceneController {
         this.uiState = 'inventory';
         this.selectedItem = null;
         this.pendingItem = null;
-
-        // Hide target indicators
-        document.getElementById('player-target-indicator').classList.remove('active');
-        document.getElementById('enemy-target-indicator').classList.remove('active');
 
         // Remove target selection highlights
         document.getElementById('player-sprite').classList.remove('target-selectable');
@@ -362,10 +354,6 @@ export class BattleSceneController {
             this.showInventory();
         });
 
-        // Show target indicators
-        document.getElementById('player-target-indicator').classList.add('active');
-        document.getElementById('enemy-target-indicator').classList.add('active');
-
         // Highlight clickable targets
         document.getElementById('player-sprite').classList.add('target-selectable');
         document.getElementById('enemy-sprite').classList.add('target-selectable');
@@ -375,10 +363,6 @@ export class BattleSceneController {
         if (this.pendingItem === null || this.isProcessingTurn) {
             return;
         }
-
-        // Hide target indicators
-        document.getElementById('player-target-indicator').classList.remove('active');
-        document.getElementById('enemy-target-indicator').classList.remove('active');
 
         // Remove highlight
         document.getElementById('player-sprite').classList.remove('target-selectable');

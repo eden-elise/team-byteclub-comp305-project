@@ -4,7 +4,7 @@ import { BaseDeathAnimation } from '../../animations/DeathAnimations.js';
 export class Knight extends Entity {
     constructor(isPlayer) {
         const stats = {
-            ATK: 180, // High attack
+            ATK: 18, // High attack
             DEF: 25, // Very high defense
             SPD: 8   // Low speed (due to heavy armor)
         };
