@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYTECLUB - Battle Scene</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/battleScene.css">
+</head>
+
+<body>
+    <main id="battle-screen" class="battle-container">
+        <header id="battle-header" class="battle-header">
+            <section class="combatant combatant--player" aria-label="Player Status">
+                <h2 class="combatant__name" id="player-name">PLAYER</h2>
+                <figure class="combatant__avatar">
+                    <img id="player-sprite" src="" alt="Player" class="combatant__sprite">
+                    <div id="player-target-indicator" class="target-indicator target-indicator--player">
+                        <div class="target-indicator__line target-indicator__line--tl"></div>
+                        <div class="target-indicator__line target-indicator__line--tr"></div>
+                        <div class="target-indicator__line target-indicator__line--bl"></div>
+                        <div class="target-indicator__line target-indicator__line--br"></div>
+                    </div>
+                </figure>
+                <div class="combatant__stats">
+                    <div class="stat-bar stat-bar--hp">
+                        <label for="player-hp" class="stat-bar__label">
+                            HP: <span id="player-hp-text">100</span>/<span id="player-hp-max">100</span>
+                        </label>
+                        <progress id="player-hp" class="stat-bar__progress" max="100" value="100"
+                            aria-label="Player health points">
+                        </progress>
+                    </div>
+                </div>
+            </section>
+
+            <div class="battle-divider" aria-hidden="true"></div>
+
+            <section class="combatant combatant--enemy" aria-label="Enemy Status">
+                <h2 class="combatant__name combatant__name--enemy" id="enemy-name">ENEMY</h2>
+                <figure class="combatant__avatar">
+                    <img id="enemy-sprite" src="" alt="Enemy" class="combatant__sprite">
+                    <div id="enemy-target-indicator" class="target-indicator target-indicator--enemy">
+                        <div class="target-indicator__line target-indicator__line--tl"></div>
+                        <div class="target-indicator__line target-indicator__line--tr"></div>
+                        <div class="target-indicator__line target-indicator__line--bl"></div>
+                        <div class="target-indicator__line target-indicator__line--br"></div>
+                    </div>
+                </figure>
+                <div class="combatant__stats">
+                    <div class="stat-bar stat-bar--hp">
+                        <label for="enemy-hp" class="stat-bar__label">
+                            HP: <span id="enemy-hp-text">100</span>/<span id="enemy-hp-max">100</span>
+                        </label>
+                        <progress id="enemy-hp" class="stat-bar__progress" max="100" value="100"
+                            aria-label="Enemy health points">
+                        </progress>
+                    </div>
+                </div>
+            </section>
+        </header>
+
+        <nav id="action-panel" class="action-panel" aria-label="Combat Actions">
+            <div id="action-container" class="action-container">
+                <!-- Action buttons or inventory will be shown here -->
+            </div>
+        </nav>
+
+        <section id="combat-log" class="combat-log" aria-live="polite" aria-label="Combat Messages">
+            <div class="combat-log__content" id="combat-log-content">
+                <p class="combat-log__entry combat-log__entry--intro">Battle begins...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- BattleSceneController is imported from a separate JS file by the calling page -->
+</body>
+
+</html>

@@ -1,0 +1,599 @@
+// Import battle system classes
+import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
+import { getItemByName } from '../gameplay/definitions/items/itemRegistry.js';
+import { Item } from '../gameplay/core/Item.js';
+import { createFloatingDamageNumber } from '../gameplay/animations/ItemAnimations.js';
+
+/**
+ * BattleSceneController - Manages the UI and connects it to the battle engine
+ * This class should be instantiated from the calling page with a BattleSequence
+ */
+export class BattleSceneController {
+    constructor(battleSequence, inventory = []) {
+        this.battleSequence = battleSequence;
+        this.battleEngine = battleSequence.getBattleEngine();
+        this.player = battleSequence.player;
+        this.enemy = battleSequence.enemy;
+        this.inventory = inventory; // Separate inventory array
+        this.currentTurnEntity = null;
+        this.turnCount = 0;
+        this.isProcessingTurn = false;
+
+        // UI state management
+        this.uiState = 'actions'; // 'actions', 'inventory', 'target-selection'
+        this.selectedItem = null;
+        this.pendingItem = null; // Item waiting for target selection
+
+        // Track HP for animations
+        this.lastPlayerHP = this.player.currentHP;
+        this.lastEnemyHP = this.enemy.currentHP;
+
+        // Apply flex layout to the main battle container for proper scaling
+        const battleContainer = document.querySelector('.battle-container');
+        if (battleContainer) {
+            battleContainer.style.display = 'flex';
+            battleContainer.style.flexDirection = 'column';
+            battleContainer.style.height = '100vh'; // Ensure container fills viewport height
+        }
+        this.initializeUI();
+        this.setupEventListeners();
+        this.startBattle();
+    }
+
+    initializeUI() {
+        // Set player info
+        document.getElementById('player-name').textContent = this.player.name.toUpperCase();
+        document.getElementById('player-sprite').src = this.player.image;
+        this.updateEntityHP(this.player, 'player');
+
+        // Set enemy info
+        document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
+        document.getElementById('enemy-sprite').src = this.enemy.image;
+        this.updateEntityHP(this.enemy, 'enemy');
+
+        // Initialize action panel
+        this.showActionButtons();
+    }
+
+    setupEventListeners() {
+        // Listen for battle log updates
+        const originalLogEvent = this.battleEngine.logEvent.bind(this.battleEngine);
+        this.battleEngine.logEvent = (message) => {
+            originalLogEvent(message);
+            this.addLogEntry(message);
+        };
+
+        // Add click listeners for target selection
+        document.getElementById('player-sprite').addEventListener('click', () => {
+            if (this.uiState === 'target-selection') {
+                this.handleTargetSelection(this.player);
+            }
+        });
+
+        document.getElementById('enemy-sprite').addEventListener('click', () => {
+            if (this.uiState === 'target-selection') {
+                this.handleTargetSelection(this.enemy);
+            }
+        });
+    }
+
+    async startBattle() {
+        // Start the battle sequence
+        const battlePromise = this.battleSequence.start();
+
+        // Handle battle end
+        battlePromise.then(result => {
+            this.handleBattleEnd(result);
+        });
+
+        // Start the first turn
+        this.processNextTurn();
+    }
+
+    async processNextTurn() {
+        if (!this.battleSequence.isActive() || this.isProcessingTurn) {
+            return;
+        }
+
+        // Check if battle ended
+        if (!this.player.isAlive() || !this.enemy.isAlive()) {
+            return;
+        }
+
+        this.isProcessingTurn = true;
+        this.turnCount++;
+
+        // Get the current entity from turn order
+        let turnOrder = this.battleEngine.turnOrderQueue;
+        if (turnOrder.length === 0) {
+            this.battleEngine.determineTurnOrder();
+            turnOrder = this.battleEngine.turnOrderQueue;
+        }
+
+        // Find next alive entity in queue
+        let nextEntity = null;
+        for (const entity of turnOrder) {
+            if (entity.isAlive()) {
+                nextEntity = entity;
+                break;
+            }
+        }
+
+        // If no alive entity found, end battle
+        if (!nextEntity) {
+            this.isProcessingTurn = false;
+            return;
+        }
+
+        // Rotate queue so next entity is first
+        while (turnOrder[0] !== nextEntity) {
+            turnOrder.push(turnOrder.shift());
+        }
+
+        this.currentTurnEntity = nextEntity;
+        const isPlayerTurn = this.currentTurnEntity === this.player;
+
+        // Update UI to show whose turn it is
+        if (isPlayerTurn) {
+            this.showActionButtons();
+            this.enableActionButtons();
+            this.isProcessingTurn = false; // Allow player to make a choice
+        } else {
+            this.showActionButtons();
+            this.disableActionButtons();
+            await this.processEnemyTurn();
+        }
+    }
+
+    async processEnemyTurn() {
+        // Simple AI: Use first available action on player
+        const action = this.enemy.availableActions[0];
+        if (action && this.player.isAlive()) {
+            await this.battleSequence.processTurn(this.enemy, action, this.player);
+            this.updateEntityHP(this.enemy, 'enemy');
+            this.updateEntityHP(this.player, 'player');
+
+            // Rotate turn order: move current entity to end
+            this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
+
+            this.isProcessingTurn = false;
+
+            // Continue to next turn if battle is still active
+            if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
+                setTimeout(() => this.processNextTurn(), 1000);
+            }
+        } else {
+            this.isProcessingTurn = false;
+        }
+    }
+
+    showActionButtons() {
+        const container = document.getElementById('action-container');
+        // Allow container to size to its content
+        container.style.flex = '0 0 auto';
+
+        this.uiState = 'actions';
+        this.selectedItem = null;
+        this.pendingItem = null;
+
+        // Show combat log
+        document.getElementById('combat-log').style.display = '';
+
+        // Hide target indicators
+        document.getElementById('player-target-indicator').classList.remove('active');
+        document.getElementById('enemy-target-indicator').classList.remove('active');
+
+        // Remove target selection highlights
+        document.getElementById('player-sprite').classList.remove('target-selectable');
+        document.getElementById('enemy-sprite').classList.remove('target-selectable');
+
+        if (this.currentTurnEntity === this.player) {
+            const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
+            
+            let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">Attack</button>`;
+            let attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">Attack</button>`;
+            
+            if (attacks.length >= 1) {
+                attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0].name}</button>`;
+            }
+            if (attacks.length >= 2) {
+                attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">${attacks[1].name}</button>`;
+            }
+            
+            container.innerHTML = `
+                <div class="action-buttons-container">
+                    ${attackButton1}
+                    ${attackButton2}
+                    <button id="btn-inventory" class="action-btn action-btn--primary">Inventory</button>
+                </div>
+            `;
+
+            // Add event listeners
+            document.getElementById('btn-attack-1').addEventListener('click', () => {
+                const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
+                if (attacks.length >= 1) {
+                    this.handleActionClick(attacks[0]);
+                }
+            });
+
+            document.getElementById('btn-attack-2').addEventListener('click', () => {
+                const attacks = this.player.availableActions.filter(action => action.constructor.name === 'Attack' || action.basePower !== undefined);
+                if (attacks.length >= 2) {
+                    this.handleActionClick(attacks[1]);
+                } else if (attacks.length === 1) {
+                    this.handleActionClick(attacks[0]);
+                }
+            });
+
+            document.getElementById('btn-inventory').addEventListener('click', () => {
+                this.showInventory();
+            });
+        } else {
+            // Show waiting message during enemy turn
+            container.innerHTML = `
+                <div class="action-buttons-container">
+                    <button class="action-btn action-btn--primary" disabled>Waiting for enemy turn...</button>
+                </div>
+            `;
+        }
+    }
+
+    handleAttackClick() {
+        // Use first attack action
+        const attackAction = this.player.availableActions.find(action => {
+            // Check if it's an Attack instance
+            return action.constructor.name === 'Attack' || action.basePower !== undefined;
+        });
+        if (attackAction) {
+            this.handleActionClick(attackAction);
+        } else {
+            // Fallback: use first available action
+            if (this.player.availableActions.length > 0) {
+                this.handleActionClick(this.player.availableActions[0]);
+            }
+        }
+    }
+
+    handleDefendClick() {
+        // For now, just skip turn (defend could be implemented as a status effect)
+        this.addLogEntry(`${this.player.name} takes a defensive stance!`);
+        this.completePlayerTurn();
+    }
+
+    showInventory() {
+        const container = document.getElementById('action-container');
+        this.uiState = 'inventory';
+        this.selectedItem = null;
+        this.pendingItem = null;
+
+        // Hide target indicators
+        document.getElementById('player-target-indicator').classList.remove('active');
+        document.getElementById('enemy-target-indicator').classList.remove('active');
+
+        // Remove target selection highlights
+        document.getElementById('player-sprite').classList.remove('target-selectable');
+        document.getElementById('enemy-sprite').classList.remove('target-selectable');
+
+        // Hide combat log
+        document.getElementById('combat-log').style.display = 'none';
+
+
+        // Build inventory list HTML
+        let inventoryHTML = `
+            <div class="inventory-container">
+                <div class="inventory-header">
+                    <button id="btn-inventory-back" class="action-btn action-btn--back">Back</button>
+                </div>
+                <div class="inventory-list-container">
+                    <ul class="inventory-list" id="inventory-list">
+        `;
+
+        if (this.inventory.length === 0) {
+            inventoryHTML += `
+                <li class="inventory-item" style="cursor: default; opacity: 0.6;">
+                    <div class="inventory-item__info" style="width: 100%; text-align: center;">
+                <li class="inventory-item" style="cursor: default; opacity: 0.6; text-align: center;">
+                    <div class="inventory-item__info">
+                        <div class="inventory-item__description">Inventory is empty</div>
+                    </div>
+                </li>
+            `;
+        } else {
+            this.inventory.forEach((inventorySlot, index) => {
+                const itemDef = getItemByName(inventorySlot.name);
+                const description = this.getItemDescription(itemDef);
+                const sprite = itemDef ? itemDef.spritePath : '';
+                inventoryHTML += `
+                    <li class="inventory-item" data-item-index="${index}">
+                        <img src="${sprite}" alt="${inventorySlot.name}" class="inventory-item__icon">
+                        <div class="inventory-item__info">
+                            <div class="inventory-item__name">${inventorySlot.name} <span style="opacity: 0.6;">x${inventorySlot.quantity}</span> — <span class="inventory-item__description">${description}</span></div>
+                        </div>
+                    </li>
+                `;
+            });
+        }
+
+        inventoryHTML += `
+                    </ul>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = inventoryHTML;
+
+        // Add event listeners
+        document.getElementById('btn-inventory-back').addEventListener('click', () => {
+            // Revert container height when going back
+            this.showActionButtons();
+        });
+
+        // Add click listeners to inventory items
+        document.querySelectorAll('.inventory-item').forEach((itemEl, index) => {
+            itemEl.addEventListener('click', () => {
+                this.selectInventoryItem(index);
+            });
+        });
+    }
+
+    async selectInventoryItem(index) {
+        if (this.isProcessingTurn) {
+            return;
+        }
+
+        const inventorySlot = this.inventory[index];
+        const itemDef = getItemByName(inventorySlot.name);
+
+        if (!itemDef) {
+            this.addLogEntry(`Error: Item ${inventorySlot.name} not found in registry`);
+            return;
+        }
+
+        // Check if item needs target selection
+        if (itemDef.data.variableTarget) {
+            this.showTargetSelection(index);
+        } else {
+            // Use item on default target immediately
+            this.isProcessingTurn = true;
+            this.disableActionButtons();
+            const defaultTarget = itemDef.data.defaultTarget === 1 ? this.enemy : this.player;
+            await this.executeItem(index, defaultTarget);
+        }
+    }
+
+    getItemDescription(itemDef) {
+        if (!itemDef) return 'Unknown item';
+        if (itemDef.description) {
+            return itemDef.description;
+        }
+        
+        const desc = [];
+        if (itemDef.data.heal) {
+            desc.push(`Restores ${itemDef.data.heal} HP`);
+        }
+        if (itemDef.data.damage) {
+            desc.push(`Deals ${itemDef.data.damage} damage`);
+        }
+        if (itemDef.data.stats) {
+            for (const [stat, value] of Object.entries(itemDef.data.stats)) {
+                desc.push(`${value >= 0 ? '+' : ''}${value} ${stat}`);
+            }
+        }
+        if (itemDef.variableTarget) {
+            desc.push('(Select target)');
+        }
+        return desc.join(', ') || 'Mysterious item';
+    }
+
+
+
+    showTargetSelection(inventoryIndex) {
+        const container = document.getElementById('action-container');
+        this.uiState = 'target-selection';
+        this.pendingItem = inventoryIndex;
+
+        container.innerHTML = `
+            <div class="target-selection-container">
+                <button id="btn-target-cancel" class="action-btn action-btn--back">Cancel</button>
+                <p class="target-selection-text">Select target for item</p>
+            </div>
+        `;
+
+        // Add cancel button listener to go back to inventory
+        document.getElementById('btn-target-cancel').addEventListener('click', () => {
+            this.showInventory();
+        });
+
+        // Show target indicators
+        document.getElementById('player-target-indicator').classList.add('active');
+        document.getElementById('enemy-target-indicator').classList.add('active');
+
+        // Highlight clickable targets
+        document.getElementById('player-sprite').classList.add('target-selectable');
+        document.getElementById('enemy-sprite').classList.add('target-selectable');
+    }
+
+    async handleTargetSelection(target) {
+        if (this.pendingItem === null || this.isProcessingTurn) {
+            return;
+        }
+
+        // Hide target indicators
+        document.getElementById('player-target-indicator').classList.remove('active');
+        document.getElementById('enemy-target-indicator').classList.remove('active');
+
+        // Remove highlight
+        document.getElementById('player-sprite').classList.remove('target-selectable');
+        document.getElementById('enemy-sprite').classList.remove('target-selectable');
+
+        // Execute item with selected target
+        await this.executeItem(this.pendingItem, target);
+    }
+
+    async executeItem(inventoryIndex, target) {
+        this.isProcessingTurn = true;
+        this.disableActionButtons();
+
+        const inventorySlot = this.inventory[inventoryIndex];
+        const itemDef = getItemByName(inventorySlot.name);
+
+        if (!itemDef) {
+            this.addLogEntry(`Error: Item ${inventorySlot.name} not found`);
+            this.isProcessingTurn = false;
+            this.showActionButtons();
+            return;
+        }
+
+        // If item doesn't require target selection, use default target
+        if (!itemDef.data.variableTarget) {
+            target = itemDef.data.defaultTarget === 0 ? this.player : this.enemy;
+        }
+            
+        const itemInstance = itemDef.factory
+            ? itemDef.factory(itemDef.animationCallback)
+            : new Item(itemDef.name, itemDef.data, itemDef.animationCallback);
+
+        // Process the turn with the item
+        await this.battleSequence.processTurn(this.player, itemInstance, target);
+
+        // Decrement quantity and remove from inventory if needed
+        inventorySlot.quantity -= 1;
+        if (inventorySlot.quantity <= 0) {
+            this.inventory.splice(inventoryIndex, 1);
+        }
+
+        // Update UI
+        this.updateEntityHP(this.player, 'player');
+        this.updateEntityHP(this.enemy, 'enemy');
+
+        // Rotate turn order: move current entity to end
+        this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
+
+        this.isProcessingTurn = false;
+
+        // Return to action buttons
+        this.showActionButtons();
+
+        // Continue to next turn if battle is still active
+        if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
+            setTimeout(() => this.processNextTurn(), 1000);
+        }
+    }
+
+    async handleActionClick(action) {
+        if (this.isProcessingTurn || this.currentTurnEntity !== this.player || !this.battleSequence.isActive()) {
+            return;
+        }
+
+        this.isProcessingTurn = true;
+        this.disableActionButtons();
+
+        // Determine target (for now, always target enemy for attacks)
+        let target = this.enemy;
+        if (action.variableTarget) {
+            // For variable target actions, prompt user (simplified: always target enemy for demo)
+            target = this.enemy;
+        }
+
+        // Process the turn
+        await this.battleSequence.processTurn(this.player, action, target);
+
+        // Update UI
+        this.updateEntityHP(this.player, 'player');
+        this.updateEntityHP(this.enemy, 'enemy');
+
+        // Rotate turn order: move current entity to end
+        this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
+
+        this.completePlayerTurn();
+    }
+
+    completePlayerTurn() {
+        this.isProcessingTurn = false;
+
+        // Continue to next turn if battle is still active
+        if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
+            setTimeout(() => this.processNextTurn(), 1000);
+        }
+    }
+
+    enableActionButtons() {
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(btn => {
+            if (!btn.disabled && btn.id !== 'btn-use-item') {
+                btn.disabled = false;
+            }
+        });
+    }
+
+    disableActionButtons() {
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(btn => btn.disabled = true);
+    }
+
+    updateEntityHP(entity, prefix) {
+        const hpBar = document.getElementById(`${prefix}-hp`);
+        const hpText = document.getElementById(`${prefix}-hp-text`);
+        const hpMax = document.getElementById(`${prefix}-hp-max`);
+
+        // Get last known HP to calculate change
+        const lastHP = prefix === 'player' ? this.lastPlayerHP : this.lastEnemyHP;
+        const hpChange = entity.currentHP - lastHP;
+
+        hpBar.max = entity.maxHP;
+        hpBar.value = entity.currentHP;
+        hpText.textContent = entity.currentHP;
+        hpMax.textContent = entity.maxHP;
+
+        // Update last known HP
+        if (prefix === 'player') {
+            this.lastPlayerHP = entity.currentHP;
+        } else {
+            this.lastEnemyHP = entity.currentHP;
+        }
+
+        // Show floating damage/healing number if HP changed
+        if (hpChange !== 0) {
+            createFloatingDamageNumber(hpChange, prefix);
+        }
+
+        // Add shake animation if taking damage
+        if (entity.currentHP < entity.maxHP) {
+            const sprite = document.getElementById(`${prefix}-sprite`);
+            sprite.classList.add('shake');
+            setTimeout(() => sprite.classList.remove('shake'), 500);
+        }
+    }
+
+    addLogEntry(message) {
+        const logContent = document.getElementById('combat-log-content');
+        const entry = document.createElement('p');
+        entry.className = 'combat-log__entry';
+
+        // Determine entry style based on message content
+        if (message.includes('wins!') || message.includes('victory')) {
+            entry.className += ' combat-log__entry--victory';
+        } else if (message.includes('defeated') || message.includes('loses')) {
+            entry.className += ' combat-log__entry--defeat';
+        } else if (message.includes(this.player.name)) {
+            entry.className += ' combat-log__entry--player';
+        } else if (message.includes(this.enemy.name)) {
+            entry.className += ' combat-log__entry--enemy';
+        }
+
+        entry.textContent = message;
+        logContent.appendChild(entry);
+
+        // Auto-scroll to bottom
+        const combatLog = document.getElementById('combat-log');
+        combatLog.scrollTop = combatLog.scrollHeight;
+    }
+
+    handleBattleEnd(result) {
+        this.disableActionButtons();
+        this.addLogEntry(`Battle ended! ${result.winner.name} is victorious!`);
+
+        // Disable further interactions
+        this.isProcessingTurn = true;
+    }
+}
