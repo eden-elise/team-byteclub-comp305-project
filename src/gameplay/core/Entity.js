@@ -12,10 +12,14 @@ export class Entity {
      * @param {Array} moves - List of moves
      * @param {Array} items - List of items
      * @param {string} image - Path to the entity's image/sprite
-     * @param {Promise} onDeathPromise - Callback function when the entity dies
+     * @param {Promise} onDeathPromise - Promise resolved when the entity dies
      * @param {Boolean} isPlayer - Whether the entity is controlled by the player or AI
+     * @param {Promise} onDamageTakenPromise - Promise resolved when the entity takes damage
      */
-    constructor(name, maxHP, stats = {}, moves = [], items = [], image = '', onDeathPromise = null, isPlayer = false) {
+    constructor(
+        name, maxHP, stats = {}, moves = [], items = [], image = '', 
+        onDeathPromise = null, isPlayer = false, onDamageTakenPromise = null
+    ) {
         this.name = name;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
@@ -28,6 +32,7 @@ export class Entity {
         this.image = image; // Path to image/sprite
         this.onDeathPromise = onDeathPromise;
         this.isPlayer = isPlayer;
+        this.onDamageTakenPromise = onDamageTakenPromise;
     }
 
     /**
@@ -46,6 +51,8 @@ export class Entity {
         this.currentHP = Math.max(0, this.currentHP - damage);
 
         createFloatingDamageNumber(-damage, this.isPlayer);
+
+        await this.onDamageTakenPromise();
 
         if (!this.isAlive()) {
             await this.onDeathPromise();

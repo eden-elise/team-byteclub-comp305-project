@@ -37,6 +37,9 @@ export class Attack extends Action {
         const defenseReduction = target.stats.DEF / 2;
         const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
 
+        // Play animation and wait for it to complete
+        await this.playAnimation(source, target, battle);
+
         await target.takeDamage(damage);
         battle.logEvent(`${target.name} takes ${damage} damage!`);
 
@@ -49,9 +52,6 @@ export class Attack extends Action {
             target.addStatusEffect(this.statusEffect, battle);
             battle.logEvent(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
         }
-
-        // Play animation and wait for it to complete
-        await this.playAnimation(source, target, battle);
     }
 }
 

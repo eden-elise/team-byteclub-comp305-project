@@ -1,12 +1,13 @@
 import { Entity } from '../../core/Entity.js';
 
 import { BaseDeathAnimation } from '../../animations/DeathAnimations.js';
+import { BaseDamageAnimation } from '../../animations/DamageAnimations.js';
 export class Knight extends Entity {
     constructor(isPlayer) {
         const stats = {
-            ATK: 18, // High attack
-            DEF: 25, // Very high defense
-            SPD: 8   // Low speed (due to heavy armor)
+            ATK: 18,
+            DEF: 25,
+            SPD: 8
         };
         const moves = [
             'Basic Strike',
@@ -28,7 +29,8 @@ export class Knight extends Entity {
             items,
             '../../src/assets/art/characters/hero-1.png',
             () => BaseDeathAnimation(isPlayer),
-            isPlayer
+            isPlayer,
+            () => BaseDamageAnimation(isPlayer)
         );    
     }
 }
@@ -61,7 +63,8 @@ export class Archer extends Entity {
             items,
             '../../src/assets/art/characters/hero-2.png',
             () => BaseDeathAnimation(isPlayer),
-            isPlayer
+            isPlayer,
+            () => BaseDamageAnimation(isPlayer)
         );
     }
 }

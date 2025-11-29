@@ -1,17 +1,8 @@
 import { Attack } from '../../core/Attack.js';
+import { createBaseAttackAnimationCallback } from '../../animations/AttackAnimations.js';
 
-/**
- * Weapon/Attack definitions
- * Each function returns a new Attack instance
- */
-
-/**
- * Basic Strike - Simple melee attack
- */
-export function createBasicStrike(animationCallback) {
-    class BasicStrike extends Attack {
-    }
-
+function createBasicStrikeInstance(animationCallback) {
+    class BasicStrike extends Attack {}
     return new BasicStrike(
         ATTACKS.BASIC_STRIKE.name,
         ATTACKS.BASIC_STRIKE.data,
@@ -19,12 +10,8 @@ export function createBasicStrike(animationCallback) {
     );
 }
 
-/**
- * Heavy Swing
- */
-export function createHeavySwing(animationCallback) {
+function createHeavySwingInstance(animationCallback) {
     class HeavySwing extends Attack {}
-
     return new HeavySwing(
         ATTACKS.HEAVY_SWING.name,
         ATTACKS.HEAVY_SWING.data,
@@ -40,10 +27,11 @@ export const ATTACKS = {
         data: {
             basePower: 1,
         },
-        factory: createBasicStrike,
-        animationCallback: (source, target) => {
-            // TODO: Implement basic strike animation callback
-        }
+        factory: createBasicStrikeInstance,
+        animationCallback: createBaseAttackAnimationCallback({
+            lungeDistance: 40,
+            duration: 300
+        })
     },
     HEAVY_SWING: {
         id: 'heavy_swing',
@@ -52,13 +40,13 @@ export const ATTACKS = {
         data: {
             basePower: 2,
         },
-        factory: createHeavySwing,
-        animationCallback: (source, target) => {
-            // TODO: Implement basic strike animation callback
-        }
+        factory: createHeavySwingInstance,
+        animationCallback: createBaseAttackAnimationCallback({
+            lungeDistance: 60,
+            duration: 400
+        })
     }
 };
-
 
 export function getAttackByName(attackName) {
     for (const attack of Object.values(ATTACKS)) {
