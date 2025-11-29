@@ -79,6 +79,7 @@
         // Import battle system classes
         import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
         import { Entity } from '../gameplay/core/Entity.js';
+        import { Knight, Archer } from '../gameplay/definitions/characters/heroes.js';
         import { BattleSceneController } from './battleSceneController.js';
 
         /**
@@ -86,51 +87,19 @@
          */
         async function initDemo() {
             
-            // Create demo inventory with item names and quantities
-            const demoAttacks = [
-                'Basic Strike',
-                'Heavy Swing'
-            ];
-            const demoInventory = [
-                { name: 'Health Potion', quantity: 5 },
-                { name: 'Poison Potion', quantity: 2 },
-                { name: 'Fire Potion', quantity: 3 },
-                { name: 'Mystery Potion', quantity: 1 }
-            ];
-            // Create Hero 1 (using hero-1.png) - Knight
-            const hero1 = new Entity(
-                'Knight',
-                100,
-                {
-                    ATK: 15,
-                    DEF: 12,
-                    SPD: 14
-                },
-                demoAttacks,
-                demoInventory,
-                '../../assets/art/characters/hero-1.png'
-            );
+            const player = new Knight(true);
 
-            // Create Hero 2 (using hero-2.png) - Ranger
-            const hero2 = new Entity(
-                'Ranger',
-                80,
-                {
-                    ATK: 18,
-                    DEF: 8,
-                    SPD: 16
-                },
-                demoAttacks,
-                demoInventory,
-                '../../assets/art/characters/hero-2.png'
-            );
+            const hero2 = new Archer(false);
 
 
             // Create battle sequence
-            const battleSequence = new BattleSequence(hero1, hero2);
+            const battleSequence = new BattleSequence(player, hero2);
 
             // Initialize the battle scene controller with inventory
-            new BattleSceneController(battleSequence, hero1.items);
+            const battleController = new BattleSceneController(battleSequence, player.items);
+            // Set a global variable to access from elsewhere
+            // in general we should try to stay away from global vars (like prof said it could have naming conflicts and is bad practice)
+            window.battleController = battleController;
         }
 
         // Start the demo when page loads

@@ -99,7 +99,6 @@ export class BattleSequence {
      * @returns {Promise} Promise that resolves when the turn and all animations are complete
      */
     async processTurn(entity, action, target) {
-        console.log(entity, action, target);
         await this.battleEngine.processTurn(entity, action, target);
     }
 

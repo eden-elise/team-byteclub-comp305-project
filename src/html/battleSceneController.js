@@ -1,9 +1,6 @@
 // Import battle system classes
-import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
 import { getAttackByName } from '../gameplay/definitions/attacks/attackRegistry.js';
 import { getItemByName } from '../gameplay/definitions/items/itemRegistry.js';
-import { Item } from '../gameplay/core/Item.js';
-import { createFloatingDamageNumber } from '../gameplay/animations/ItemAnimations.js';
 
 /**
  * BattleSceneController - Manages the UI and connects it to the battle engine
@@ -25,10 +22,6 @@ export class BattleSceneController {
         this.selectedItem = null;
         this.pendingItem = null; // Item waiting for target selection
 
-        // Track HP for animations
-        this.lastPlayerHP = this.player.currentHP;
-        this.lastEnemyHP = this.enemy.currentHP;
-
         // Apply flex layout to the main battle container for proper scaling
         const battleContainer = document.querySelector('.battle-container');
         if (battleContainer) {
@@ -45,12 +38,11 @@ export class BattleSceneController {
         // Set player info
         document.getElementById('player-name').textContent = this.player.name.toUpperCase();
         document.getElementById('player-sprite').src = this.player.image;
-        this.updateEntityHP(this.player, 'player');
 
         // Set enemy info
         document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
         document.getElementById('enemy-sprite').src = this.enemy.image;
-        this.updateEntityHP(this.enemy, 'enemy');
+        this.updateEntityHPs();
 
         // Initialize action panel
         this.showActionButtons();
@@ -147,13 +139,14 @@ export class BattleSceneController {
     }
 
     async processEnemyTurn() {
+        // at some point we should make this a global variable then they can chooes to speed up or slow down enemy turns
+        await new Promise(r => setTimeout(r, 1000));
         // Simple AI: Use first available action on player
         const attackName = getAttackByName(this.enemy.moves[0]);
         if (attackName && this.player.isAlive()) {
             const attackInstance = attackName.factory(attackName.animationCallback);
             await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
-            this.updateEntityHP(this.enemy, 'enemy');
-            this.updateEntityHP(this.player, 'player');
+            this.updateEntityHPs();
 
             // Rotate turn order: move current entity to end
             this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
@@ -425,9 +418,7 @@ export class BattleSceneController {
             this.inventory.splice(inventoryIndex, 1);
         }
 
-        // Update UI
-        this.updateEntityHP(this.player, 'player');
-        this.updateEntityHP(this.enemy, 'enemy');
+        this.updateEntityHPs();
 
         // Rotate turn order: move current entity to end
         this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
@@ -455,8 +446,7 @@ export class BattleSceneController {
         await this.battleSequence.processTurn(this.player, action, this.enemy);
 
         // Update UI
-        this.updateEntityHP(this.player, 'player');
-        this.updateEntityHP(this.enemy, 'enemy');
+        this.updateEntityHPs();
 
         // Rotate turn order: move current entity to end
         this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
@@ -487,38 +477,18 @@ export class BattleSceneController {
         buttons.forEach(btn => btn.disabled = true);
     }
 
-    updateEntityHP(entity, prefix) {
-        const hpBar = document.getElementById(`${prefix}-hp`);
-        const hpText = document.getElementById(`${prefix}-hp-text`);
-        const hpMax = document.getElementById(`${prefix}-hp-max`);
+    updateEntityHPs() {
+        ['player', 'enemy'].forEach(prefix => {
+            const hpBar = document.getElementById(`${prefix}-hp`);
+            const hpText = document.getElementById(`${prefix}-hp-text`);
+            const hpMax = document.getElementById(`${prefix}-hp-max`);
+            const entity = prefix === 'player' ? this.player : this.enemy;
 
-        // Get last known HP to calculate change
-        const lastHP = prefix === 'player' ? this.lastPlayerHP : this.lastEnemyHP;
-        const hpChange = entity.currentHP - lastHP;
-
-        hpBar.max = entity.maxHP;
-        hpBar.value = entity.currentHP;
-        hpText.textContent = entity.currentHP;
-        hpMax.textContent = entity.maxHP;
-
-        // Update last known HP
-        if (prefix === 'player') {
-            this.lastPlayerHP = entity.currentHP;
-        } else {
-            this.lastEnemyHP = entity.currentHP;
-        }
-
-        // Show floating damage/healing number if HP changed
-        if (hpChange !== 0) {
-            createFloatingDamageNumber(hpChange, prefix);
-        }
-
-        // Add shake animation if taking damage
-        if (entity.currentHP < entity.maxHP) {
-            const sprite = document.getElementById(`${prefix}-sprite`);
-            sprite.classList.add('shake');
-            setTimeout(() => sprite.classList.remove('shake'), 500);
-        }
+            hpBar.max = entity.maxHP;
+            hpBar.value = entity.currentHP;
+            hpText.textContent = entity.currentHP;
+            hpMax.textContent = entity.maxHP;
+        });
     }
 
     addLogEntry(message) {

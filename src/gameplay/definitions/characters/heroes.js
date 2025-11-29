@@ -1,66 +1,67 @@
 import { Entity } from '../../core/Entity.js';
-import { createBasicStrike, createQuickSlash } from '../items/weapons.js';
 
-/**
- * Hero/Player character definitions
- * Each function returns a new Entity instance
- */
+import { BaseDeathAnimation } from '../../animations/DeathAnimations.js';
+export class Knight extends Entity {
+    constructor(isPlayer) {
+        const stats = {
+            ATK: 180, // High attack
+            DEF: 25, // Very high defense
+            SPD: 8   // Low speed (due to heavy armor)
+        };
+        const moves = [
+            'Basic Strike',
+            'Heavy Swing'
+        ];
 
-/**
- * Default Hero character
- */
-export function createHero() {
-    return new Entity(
-        'Hero',
-        100,
-        {
-            ATK: 15,
-            DEF: 12,
-            SPD: 14
-        },
-        [
-            createBasicStrike(),
-            createQuickSlash()
-        ],
-        'assets/art/characters/hero-1.png'
-    );
+        const items = [
+            { name: 'Health Potion', quantity: 5 },
+            { name: 'Poison Potion', quantity: 2 },
+            { name: 'Fire Potion', quantity: 3 },
+            { name: 'Mystery Potion', quantity: 1 }
+        ];
+
+        super(
+            'Knight',
+            150,
+            stats,
+            moves,
+            items,
+            '../../../assets/art/characters/hero-1.png',
+            () => BaseDeathAnimation(isPlayer),
+            isPlayer
+        );    
+    }
 }
 
-/**
- * Warrior - High HP and ATK, low SPD
- */
-export function createWarrior() {
-    return new Entity(
-        'Warrior',
-        150,
-        {
-            ATK: 20,
-            DEF: 15,
-            SPD: 8
-        },
-        [
-            createBasicStrike()
-        ],
-        'assets/art/characters/hero-1.png'
-    );
-}
 
-/**
- * Rogue - Low HP, high SPD and ATK
- */
-export function createRogue() {
-    return new Entity(
-        'Rogue',
-        70,
-        {
-            ATK: 18,
-            DEF: 8,
-            SPD: 20
-        },
-        [
-            createQuickSlash()
-        ],
-        'assets/art/characters/hero-2.png'
-    );
-}
+export class Archer extends Entity {
+    constructor(isPlayer) {
+        const stats = {
+            ATK: 24,
+            DEF: 13,
+            SPD: 14 
+        };
+        const moves = [
+            'Basic Strike',
+            'Heavy Swing'
+        ];
 
+        const items = [
+            { name: 'Health Potion', quantity: 5 },
+            { name: 'Poison Potion', quantity: 2 },
+            { name: 'Fire Potion', quantity: 3 },
+            { name: 'Mystery Potion', quantity: 1 }
+        ];
+
+        super(
+            'Archer',
+            120,
+            stats,
+            moves,
+            items,
+            '../../assets/art/characters/hero-2.png',
+            () => BaseDeathAnimation(isPlayer),
+            isPlayer
+        );
+    }
+}

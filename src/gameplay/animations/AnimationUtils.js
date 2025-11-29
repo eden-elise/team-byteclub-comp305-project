@@ -4,18 +4,6 @@
  */
 
 /**
- * Get the DOM element for an entity's sprite
- * @param {Entity} entity - The entity
- * @param {Entity} player - The player entity (for determining if entity is player or enemy)
- * @returns {HTMLElement|null} The sprite element or null if not found
- */
-export function getEntitySpriteElement(entity, player) {
-    const isPlayer = entity === player;
-    const spriteId = isPlayer ? 'player-sprite' : 'enemy-sprite';
-    return document.getElementById(spriteId);
-}
-
-/**
  * Get the position of an element relative to the viewport
  * @param {HTMLElement} element - The DOM element
  * @returns {{x: number, y: number, width: number, height: number}} Position and dimensions
