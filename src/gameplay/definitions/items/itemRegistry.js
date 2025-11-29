@@ -1,302 +1,174 @@
 import { Item } from '../../core/Item.js';
 
 import { createThrowAnimationCallback } from '../../animations/ItemAnimations.js';
-import { StatusEffect } from '../../core/StatusEffect.js';
+import * as StatusEffects from '../status-effects/statusEffectRegistry.js';
 
-function createHealthPotionInstance(animationCallback) {
-    class HealthPotion extends Item {}
-    
-    return new HealthPotion(
-        'Health Potion',
-        ITEMS.HEALTH_POTION.data,
-        animationCallback
-    );
-}
 
-function createPoisonPotionInstance(animationCallback) {
-    class PoisonPotion extends Item {
-        async execute(source, target, battle) {
-            super.execute(source, target, battle);
-            
-            const duration = Math.floor(Math.random() * 4) + 2;
-            const poisonEffect = new StatusEffect(
-                'Poison',
-                duration,
-                '',
-                {},
-                null,
-                async (entity, battleEngine) => {
-                    await entity.takeDamage(4);
-                    battleEngine.logEvent(`${entity.name} takes 4 damage from poison!`);
-                }
-            );
-
-            target.addStatusEffect(poisonEffect, battle);
-            battle.logEvent(`${target.name} is poisoned for ${duration} turns!`);
-        }
+export class HealthPotion extends Item {
+    constructor() {
+        super('Health Potion', HealthPotion.data, createThrowAnimationCallback({ itemImage: HealthPotion.data.spritePath }));
     }
-
-    return new PoisonPotion(
-        'Poison Potion',
-        ITEMS.POISON_POTION.data,
-        animationCallback
-    );
 }
-
-function createFirePotionInstance(animationCallback) {
-    class FirePotion extends Item {
-        async execute(source, target, battle) {
-            if (!target.isAlive()) return Promise.resolve();
-
-            battle.logEvent(`${source.name} uses ${this.name}!`);
-
-            await target.takeDamage(5);
-            battle.logEvent(`${target.name} takes 5 damage from the fire potion!`);
-
-            const burnEffect = new StatusEffect(
-                'Burn',
-                3,
-                '',
-                {},
-                null,
-                async (entity, battleEngine) => {
-                    await entity.takeDamage(5);
-                    battleEngine.logEvent(`${entity.name} takes 5 damage from burn!`);
-                }
-            );
-
-            target.addStatusEffect(burnEffect, battle);
-            battle.logEvent(`${target.name} is burned for 3 turns!`);
-
-            this.removeIfConsumable(source);
-            await this.playAnimation(source, target, battle);
-        }
-    }
-
-    return new FirePotion(
-        'Fire Potion',
-        ITEMS.FIRE_POTION.data,
-        animationCallback
-    );
-}
-
-function createMysteryPotionInstance(animationCallback) {
-    class MysteryPotion extends Item {
-        async execute(source, target, battle) {
-            if (!target.isAlive()) return Promise.resolve();
-
-            battle.logEvent(`${source.name} uses ${this.name}!`);
-
-            const randomEffect = Math.random() < 0.5;
-            if (randomEffect) {
-                const oldHP = target.currentHP;
-                target.heal(150);
-                const actualHeal = target.currentHP - oldHP;
-                if (actualHeal > 0) {
-                    battle.logEvent(`${target.name} recovers ${actualHeal} HP from the mystery potion!`);
-                }
-            } else {
-                if (target.stats.ATK !== undefined) {
-                    target.stats.ATK += 10;
-                    battle.logEvent(`${target.name}'s ATK increased by 10 from the mystery potion!`);
-                }
-            }
-
-            this.removeIfConsumable(source);
-            await this.playAnimation(source, target, battle);
-        }
-    }
-
-    return new MysteryPotion(
-        'Mystery Potion',
-        ITEMS.MYSTERY_POTION.data,
-        animationCallback
-    );
-}
-
-export const ITEMS = {
-    HEALTH_POTION: {
-        id: 'health_potion',
-        name: 'Health Potion',
-        spritePath: '../../src/assets/art/items/potions/health-potion.png',
-        description: 'Restores 40 HP',
-        data: {
-            heal: 40,
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 0
-        },
-        factory: createHealthPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/health-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    },
-    POISON_POTION: {
-        id: 'poison_potion',
-        name: 'Poison Potion',
-        spritePath: '../../src/assets/art/items/potions/poison-potion.png',
-        description: 'Inflicts poison (4 damage per turn for 2-5 turns)',
-        data: {
-            damage: 0,
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 1
-        },
-        factory: createPoisonPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/poison-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 6,
-            soundPath: null,
-            soundVolume: 0.6
-        })
-    },
-    FIRE_POTION: {
-        id: 'fire_potion',
-        name: 'Fire Potion',
-        spritePath: '../../src/assets/art/items/potions/fire-potion.png',
-        description: 'Deals 5 damage + 5 per turn for 3 turns',
-        data: {
-            damage: 5,
-            isConsumable: true,
-            variableTarget: true,
-            defaultTarget: 1
-        },
-        factory: createFirePotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/fire-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 7,
-            soundPath: null,
-            soundVolume: 0.7
-        })
-    },
-    MYSTERY_POTION: {
-        id: 'mystery_potion',
-        name: 'Mystery Potion',
-        spritePath: '../../src/assets/art/items/potions/mystery-potion.png',
-        description: 'Random effect: Heal 150 HP or gain +10 ATK',
-        data: {
-            isConsumable: true,
-            variableTarget: true,
-            defaultTarget: 1
-        },
-        factory: createMysteryPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/mystery-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    },
-    MANA_POTION: {
-        id: 'mana_potion',
-        name: 'Mana Potion',
-        spritePath: '../../src/assets/art/items/potions/health-potion.png',
-        description: 'Restores 100 MP',
-        data: {
-            heal: 100,
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 0
-        },
-        factory: createHealthPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/health-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    },
-    DAMAGE_ELIXIR: {
-        id: 'damage_elixir',
-        name: 'Damage Elixir',
-        spritePath: '../../src/assets/art/items/potions/health-potion.png',
-        description: 'Gain +20 ATK',
-        data: {
-            stats: { ATK: 20 },
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 0
-        },
-        factory: createHealthPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/health-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    },
-    DEFENSE_TONIC: {
-        id: 'defense_tonic',
-        name: 'Defense Tonic',
-        spritePath: '../../src/assets/art/items/potions/health-potion.png',
-        description: 'Gain +15 DEF',
-        data: {
-            stats: { DEF: 15 },
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 0
-        },
-        factory: createHealthPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/health-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    },
-    SPEED_SCROLL: {
-        id: 'speed_scroll',
-        name: 'Speed Scroll',
-        spritePath: '../../src/assets/art/items/potions/health-potion.png',
-        description: 'Gain +10 SPD',
-        data: {
-            stats: { SPD: 10 },
-            isConsumable: true,
-            variableTarget: false,
-            defaultTarget: 0
-        },
-        factory: createHealthPotionInstance,
-        animationCallback: createThrowAnimationCallback({
-            itemImage: '../../src/assets/art/items/potions/health-potion.png',
-            startScale: 2.0,
-            endScale: 0.3,
-            duration: 1000,
-            rotationSpeed: 5,
-            soundPath: null,
-            soundVolume: 0.5
-        })
-    }
+HealthPotion.data = {
+    heal: 40,
+    spritePath: '../../src/assets/art/items/potions/health-potion.png',
+    description: 'Restores 40 HP'
 };
 
-export function getItemByName(itemName) {
-    for (const item of Object.values(ITEMS)) {
-        if (item.name === itemName) {
-            return item;
-        }
+export class RegenerationPotion extends Item {
+    constructor() {
+        super('Regeneration Potion', RegenerationPotion.data, createThrowAnimationCallback({ itemImage: RegenerationPotion.data.spritePath }));
     }
-    return null;
+    async execute(source, target, battle) {
+        super.execute(source, target, battle);
+        const regenerationEffect = new StatusEffects.RegenerationStatusEffect();
+        regenerationEffect.duration = Math.floor(Math.random() * 3) + 3;
+        target.addStatusEffect(regenerationEffect, battle);
+        battle.logEvent(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
+    }
+}
+RegenerationPotion.data = {
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/regeneration-potion.png',
+    description: 'Gives target regeneration for between 3 and 5 turns!'
+};
+
+export class AdrenalinePotion extends Item {
+    constructor() {
+        super('Adrenaline Potion', AdrenalinePotion.data, createThrowAnimationCallback({ itemImage: AdrenalinePotion.data.spritePath }));
+    }
+    async execute(source, target, battle) {
+        super.execute(source, target, battle);
+        const duration = 2;
+        const adrenalineEffect = new StatusEffects.AdrenalineStatusEffect();
+        target.addStatusEffect(adrenalineEffect, battle);
+        battle.logEvent(`${target.name} has adrenaline for ${duration} turns!`);
+    }
+}
+AdrenalinePotion.data = {
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/adrenaline-potion.png',
+    description: 'Gives target adrenaline!'
+};
+
+export class PoisonPotion extends Item {
+    constructor() {
+        super('Poison Potion', PoisonPotion.data, createThrowAnimationCallback({ itemImage: PoisonPotion.data.spritePath }));
+    }
+    async execute(source, target, battle) {
+        super.execute(source, target, battle);
+        const poisonEffect = new StatusEffects.PoisonStatusEffect();
+        poisonEffect.duration = Math.floor(Math.random() * 4) + 2;
+        target.addStatusEffect(poisonEffect, battle);
+        battle.logEvent(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
+    }
+}
+PoisonPotion.data = {
+    damage: 5,
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/poison-potion.png',
+    description: 'Inflicts poison (4 damage per turn for 2-5 turns)'
+};
+
+export class FirePotion extends Item {
+    constructor() {
+        super('Fire Potion', FirePotion.data, createThrowAnimationCallback({ itemImage: FirePotion.data.spritePath }));
+    }
+    async execute(source, target, battle) {
+        super.execute(source, target, battle);
+        const duration = 3;
+        const burnEffect = new StatusEffects.BurnStatusEffect();
+        burnEffect.duration = 3;
+        target.addStatusEffect(burnEffect, battle);
+        battle.logEvent(`${target.name} is burned for ${duration} turns!`);
+    }
+}
+FirePotion.data = {
+    damage: 5,
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/fire-potion.png',
+    description: 'Deals 5 damage + 5 per turn for 3 turns'
+};
+
+export class FreezePotion extends Item {
+    constructor() {
+        super('Freeze Potion', FreezePotion.data, createThrowAnimationCallback({ itemImage: FreezePotion.data.spritePath }));
+    }
+    async execute(source, target, battle) {
+        super.execute(source, target, battle);
+        const freezeEffect = new StatusEffects.FreezeStatusEffect();
+        freezeEffect.duration = 1;
+        target.addStatusEffect(freezeEffect, battle);
+        battle.logEvent(`${target.name} is burned for 1 turn!`);
+    }
+}
+FreezePotion.data = {
+    damage: 15,
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/freeze-potion.png',
+    description: 'Deals 15 damage and freezes target for a turn!'
+};
+
+export class MysteryPotion extends Item {
+    constructor() {
+        super('Mystery Potion', MysteryPotion.data, createThrowAnimationCallback({ itemImage: MysteryPotion.data.spritePath }));
+    }
+    async execute(source, target, battle) {
+        const num = Math.random();
+        if (Math.random() < 0.5 + 0.25 * (source.stats.LUCK - target.stats.LUCK) / (source.stats.LUCK + target.stats.LUCK)) {
+            if (num <= 0.33) {
+                target.heal(40);
+                battle.logEvent(`${target.name} has healed 40 health!`);
+            } else if (num < 0.67) {
+                const duration = 2;
+                const adrenalineEffect = new StatusEffects.AdrenalineStatusEffect();
+                target.addStatusEffect(adrenalineEffect, battle);
+                battle.logEvent(`${target.name} has adrenaline for ${duration} turns!`);
+            } else {
+                const regenerationEffect = new StatusEffects.RegenerationStatusEffect();
+                regenerationEffect.duration = Math.floor(Math.random() * 3) + 3;
+                target.addStatusEffect(regenerationEffect, battle);
+                battle.logEvent(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
+            }
+        } else {
+            if (num <= 0.33) {
+                const freezeEffect = new StatusEffects.FreezeStatusEffect();
+                freezeEffect.duration = 1;
+                target.addStatusEffect(freezeEffect, battle);
+                battle.logEvent(`${target.name} is burned for 1 turn!`);
+            } else if (num < 0.67) {
+                const poisonEffect = new StatusEffects.PoisonStatusEffect();
+                poisonEffect.duration = Math.floor(Math.random() * 4) + 2;
+                target.addStatusEffect(poisonEffect, battle);
+                battle.logEvent(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
+            } else {
+                const duration = 3;
+                const burnEffect = new StatusEffects.BurnStatusEffect();
+                burnEffect.duration = 3;
+                target.addStatusEffect(burnEffect, battle);
+                battle.logEvent(`${target.name} is burned for ${duration} turns!`);
+            }
+        }
+        super.execute(source, target, battle);
+    }
+}
+MysteryPotion.data = {
+    isVariableTarget: true,
+    spritePath: '../../src/assets/art/items/potions/mystery-potion.png',
+    description: 'Random effect - Do you feel lucky???'
+};
+
+
+const itemMap = {
+    'Health Potion': HealthPotion,
+    'Regeneration Potion': RegenerationPotion,
+    'Adrenaline Potion': AdrenalinePotion,
+    'Poison Potion': PoisonPotion,
+    'Fire Potion': FirePotion,
+    'Freeze Potion': FreezePotion,
+    'Mystery Potion': MysteryPotion
+};
+
+export function getItemByName(name) {
+    return itemMap[name] || null;
 }

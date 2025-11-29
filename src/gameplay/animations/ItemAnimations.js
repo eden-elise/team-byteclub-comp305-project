@@ -52,23 +52,8 @@ const DEFAULT_THROW_CONFIG = {
  */
 export async function createThrowAnimation(source, target, battle, config = {}) {
     const finalConfig = { ...DEFAULT_THROW_CONFIG, ...config };
-
-    // Helper function to find sprite element for an entity
-    const findSpriteElement = (entity) => {
-        if (!entity?.name) return null;
-        const name = entity.name.toUpperCase();
-        const pName = document.getElementById('player-name')?.textContent.toUpperCase() || '';
-        const eName = document.getElementById('enemy-name')?.textContent.toUpperCase() || '';
-        if (pName.includes(name)) return document.getElementById('player-sprite');
-        if (eName.includes(name)) return document.getElementById('enemy-sprite');
-        // fallback
-        return document.getElementById('enemy-sprite');
-    };
-
-    // Get target sprite position
-    let targetSprite = findSpriteElement(target);
     
-    const targetPos = getElementPosition(targetSprite);
+    const targetPos = getElementPosition(document.getElementById(target.isPlayer ? "player-sprite" : "enemy-sprite"));
 
     // Determine starting position
     let startX, startY;

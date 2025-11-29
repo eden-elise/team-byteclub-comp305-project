@@ -16,8 +16,8 @@ Five-layer architecture with clear responsibilities:
 ### **2. Actions** (`Action` → `Attack`, `Item`)
 - Abstract base for all turn-based choices
 - `Attack`: Deals damage based on stats
-- `Item`: Applies effects via data object (`{ heal: 200 }`, `{ damage: 50 }`, `{ stats: { ATK: 5 } }`)
-- Supports `variableTarget` flag for target selection
+- `Item`: Applies effects via data object (`{ heal: 200 }`, `{ damage: 50 }`, `{ stats: { ATTACK: 5 } }`)
+- Supports `isVariableTarget` flag for target selection
 - Supports animation callbacks (returns Promise)
 
 ### **3. Effects**
@@ -63,5 +63,5 @@ One `Entity` class for all entities. Player/enemy distinction handled by game co
 Actions return Promises from `execute()`. Battle flow waits for animations before continuing.
 
 ### **Variable Targets**
-Actions can set `variableTarget: true`. BattleSequence prompts for target selection via callback before execution.
+Actions can set `isVariableTarget: true`. BattleSequence prompts for target selection via callback before execution.
 
