@@ -1,3 +1,6 @@
+
+import { createFloatingDamageNumber } from '../animations/TextAnimations.js'; 
+
 /**
  * Represents any entity that can participate in combat
  */
@@ -9,8 +12,10 @@ export class Entity {
      * @param {Array} moves - List of moves
      * @param {Array} items - List of items
      * @param {string} image - Path to the entity's image/sprite
+     * @param {Promise} onDeathPromise - Callback function when the entity dies
+     * @param {Boolean} isPlayer - Whether the entity is controlled by the player or AI
      */
-    constructor(name, maxHP, stats = {}, moves = [], items = [], image = '') {
+    constructor(name, maxHP, stats = {}, moves = [], items = [], image = '', onDeathPromise = null, isPlayer = false) {
         this.name = name;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
@@ -21,6 +26,8 @@ export class Entity {
         this.moves = moves;
         this.items = items;
         this.image = image; // Path to image/sprite
+        this.onDeathPromise = onDeathPromise;
+        this.isPlayer = isPlayer;
     }
 
     /**
@@ -35,8 +42,14 @@ export class Entity {
      * Take damage (can be overridden for special behavior)
      * @param {number} damage - Amount of damage to take
      */
-    takeDamage(damage) {
+    async takeDamage(damage) {
         this.currentHP = Math.max(0, this.currentHP - damage);
+
+        createFloatingDamageNumber(-damage, this.isPlayer);
+
+        if (!this.isAlive()) {
+            await this.onDeathPromise();
+        }
     }
 
     /**
@@ -44,6 +57,8 @@ export class Entity {
      * @param {number} amount - Amount to heal
      */
     heal(amount) {
+        createFloatingDamageNumber(amount, this.isPlayer);
+
         this.currentHP = Math.min(this.maxHP, this.currentHP + amount);
     }
 

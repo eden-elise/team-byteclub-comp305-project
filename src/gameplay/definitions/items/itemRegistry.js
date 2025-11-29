@@ -25,8 +25,8 @@ function createPoisonPotionInstance(animationCallback) {
                 '',
                 {},
                 null,
-                (entity, battleEngine) => {
-                    entity.takeDamage(4);
+                async (entity, battleEngine) => {
+                    await entity.takeDamage(4);
                     battleEngine.logEvent(`${entity.name} takes 4 damage from poison!`);
                 }
             );
@@ -50,7 +50,7 @@ function createFirePotionInstance(animationCallback) {
 
             battle.logEvent(`${source.name} uses ${this.name}!`);
 
-            target.takeDamage(5);
+            await target.takeDamage(5);
             battle.logEvent(`${target.name} takes 5 damage from the fire potion!`);
 
             const burnEffect = new StatusEffect(
@@ -59,8 +59,8 @@ function createFirePotionInstance(animationCallback) {
                 '',
                 {},
                 null,
-                (entity, battleEngine) => {
-                    entity.takeDamage(5);
+                async (entity, battleEngine) => {
+                    await entity.takeDamage(5);
                     battleEngine.logEvent(`${entity.name} takes 5 damage from burn!`);
                 }
             );

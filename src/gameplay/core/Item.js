@@ -41,7 +41,7 @@ export class Item extends Action {
 
         // Apply damage if present
         if (this.data.damage !== undefined) {
-            target.takeDamage(this.data.damage);
+            await target.takeDamage(this.data.damage);
             battle.logEvent(`${target.name} takes ${this.data.damage} damage!`);
             if (!target.isAlive()) {
                 battle.logEvent(`${target.name} is defeated!`);

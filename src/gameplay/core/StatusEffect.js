@@ -59,7 +59,7 @@ export class StatusEffect {
      * @param {Entity} entity - The entity with this effect
      * @param {BattleEngine} battleEngine - The battle engine
      */
-    processTurnStart(entity, battleEngine) {
+    async processTurnStart(entity, battleEngine) {
         if (this.onTurnStart) {
             this.onTurnStart(entity, battleEngine);
         }
@@ -71,7 +71,7 @@ export class StatusEffect {
      * @param {Entity} entity - The entity with this effect
      * @param {BattleEngine} battleEngine - The battle engine
      */
-    processTurnEnd(entity, battleEngine) {
+    async processTurnEnd(entity, battleEngine) {
         if (this.onTurnEnd) {
             this.onTurnEnd(entity, battleEngine);
         }

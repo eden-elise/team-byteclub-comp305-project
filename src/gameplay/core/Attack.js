@@ -37,7 +37,7 @@ export class Attack extends Action {
         const defenseReduction = target.stats.DEF / 2;
         const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
 
-        target.takeDamage(damage);
+        await target.takeDamage(damage);
         battle.logEvent(`${target.name} takes ${damage} damage!`);
 
         if (!target.isAlive()) {
