@@ -16,3 +16,6 @@ export { BattleSequence } from './engine/BattleSequence.js';
 // Definitions
 export * from './definitions/index.js';
 
+// Animations
+export * from './animations/index.js';
+

@@ -17,7 +17,7 @@ export class BattleEngine {
     }
 
     /**
-     * Initializes entitys, sets up the log, and determines initial turn order
+     * Initializes entities, sets up the log, and determines initial turn order
      */
     startBattle() {
         this.isBattleActive = true;

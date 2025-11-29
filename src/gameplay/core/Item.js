@@ -2,20 +2,18 @@ import { Action } from './Action.js';
 
 /**
  * A non-combat utility or consumable item
- * Item data can contain properties like: { heal: 200, damage: 50, etc. }
+ * Item data can contain properties like: { heal: 200, damage: 50, isConsumable: true, variableTarget: false, defaultTarget: 0, etc. }
  */
 export class Item extends Action {
     /**
      * @param {string} name - Display name of the item
-     * @param {Object} data - Item data properties (e.g., { heal: 200, damage: 50 })
-     * @param {boolean} isConsumable - Determines if the item is removed after use
-     * @param {boolean} variableTarget - If true, requires target selection
+     * @param {Object} data - Item data properties (e.g., { heal: 200, damage: 50, isConsumable: true, variableTarget: false, defaultTarget: 0 })
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {}, isConsumable = true, variableTarget = false, animationCallback = null) {
+    constructor(name, data = {}, animationCallback = null) {
+        const variableTarget = data.variableTarget ?? false;
         super(name, variableTarget, animationCallback);
-        this.data = data; // Simple data object with properties like { heal: 200 }
-        this.isConsumable = isConsumable;
+        this.data = data;
     }
 
     /**
@@ -61,15 +59,19 @@ export class Item extends Action {
         }
 
         // Remove consumable items from available actions after use
-        if (this.isConsumable) {
+        this.removeIfConsumable(source);
+
+        // Play animation and wait for it to complete
+        await this.playAnimation(source, target, battle);
+    }
+
+    removeIfConsumable(source) {
+        if (this.data.isConsumable !== false) {
             const index = source.availableActions.indexOf(this);
             if (index > -1) {
                 source.availableActions.splice(index, 1);
             }
         }
-
-        // Play animation and wait for it to complete
-        await this.playAnimation(source, target, battle);
     }
 }
 
