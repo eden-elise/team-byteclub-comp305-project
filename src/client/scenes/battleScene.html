@@ -8,12 +8,12 @@
                 </figure>
                 <div class="combatant__stats">
                     <div class="stat-bar stat-bar--hp">
-                        <label for="player-hp" class="stat-bar__label">
-                            HP: <span id="player-hp-text">100</span>/<span id="player-hp-max">100</span>
-                        </label>
-                        <progress id="player-hp" class="stat-bar__progress" max="100" value="100"
-                            aria-label="Player health points">
-                        </progress>
+                        <div class="stat-bar__wrapper">
+                            <progress id="player-hp" class="stat-bar__progress" max="100" value="100"></progress>
+                            <span class="stat-bar__label-inside">
+                                HP: <span id="player-hp-text">100</span>/<span id="player-hp-max">100</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -27,14 +27,15 @@
                 </figure>
                 <div class="combatant__stats">
                     <div class="stat-bar stat-bar--hp">
-                        <label for="enemy-hp" class="stat-bar__label">
-                            HP: <span id="enemy-hp-text">100</span>/<span id="enemy-hp-max">100</span>
-                        </label>
-                        <progress id="enemy-hp" class="stat-bar__progress" max="100" value="100"
-                            aria-label="Enemy health points">
-                        </progress>
+                        <div class="stat-bar__wrapper">
+                            <progress id="enemy-hp" class="stat-bar__progress" max="100" value="100"></progress>
+                            <span class="stat-bar__label-inside" style="left:82%;">
+                                HP: <span id="enemy-hp-text">100</span>/<span id="enemy-hp-max">100</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
+                
             </section>
         </header>
 

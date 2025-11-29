@@ -30,6 +30,9 @@
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
     --transition-slow: 0.5s ease;
+
+    --battle-header-bg: url('../../assets/art/backgrounds/bkg-library.png');
+
 }
 
 * {
@@ -88,18 +91,43 @@ body {
     align-items: center;
     gap: 30px;
     padding: 20px;
-    background: var(--color-bg-secondary);
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
     backdrop-filter: blur(5px);
     flex: 0 0 auto;
+
+    /* bkg image with a tint, we can control this with style.setProperty in js */
+    background: var(--battle-header-bg) center/cover no-repeat;
+    background-color: rgba(0, 0, 0, 0.4);
+    background-blend-mode: multiply;
 }
 
 .combatant {
     flex: 1;
     text-align: center;
     animation: slideIn 0.8s ease;
+    position: relative;
+    overflow: hidden; 
 }
+
+.combatant::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15%; 
+    right: 15%;
+    background-color: rgba(0, 0, 0, 0.3); 
+    z-index: 0; 
+    pointer-events: none; 
+    border-radius: var(--size-border-radius); 
+}
+
+.combatant > * {
+    position: relative;
+    z-index: 1;
+}
+
 
 .combatant--player {
     animation-delay: 0.2s;
@@ -205,6 +233,24 @@ body {
     }
 }
 
+.stat-bar__wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.stat-bar__label-inside {
+    white-space: nowrap;
+    position: absolute;
+    top: 50%;
+    left: 16%;
+    transform: translate(-50%, -50%);
+    color: var(--color-text-primary);
+    font-size: 0.85rem;
+    pointer-events: none; /* so clicks go through */
+    text-shadow: 1px 1px 2px black;
+}
+
+
 .combatant__stats {
     display: flex;
     flex-direction: column;
@@ -220,17 +266,10 @@ body {
     gap: 10px;
 }
 
-.stat-bar__label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    text-align: right;
-    white-space: nowrap;
-    flex: 0 0 auto;
-    min-width: 70px;
-}
-
 .stat-bar__progress {
+    width: 100%;
+    height: 22px;
+    border-radius: 10px;
     flex: 1;
     height: 22px;
     appearance: none;
@@ -272,11 +311,12 @@ body {
     background: var(--color-bg-secondary);
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
-    padding: 15px;
+    padding: 32px;
     overflow-y: auto;
     backdrop-filter: blur(3px);
     box-shadow: var(--shadow-box);
     flex: 1 1 auto;
+    margin-bottom: 35px;
 }
 
 .combat-log__content {
@@ -286,7 +326,6 @@ body {
 }
 
 .combat-log__entry {
-    margin: 0;
     padding: 8px;
     border-left: 3px solid transparent;
     transition: all var(--transition-fast);
@@ -361,7 +400,7 @@ body {
 .action-container {
     display: flex;
     flex-direction: column;
-    flex: 1; /* Allow container to grow */
+    flex: 1;
     width: 100%;
     min-height: 0;
 }
@@ -379,7 +418,7 @@ body {
     background: linear-gradient(135deg, var(--color-btn-bg), var(--color-stone-darker));
     color: var(--color-text-primary);
     border: 2px solid var(--color-btn-border);
-    padding: 20px 24px;
+    padding: 20%;
     font-family: var(--font-heading);
     font-size: 1.1rem;
     font-weight: 600;
@@ -399,7 +438,7 @@ body {
 
 .action-btn--primary {
     font-size: 1.2rem;
-    padding: 24px 20px;
+    padding: 20%;
 }
 
 .action-btn--back {
