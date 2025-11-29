@@ -8,9 +8,9 @@ export class Entity {
     /**
      * @param {string} name - The entity's name
      * @param {number} maxHP - Maximum Health
-     * @param {Object} stats - Dictionary of core stats (e.g., ATK, DEF, SPD)
-     * @param {Array} moves - List of moves
-     * @param {Array} items - List of items
+     * @param {Object} stats - Dictionary of core stats (e.g., ATTACK, DEFEND, SPEED)
+     * @param {Array} moves - Array of moves
+     * @param {Array} items - Array of item - quantity pairs
      * @param {string} image - Path to the entity's image/sprite
      * @param {Promise} onDeathPromise - Promise resolved when the entity dies
      * @param {Boolean} isPlayer - Whether the entity is controlled by the player or AI
@@ -100,7 +100,7 @@ export class Entity {
 
     /**
      * Get a stat value with all status effect modifications applied
-     * @param {string} statName - Name of the stat (e.g., 'ATK', 'DEF')
+     * @param {string} statName - Name of the stat (e.g., 'ATTACK', 'DEFEND')
      * @returns {number} The modified stat value
      */
     getModifiedStat(statName) {

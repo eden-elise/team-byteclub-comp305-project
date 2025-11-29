@@ -4,12 +4,12 @@
 export class Action {
     /**
      * @param {string} name - Display name of the action
-     * @param {boolean} variableTarget - If true, requires target selection before execution
+     * @param {boolean} isVariableTarget - If true, requires target selection before execution
      * @param {Function} animationCallback - Optional callback that returns a Promise for the animation
      */
-    constructor(name, variableTarget = false, animationCallback = null) {
+    constructor(name, isVariableTarget = false, animationCallback = null) {
         this.name = name;
-        this.variableTarget = variableTarget; // If true, UI must prompt for target selection
+        this.isVariableTarget = isVariableTarget; // If true, UI must prompt for target selection
         this.animationCallback = animationCallback; // Function(source, target, battle) => Promise
     }
 

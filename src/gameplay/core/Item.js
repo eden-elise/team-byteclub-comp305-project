@@ -2,17 +2,22 @@ import { Action } from './Action.js';
 
 /**
  * A non-combat utility or consumable item
- * Item data can contain properties like: { heal: 200, damage: 50, isConsumable: true, variableTarget: false, defaultTarget: 0, etc. }
+ * Item data can contain properties like: { heal: 200, damage: 50, isConsumable: true, isVariableTarget: false, defaultTarget: 0, etc. }
  */
 export class Item extends Action {
     /**
      * @param {string} name - Display name of the item
-     * @param {Object} data - Item data properties (e.g., { heal: 200, damage: 50, isConsumable: true, variableTarget: false, defaultTarget: 0 })
+     * @param {Object} data 
+     * -spritePath
+     * -description
+     * -isConsumable
+     * -isVariableTarget
+     * -defaultTarget
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {}, animationCallback = null) {
-        const variableTarget = data.variableTarget ?? false;
-        super(name, variableTarget, animationCallback);
+    constructor(name, data = {isConsumable: true, isVariableTarget: false, defaultTarget: 0}, animationCallback = null) {
+        const isVariableTarget = data.isVariableTarget ?? false;
+        super(name, isVariableTarget, animationCallback);
         this.data = data;
     }
 

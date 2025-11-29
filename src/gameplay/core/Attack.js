@@ -32,9 +32,9 @@ export class Attack extends Action {
 
         battle.logEvent(`${source.name} uses ${this.name}!`);
 
-        // Calculate damage: (source ATK * basePower) - (target DEF / 2)
-        const baseDamage = source.stats.ATK * this.basePower;
-        const defenseReduction = target.stats.DEF / 2;
+        // Calculate damage: (source ATTACK * basePower) - (target DEFEND / 2)
+        const baseDamage = source.stats.ATTACK * this.basePower;
+        const defenseReduction = target.stats.DEFEND / 2;
         const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
 
         // Play animation and wait for it to complete

@@ -5,9 +5,10 @@ import { BaseDamageAnimation } from '../../animations/DamageAnimations.js';
 export class Knight extends Entity {
     constructor(isPlayer) {
         const stats = {
-            ATK: 18,
-            DEF: 25,
-            SPD: 8
+            ATTACK: 18,
+            DEFEND: 25,
+            SPEED: 8,
+            LUCK: 10
         };
         const moves = [
             'Basic Strike',
@@ -39,9 +40,10 @@ export class Knight extends Entity {
 export class Archer extends Entity {
     constructor(isPlayer) {
         const stats = {
-            ATK: 24,
-            DEF: 13,
-            SPD: 14 
+            ATTACK: 24,
+            DEFEND: 13,
+            SPEED: 14,
+            LUCK: 15
         };
         const moves = [
             'Basic Strike',

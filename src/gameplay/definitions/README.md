@@ -61,7 +61,7 @@ export function createMyNewPotion() {
         'My New Potion',
         { heal: 300 },
         true, // consumable
-        false, // variableTarget
+        false, // isVariableTarget
         null // animation callback (optional)
     );
 }
@@ -78,7 +78,7 @@ export function createMyNewAttack() {
     return new Attack(
         'My New Attack',
         60, // basePower
-        false, // variableTarget
+        false, // isVariableTarget
         null // animation callback (optional)
     );
 }
@@ -96,7 +96,7 @@ export function createMyNewCharacter() {
     return new Entity(
         'My Character',
         120,
-        { ATK: 16, DEF: 14, SPD: 10 },
+        { ATTACK: 16, DEFEND: 14, SPEED: 10 },
         [createBasicStrike()],
         'assets/art/characters/my-character.png'
     );

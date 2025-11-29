@@ -193,44 +193,71 @@ body {
     transform: scaleX(-1) scale(1.05);
 }
 
-.combatant__sprite.shake {
-    animation: shake 0.5s;
+/* status effects area */
+.combatant__stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.combatant--enemy .combatant__sprite.shake {
-    animation: shakeFlipped 0.5s;
+.status-icon-stack {
+    width: 24px;
+    max-height: calc(5 * 24px + 4 * 2px);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 10;
+    position: relative;
 }
 
-@keyframes shake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    25% {
-        transform: translateX(-5px);
-    }
-
-    75% {
-        transform: translateX(5px);
-    }
+.combatant--player .combatant__stats {
+    justify-content: flex-start;
 }
 
-@keyframes shakeFlipped {
+.combatant--enemy .combatant__stats {
+    justify-content: flex-end;
+}
 
-    0%,
-    100% {
-        transform: scaleX(-1) translateX(0);
-    }
+.status-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    background-color: var(--color-stone-dark);
+    box-shadow: var(--shadow-primary);
+    border: 1px solid var(--color-stone);
+    cursor: help;
+    transition: border-color var(--transition-fast);
+}
 
-    25% {
-        transform: scaleX(-1) translateX(-5px);
-    }
+.status-icon:hover {
+    border-color: var(--color-text-accent);
+}
 
-    75% {
-        transform: scaleX(-1) translateX(5px);
-    }
+.status-icon-tooltip {
+    position: fixed;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    padding: 10px 15px;
+    border: 1px solid var(--color-text-accent);
+    border-radius: var(--size-border-radius);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    max-width: 250px;
+    line-height: 1.4;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0px);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    z-index: 999;
+}
+
+.status-icon-tooltip.is-visible {
+    opacity: 1;
+    visibility: visible;
 }
 
 .stat-bar__wrapper {

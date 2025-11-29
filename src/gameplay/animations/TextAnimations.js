@@ -8,7 +8,7 @@ import { animateWithFrame } from './AnimationUtils.js';
  * @returns {Promise} Promise that resolves when animation completes
  */
 export async function createFloatingDamageNumber(amount, isPlayer) {
-    window.battleController?.updateEntityHPs();
+    window.battleController?.updateEntityStats();
 
     const sprite = document.getElementById(`${isPlayer ? 'player' : 'enemy'}-sprite`);
     if (!sprite) return Promise.resolve();

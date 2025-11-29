@@ -42,7 +42,7 @@ export class BattleSceneController {
         // Set enemy info
         document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
         document.getElementById('enemy-sprite').src = this.enemy.image;
-        this.updateEntityHPs();
+        this.updateEntityStats();
 
         // Initialize action panel
         this.showActionButtons();
@@ -146,7 +146,7 @@ export class BattleSceneController {
         if (attackName && this.player.isAlive()) {
             const attackInstance = attackName.factory(attackName.animationCallback);
             await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
-            this.updateEntityHPs();
+            this.updateEntityStats();
 
             // Rotate turn order: move current entity to end
             this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
@@ -250,14 +250,19 @@ export class BattleSceneController {
             `;
         } else {
             this.inventory.forEach((inventorySlot, index) => {
-                const itemName = getItemByName(inventorySlot.name);
-                const description = this.getItemDescription(itemName);
-                const sprite = itemName ? itemName.spritePath : '';
+                const itemClass = getItemByName(inventorySlot.name);
                 inventoryHTML += `
                     <li class="inventory-item" data-item-index="${index}">
-                        <img src="${sprite}" alt="${inventorySlot.name}" class="inventory-item__icon">
+                        <img src="${itemClass.data.spritePath}" alt="${inventorySlot.name}" class="inventory-item__icon">
                         <div class="inventory-item__info">
-                            <div class="inventory-item__name">${inventorySlot.name} <span style="opacity: 0.6;">x${inventorySlot.quantity}</span> — <span class="inventory-item__description">${description}</span></div>
+                            <div class="inventory-item__name">
+                                ${inventorySlot.name} 
+                                <span style="opacity: 0.6;">
+                                    x${inventorySlot.quantity}
+                                </span>
+                                     — 
+                                <span class="inventory-item__description">${itemClass.data.description}</span>
+                            </div>
                         </div>
                     </li>
                 `;
@@ -292,50 +297,18 @@ export class BattleSceneController {
         }
 
         const inventorySlot = this.inventory[index];
-        const itemName = getItemByName(inventorySlot.name);
-
-        if (!itemName) {
-            this.addLogEntry(`Error: Item ${inventorySlot.name} not found in registry`);
-            return;
-        }
+        const itemClass = getItemByName(inventorySlot.name);
 
         // Check if item needs target selection
-        if (itemName.data.variableTarget) {
+        if (itemClass.data.isVariableTarget) {
             this.showTargetSelection(index);
         } else {
-            // Use item on default target immediately
             this.isProcessingTurn = true;
             this.disableActionButtons();
-            const defaultTarget = itemName.data.defaultTarget === 1 ? this.enemy : this.player;
+            const defaultTarget = itemClass.data.defaultTarget === 1 ? this.enemy : this.player;
             await this.executeItem(index, defaultTarget);
         }
     }
-
-    getItemDescription(itemName) {
-        if (!itemName) return 'Unknown item';
-        if (itemName.description) {
-            return itemName.description;
-        }
-        
-        const desc = [];
-        if (itemName.data.heal) {
-            desc.push(`Restores ${itemName.data.heal} HP`);
-        }
-        if (itemName.data.damage) {
-            desc.push(`Deals ${itemName.data.damage} damage`);
-        }
-        if (itemName.data.stats) {
-            for (const [stat, value] of Object.entries(itemName.data.stats)) {
-                desc.push(`${value >= 0 ? '+' : ''}${value} ${stat}`);
-            }
-        }
-        if (itemName.variableTarget) {
-            desc.push('(Select target)');
-        }
-        return desc.join(', ') || 'Mysterious item';
-    }
-
-
 
     showTargetSelection(inventoryIndex) {
         const container = document.getElementById('action-container');
@@ -349,12 +322,10 @@ export class BattleSceneController {
             </div>
         `;
 
-        // Add cancel button listener to go back to inventory
         document.getElementById('btn-target-cancel').addEventListener('click', () => {
             this.showInventory();
         });
 
-        // Highlight clickable targets
         document.getElementById('player-sprite').classList.add('target-selectable');
         document.getElementById('enemy-sprite').classList.add('target-selectable');
     }
@@ -364,11 +335,9 @@ export class BattleSceneController {
             return;
         }
 
-        // Remove highlight
         document.getElementById('player-sprite').classList.remove('target-selectable');
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
-        // Execute item with selected target
         await this.executeItem(this.pendingItem, target);
     }
 
@@ -377,23 +346,14 @@ export class BattleSceneController {
         this.disableActionButtons();
 
         const inventorySlot = this.inventory[inventoryIndex];
-        const itemName = getItemByName(inventorySlot.name);
+        const itemClass = getItemByName(inventorySlot.name);
 
-        if (!itemName) {
-            this.addLogEntry(`Error: Item ${inventorySlot.name} not found`);
-            this.isProcessingTurn = false;
-            this.showActionButtons();
-            return;
-        }
-
-        // If item doesn't require target selection, use default target
-        if (!itemName.data.variableTarget) {
-            target = itemName.data.defaultTarget === 0 ? this.player : this.enemy;
+        if (!itemClass.data.isVariableTarget) {
+            target = itemClass.data.defaultTarget === 0 ? this.player : this.enemy;
         }
             
-        const itemInstance = itemName.factory(itemName.animationCallback);
+        const itemInstance = new itemClass();
 
-        // Process the turn with the item
         await this.battleSequence.processTurn(this.player, itemInstance, target);
 
         // Decrement quantity and remove from inventory if needed
@@ -402,14 +362,10 @@ export class BattleSceneController {
             this.inventory.splice(inventoryIndex, 1);
         }
 
-        this.updateEntityHPs();
+        this.updateEntityStats();
 
-        // Rotate turn order: move current entity to end
         this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
-
         this.isProcessingTurn = false;
-
-        // Return to action buttons
         this.showActionButtons();
 
         // Continue to next turn if battle is still active
@@ -430,7 +386,7 @@ export class BattleSceneController {
         await this.battleSequence.processTurn(this.player, action, this.enemy);
 
         // Update UI
-        this.updateEntityHPs();
+        this.updateEntityStats();
 
         // Rotate turn order: move current entity to end
         this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
@@ -461,17 +417,79 @@ export class BattleSceneController {
         buttons.forEach(btn => btn.disabled = true);
     }
 
-    updateEntityHPs() {
+    updateEntityStats() {
         ['player', 'enemy'].forEach(prefix => {
+            const entity = prefix === 'player' ? this.player : this.enemy;
+            // update hp
             const hpBar = document.getElementById(`${prefix}-hp`);
             const hpText = document.getElementById(`${prefix}-hp-text`);
             const hpMax = document.getElementById(`${prefix}-hp-max`);
-            const entity = prefix === 'player' ? this.player : this.enemy;
 
             hpBar.max = entity.maxHP;
             hpBar.value = entity.currentHP;
             hpText.textContent = entity.currentHP;
             hpMax.textContent = entity.maxHP;
+
+            // update status effects
+            const iconContainer = document.getElementById(`${prefix}-status-icons`);
+            iconContainer.innerHTML = '';
+            entity.activeEffects.forEach(effect => {
+                const icon = document.createElement('img');
+                icon.src = effect.icon;
+                icon.className = 'status-icon';
+                icon.setAttribute('data-info', effect.description);
+                
+                // add event listeners for tooltip
+                icon.addEventListener('mouseover', (event) => {
+                    const target = event.target.closest('.status-icon');
+                    const info = target ? target.getAttribute('data-info') : null;
+                    const tooltip = document.getElementById('status-tooltip');
+
+                    if (info && tooltip) {
+                        tooltip.textContent = info;
+                        
+                        // Temporarily make it visible to measure its dimensions
+                        tooltip.style.display = 'block';
+                        tooltip.style.opacity = '0';
+                        tooltip.style.visibility = 'visible';
+                        
+                        const rect = target.getBoundingClientRect();
+                        const isPlayerIcon = prefix === 'player';
+                        const offset = 10; // Distance from the icon stack
+
+                        // Calculate horizontal position
+                        if (isPlayerIcon) {
+                            // Player: Tooltip placed to the right of the stack
+                            tooltip.style.left = `${rect.right + offset}px`;
+                        } else {
+                            // Enemy: Tooltip placed to the left of the stack
+                            // Need to subtract tooltip width for correct placement
+                            tooltip.style.left = `${rect.left - tooltip.offsetWidth - offset}px`;
+                        }
+                        
+                        // Center vertically with the icon
+                        tooltip.style.top = `${rect.top + (rect.height / 2) - (tooltip.offsetHeight / 2)}px`;
+                        
+                        // Apply final visible state using the CSS transition class
+                        tooltip.classList.add('is-visible');
+                    }
+                });
+
+                icon.addEventListener('mouseout', () => {
+                    const tooltip = document.getElementById('status-tooltip');
+                    if (tooltip) {
+                        tooltip.classList.remove('is-visible');
+                        
+                        setTimeout(() => {
+                            if (!tooltip.classList.contains('is-visible')) {
+                                tooltip.style.display = 'none';
+                            }
+                        }, 150);
+                    }
+                });
+
+                iconContainer.appendChild(icon);
+            });
         });
     }
 
