@@ -17,7 +17,7 @@ export class BattleEngine {
     }
 
     /**
-     * Initializes entitys, sets up the log, and determines initial turn order
+     * Initializes entities, sets up the log, and determines initial turn order
      */
     startBattle() {
         this.isBattleActive = true;
@@ -35,7 +35,7 @@ export class BattleEngine {
         this.turnOrderQueue = [];
 
         // Higher speed goes first
-        if (this.entityA.stats.SPD >= this.entityB.stats.SPD) {
+        if (this.entityA.stats.SPEED >= this.entityB.stats.SPEED) {
             this.turnOrderQueue.push(this.entityA, this.entityB);
         } else {
             this.turnOrderQueue.push(this.entityB, this.entityA);

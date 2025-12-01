@@ -2,20 +2,23 @@ import { Action } from './Action.js';
 
 /**
  * A non-combat utility or consumable item
- * Item data can contain properties like: { heal: 200, damage: 50, etc. }
+ * Item data can contain properties like: { heal: 200, damage: 50, isConsumable: true, isVariableTarget: false, defaultTarget: 0, etc. }
  */
 export class Item extends Action {
     /**
      * @param {string} name - Display name of the item
-     * @param {Object} data - Item data properties (e.g., { heal: 200, damage: 50 })
-     * @param {boolean} isConsumable - Determines if the item is removed after use
-     * @param {boolean} variableTarget - If true, requires target selection
+     * @param {Object} data 
+     * -spritePath
+     * -description
+     * -isConsumable
+     * -isVariableTarget
+     * -defaultTarget
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {}, isConsumable = true, variableTarget = false, animationCallback = null) {
-        super(name, variableTarget, animationCallback);
-        this.data = data; // Simple data object with properties like { heal: 200 }
-        this.isConsumable = isConsumable;
+    constructor(name, data = {isConsumable: true, isVariableTarget: true}, animationCallback = null) {
+        const isVariableTarget = data.isVariableTarget ?? false;
+        super(name, isVariableTarget, animationCallback);
+        this.data = data;
     }
 
     /**
@@ -43,7 +46,7 @@ export class Item extends Action {
 
         // Apply damage if present
         if (this.data.damage !== undefined) {
-            target.takeDamage(this.data.damage);
+            await target.takeDamage(this.data.damage);
             battle.logEvent(`${target.name} takes ${this.data.damage} damage!`);
             if (!target.isAlive()) {
                 battle.logEvent(`${target.name} is defeated!`);
@@ -61,15 +64,19 @@ export class Item extends Action {
         }
 
         // Remove consumable items from available actions after use
-        if (this.isConsumable) {
-            const index = source.availableActions.indexOf(this);
-            if (index > -1) {
-                source.availableActions.splice(index, 1);
-            }
-        }
+        this.removeIfConsumable(source);
 
         // Play animation and wait for it to complete
         await this.playAnimation(source, target, battle);
+    }
+
+    removeIfConsumable(source) {
+        if (this.data.isConsumable !== false) {
+            const index = source.items.indexOf(this);
+            if (index > -1) {
+                source.items.splice(index, 1);
+            }
+        }
     }
 }
 
