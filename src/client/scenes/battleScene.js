@@ -441,7 +441,7 @@ export class BattleSceneController {
 
                 icon.addEventListener('mouseover', () => {
                     const tooltip = document.getElementById('status-tooltip');
-                    tooltip.textContent = effect.description;
+                    tooltip.textContent = effect.name + ': ' + effect.duration + (effect.duration === 1 ? 'turn -' : 'turns -') + effect.description;
                     tooltip.style.display = 'block';
                     tooltip.style.opacity = '1';
                     tooltip.style.visibility = 'visible';

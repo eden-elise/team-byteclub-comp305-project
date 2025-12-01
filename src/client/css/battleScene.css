@@ -1,46 +1,7 @@
 :root {
-    --color-bg-primary: #1C1411;
-    --color-bg-secondary: rgba(42, 31, 27, 0.9);
-    --color-bg-radial-light: rgba(42, 31, 27, 0.3);
-    --color-bg-radial-dark: rgba(28, 20, 17, 1);
-    --color-text-primary: #F3E8D8;
-    --color-text-secondary: #B49D90;
-    --color-text-gold: #E2C07A;
-    --color-text-gold-alt: #c99d7a;
-    --color-stone: #4B3B36;
-    --color-stone-dark: #3a2a26;
-    --color-stone-darker: #2A1F1B;
-    --color-hp: #B73A2E;
-    --color-hp-glow: rgba(183, 58, 46, 0.6);
-    --color-mana: #3f50a8;
-    --color-mana-glow: rgba(63, 80, 168, 0.6);
-    --color-defend: #8b7355;
-    --color-btn-bg: #2A1F1B;
-    --color-btn-hover: #4B3B36;
-    --color-btn-active: #5a4a45;
-    --color-btn-border: #4B3B36;
-    --color-btn-border-hover: #E2C07A;
-    --shadow-glow-red: 0 0 20px rgba(183, 58, 46, 0.4);
-    --shadow-glow-gold: 0 0 15px rgba(226, 192, 122, 0.3);
-    --shadow-box: 0 0 15px rgba(0, 0, 0, 0.5);
-    --font-primary: 'Crimson Text', serif;
-    --font-heading: 'Cinzel', serif;
-    --size-container-width: 900px;
-    --size-border-radius: 6px;
-    --transition-fast: 0.2s ease;
-    --transition-medium: 0.3s ease;
-    --transition-slow: 0.5s ease;
-
     --battle-header-bg: url('../../assets/art/backgrounds/bkg-library.png');
-
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    user-select: none;
-}
 
 body {
     background: var(--color-bg-primary);
@@ -49,10 +10,10 @@ body {
             var(--color-bg-radial-dark) 70%);
     color: var(--color-text-primary);
     font-family: var(--font-primary);
-    font-size: 18px;
+    font-size: clamp(14px, 1.5vw, 18px);
     line-height: 1.6;
     height: 100vh;
-    padding: 20px;
+    padding: 2vh 2vw;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -60,14 +21,14 @@ body {
 }
 
 .battle-container {
-    width: 70%;
-    max-width: 1400px;
+    width: 90%;
+    max-width: 1600px;
     margin: 0 auto;
     animation: fadeIn 1s ease;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 2vh;
     overflow: hidden;
     height: 100vh;
 }
@@ -76,7 +37,7 @@ body {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(2vh);
     }
 
     to {
@@ -89,8 +50,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 30px;
-    padding: 20px;
+    gap: 2vw;
+    padding: 2vh 2vw;
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
     backdrop-filter: blur(5px);
@@ -140,7 +101,7 @@ body {
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform: translateX(-30px);
+        transform: translateX(-2vw);
     }
 
     to {
@@ -151,11 +112,11 @@ body {
 
 .combatant__name {
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 2vw, 1.5rem);
     font-weight: 600;
     color: var(--color-text-gold);
     text-shadow: 2px 2px 4px black;
-    margin-bottom: 10px;
+    margin-bottom: 1vh;
     letter-spacing: 1px;
 }
 
@@ -165,9 +126,11 @@ body {
 }
 
 .combatant__avatar {
-    width: 220px;
-    height: 220px;
-    margin: 0 auto 15px;
+    width: 15vw;
+    height: 15vw;
+    max-width: 250px;
+    max-height: 250px;
+    margin: 0 auto 1.5vh;
     position: relative;
 }
 
@@ -197,12 +160,12 @@ body {
 .combatant__stats {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
 .status-icon-stack {
-    width: 24px;
-    max-height: calc(5 * 24px + 4 * 2px);
+    width: 1.5rem;
+    max-height: calc(5 * 1.5rem + 4 * 2px);
     display: flex;
     flex-direction: row;
     gap: 2px;
@@ -219,8 +182,8 @@ body {
 }
 
 .status-icon {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 4px;
     object-fit: cover;
     background-color: var(--color-stone-dark);
@@ -238,12 +201,12 @@ body {
     position: fixed;
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
-    padding: 10px 15px;
+    padding: 0.5rem 1rem;
     border: 1px solid var(--color-text-accent);
     border-radius: var(--size-border-radius);
     font-family: var(--font-body);
     font-size: 0.9rem;
-    max-width: 250px;
+    max-width: 20vw;
     line-height: 1.4;
     text-align: left;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
@@ -272,7 +235,7 @@ body {
     left: 16%;
     transform: translate(-50%, -50%);
     color: var(--color-text-primary);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     pointer-events: none; /* so clicks go through */
     text-shadow: 1px 1px 2px black;
 }
@@ -281,27 +244,25 @@ body {
 .combatant__stats {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1vh;
     align-items: center;
 }
 
 .stat-bar {
     width: 100%;
-    max-width: 250px;
+    max-width: 20vw;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
 .stat-bar__progress {
     width: 100%;
-    height: 22px;
-    border-radius: 10px;
+    height: 2.5vh;
+    border-radius: 0.5rem;
     flex: 1;
-    height: 22px;
     appearance: none;
     -webkit-appearance: none;
-    border-radius: 10px;
     overflow: hidden;
     background: var(--color-stone-darker);
     border: 1px solid var(--color-stone-dark);
@@ -325,7 +286,7 @@ body {
 
 .battle-divider {
     width: 2px;
-    min-height: 250px;
+    min-height: 25vh;
     background: linear-gradient(to bottom,
             transparent,
             var(--color-stone-dark) 20%,
@@ -338,22 +299,22 @@ body {
     background: var(--color-bg-secondary);
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
-    padding: 32px;
+    padding: 2vh 2vw;
     overflow-y: auto;
     backdrop-filter: blur(3px);
     box-shadow: var(--shadow-box);
     flex: 1 1 auto;
-    margin-bottom: 35px;
+    margin-bottom: 3vh;
 }
 
 .combat-log__content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
 .combat-log__entry {
-    padding: 8px;
+    padding: 0.5rem;
     border-left: 3px solid transparent;
     transition: all var(--transition-fast);
     animation: logEntry 0.5s ease;
@@ -362,7 +323,7 @@ body {
 @keyframes logEntry {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-1vh);
     }
 
     to {
@@ -401,7 +362,7 @@ body {
 }
 
 .combat-log::-webkit-scrollbar {
-    width: 8px;
+    width: 0.5rem;
 }
 
 .combat-log::-webkit-scrollbar-track {
@@ -437,7 +398,7 @@ body {
     /* The buttons don't need to stretch, so we align them at the start */
     align-content: start;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    gap: 1rem;
     width: 100%;
 }
 
@@ -445,9 +406,9 @@ body {
     background: linear-gradient(135deg, var(--color-btn-bg), var(--color-stone-darker));
     color: var(--color-text-primary);
     border: 2px solid var(--color-btn-border);
-    padding: 20%;
+    padding: 2vh 0;
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
     font-weight: 600;
     letter-spacing: 1px;
     border-radius: var(--size-border-radius);
@@ -457,22 +418,22 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 0.5rem;
     position: relative;
     overflow: hidden;
     width: 100%;
 }
 
 .action-btn--primary {
-    font-size: 1.2rem;
-    padding: 20%;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    padding: 2.5vh 0;
 }
 
 .action-btn--back {
     background: linear-gradient(135deg, var(--color-stone-dark), var(--color-stone-darker));
     font-size: 1rem;
-    padding: 12px 24px;
-    min-width: 120px;
+    padding: 1vh 2vw;
+    min-width: 8vw;
 }
 
 .action-btn::before {
@@ -522,7 +483,7 @@ body {
 .inventory-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1vh;
 }
 
 .inventory-header {
@@ -534,14 +495,14 @@ body {
 
 .inventory-header .action-btn--back {
     width: auto;
-    padding: 10px 20px;
+    padding: 1vh 2vw;
     font-size: 0.95rem;
 }
 
 .inventory-header .action-btn--use {
     flex: 1;
-    max-width: 300px;
-    padding: 14px 28px;
+    max-width: 20vw;
+    padding: 1.5vh 2vw;
     font-size: 1.05rem;
     margin: 0 auto;
 }
@@ -550,7 +511,7 @@ body {
     background: var(--color-bg-secondary);
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
-    padding: 15px;
+    padding: 1.5vh 1.5vw;
     max-height: 45vh;
     overflow-y: auto;
     box-shadow: var(--shadow-box);
@@ -560,14 +521,14 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1vh;
 }
 
 .inventory-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 12px;
+    gap: 1rem;
+    padding: 1vh 1vw;
     background: var(--color-stone-darker);
     border: 2px solid var(--color-stone-dark);
     border-radius: var(--size-border-radius);
@@ -578,12 +539,12 @@ body {
 .inventory-item:hover {
     background: var(--color-stone-dark);
     border-color: var(--color-text-gold);
-    transform: translateX(5px);
+    transform: translateX(0.5vw);
 }
 
 .inventory-item__icon {
-    width: 50px;
-    height: 50px;
+    width: 3rem;
+    height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -608,7 +569,7 @@ body {
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
@@ -619,7 +580,7 @@ body {
 }
 
 .inventory-list-container::-webkit-scrollbar {
-    width: 8px;
+    width: 0.5rem;
 }
 
 .inventory-list-container::-webkit-scrollbar-track {
@@ -640,9 +601,9 @@ body {
 .target-selection-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 1.5vh;
     align-items: center;
-    padding: 20px;
+    padding: 2vh;
 }
 
 .target-selection-text {
@@ -650,7 +611,7 @@ body {
     font-size: 1.2rem;
     color: var(--color-text-gold);
     text-align: center;
-    margin: 20px 0;
+    margin: 2vh 0;
 }
 
 .combatant__sprite.target-selectable {
@@ -682,14 +643,14 @@ body {
 
 @media (max-width: 768px) {
     body {
-        padding: 15px;
+        padding: 1vh 1vw;
     }
 
     .battle-header {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
-        padding: 15px;
+        gap: 2vh;
+        padding: 1.5vh;
     }
 
     .battle-divider {
@@ -701,8 +662,8 @@ body {
     }
 
     .combatant__avatar {
-        width: 120px;
-        height: 120px;
+        width: 25vw;
+        height: 25vw;
     }
 
     .inventory-item {
@@ -713,6 +674,6 @@ body {
     .inventory-item__name {
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 0.25rem;
     }
 }
