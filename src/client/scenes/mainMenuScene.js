@@ -21,7 +21,6 @@ export class MainMenuSceneController {
 
         if (saveData) {
             continueContainer.style.display = 'flex';
-            
             const date = new Date(saveData.metadata.timestamp).toLocaleString();
             saveInfo.innerHTML = `
                 <div style="color: var(--color-text-gold); font-weight: bold;">${saveData.hero.name}</div>
@@ -34,6 +33,22 @@ export class MainMenuSceneController {
     }
 
     setupListeners() {
+        // Play button → show secondary menu
+        const btnPlay = document.getElementById('btn-play');
+        btnPlay.addEventListener('click', () => this.showSecondaryMenu());
+
+        // Exit button → show exit confirmation
+        const btnExit = document.getElementById('btn-exit');
+        btnExit.addEventListener('click', () => this.showExitConfirmation());
+
+        // Exit confirmation buttons
+        const btnExitYes = document.getElementById('btn-exit-yes');
+        btnExitYes.addEventListener('click', () => window.close());
+
+        const btnExitNo = document.getElementById('btn-exit-no');
+        btnExitNo.addEventListener('click', () => this.hideExitConfirmation());
+
+        // Continue / New Game / Load File buttons
         const btnContinue = document.getElementById('btn-continue');
         if (btnContinue) {
             btnContinue.addEventListener('click', () => {
@@ -46,22 +61,18 @@ export class MainMenuSceneController {
         });
 
         document.getElementById('btn-load-file').addEventListener('click', () => {
-            // Create a hidden file input
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            
+
             input.onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
                         const json = JSON.parse(event.target.result);
-                        if (this.callbacks.onLoadFile) {
-                            this.callbacks.onLoadFile(json);
-                        }
+                        if (this.callbacks.onLoadFile) this.callbacks.onLoadFile(json);
                     } catch (err) {
                         console.error('Error parsing save file:', err);
                         alert('Invalid save file!');
@@ -73,7 +84,12 @@ export class MainMenuSceneController {
             input.click();
         });
 
-        // Listen for any user input to speed up animation
+        // Back button in secondary menu
+        const btnBack = document.getElementById('btn-back');
+        if (btnBack) {
+            btnBack.addEventListener('click', () => this.hideSecondaryMenu());
+        }
+
         this.setupUserInputDetection();
     }
 
@@ -84,31 +100,16 @@ export class MainMenuSceneController {
                 this.skipToButtons();
             }
         };
-
-        // Listen for keyboard, mouse, and touch events
         document.addEventListener('keydown', handleUserInput, { once: true });
         document.addEventListener('click', handleUserInput, { once: true });
         document.addEventListener('touchstart', handleUserInput, { once: true });
     }
 
     startAnimationSequence() {
-        // Background fades in (0-2s)
-        // Title fades in (2-4s)
-        // Lightning strikes at 4.5s
-        // Birds start flying around 3s and continue
-        // Buttons fade in at 6s (or immediately on user input)
-
-        // Start bird animations
         setTimeout(() => this.startBirdAnimations(), 3000);
-
-        // Lightning strike
         setTimeout(() => this.triggerLightning(), 4500);
-
-        // Show buttons after full sequence
         setTimeout(() => {
-            if (!this.userInterrupted) {
-                this.showButtons();
-            }
+            if (!this.userInterrupted) this.showButtons();
         }, 6000);
     }
 
@@ -120,58 +121,34 @@ export class MainMenuSceneController {
             '../../src/assets/art/title-screen/crow/crow-3.png'
         ];
 
-        // Create multiple birds flying across the screen
         const createBird = (delay) => {
             setTimeout(() => {
                 const bird = document.createElement('div');
                 bird.className = 'bird';
-                
-                // Random bird image
                 const randomImage = birdImages[Math.floor(Math.random() * birdImages.length)];
                 bird.style.backgroundImage = `url('${randomImage}')`;
-                
-                // Random starting position (left side of screen)
-                const startY = Math.random() * 40 + 10; // 10-50% from top
+                const startY = Math.random() * 40 + 10;
                 bird.style.top = `${startY}%`;
                 bird.style.left = '-50px';
-                
-                // Random flight path
-                const flyDistanceX = Math.random() * 600 + 800; // 800-1400px to the right
-                const flyDistanceY = (Math.random() - 0.5) * 200; // -100 to +100px vertical
-                const duration = Math.random() * 5 + 8; // 8-13 seconds
-                
+                const flyDistanceX = Math.random() * 600 + 800;
+                const flyDistanceY = (Math.random() - 0.5) * 200;
+                const duration = Math.random() * 5 + 8;
                 bird.style.setProperty('--fly-distance-x', `${flyDistanceX}px`);
                 bird.style.setProperty('--fly-distance-y', `${flyDistanceY}px`);
                 bird.style.animation = `flyBird ${duration}s linear forwards`;
-                
                 birdsContainer.appendChild(bird);
-                
-                // Remove bird after animation
-                setTimeout(() => {
-                    bird.remove();
-                }, duration * 1000);
+                setTimeout(() => bird.remove(), duration * 1000);
             }, delay);
         };
 
-        // Create birds at intervals
-        for (let i = 0; i < 8; i++) {
-            createBird(i * 2000); // Every 2 seconds
-        }
-        
-        // Continue creating birds periodically
-        this.birdInterval = setInterval(() => {
-            createBird(0);
-        }, 4000);
+        for (let i = 0; i < 8; i++) createBird(i * 2000);
+        this.birdInterval = setInterval(() => createBird(0), 4000);
     }
 
     triggerLightning() {
         const lightningFlash = document.getElementById('lightning-flash');
         lightningFlash.style.animation = 'lightningStrike 0.8s ease-out forwards';
-        
-        // Reset animation so it can be triggered again if needed
-        setTimeout(() => {
-            lightningFlash.style.animation = '';
-        }, 800);
+        setTimeout(() => { lightningFlash.style.animation = ''; }, 800);
     }
 
     showButtons() {
@@ -181,29 +158,115 @@ export class MainMenuSceneController {
     }
 
     skipToButtons() {
-        // Instantly show everything
         const background = document.getElementById('background');
         const titleText = document.getElementById('title-text');
         const menuButtons = document.getElementById('menu-buttons');
-        
-        // Force all animations to complete instantly
+
         background.style.animation = 'none';
         background.style.opacity = '1';
-        
+
         titleText.style.animation = 'none';
         titleText.style.opacity = '1';
         titleText.style.transform = 'scale(1)';
-        
+
         menuButtons.classList.add('instant');
-        
         this.animationComplete = true;
     }
 
+    showSecondaryMenu() {
+        const titleText = document.getElementById('title-text');
+        const initialButtons = document.getElementById('initial-buttons');
+        const secondary = document.getElementById('secondary-buttons');
+
+        // Fade out title & initial buttons
+        titleText.style.transition = 'opacity 0.5s ease';
+        initialButtons.style.transition = 'opacity 0.5s ease';
+        titleText.style.opacity = 0;
+        initialButtons.style.opacity = 0;
+
+        setTimeout(() => {
+            titleText.style.display = 'none';
+            initialButtons.style.display = 'none';
+
+            // Show secondary menu centered
+            secondary.style.display = 'flex';
+            secondary.style.opacity = 0;
+            secondary.style.transition = 'opacity 0.5s ease-in';
+            requestAnimationFrame(() => secondary.style.opacity = 1);
+        }, 500);
+    }
+
+    hideSecondaryMenu() {
+        const secondary = document.getElementById('secondary-buttons');
+        secondary.style.opacity = 0;
+        secondary.style.transition = 'opacity 0.5s ease';
+
+        setTimeout(() => {
+            secondary.style.display = 'none';
+            const titleText = document.getElementById('title-text');
+            const initialButtons = document.getElementById('initial-buttons');
+
+            titleText.style.display = 'block';
+            initialButtons.style.display = 'flex';
+            titleText.style.opacity = 0;
+            initialButtons.style.opacity = 0;
+
+            requestAnimationFrame(() => {
+                titleText.style.transition = 'opacity 0.5s ease';
+                initialButtons.style.transition = 'opacity 0.5s ease';
+                titleText.style.opacity = 1;
+                initialButtons.style.opacity = 1;
+            });
+        }, 500);
+    }
+
+    showExitConfirmation() {
+        const title = document.getElementById('title-text');
+        const initialButtons = document.getElementById('initial-buttons');
+
+        title.style.transition = 'opacity 0.5s ease';
+        initialButtons.style.transition = 'opacity 0.5s ease';
+        title.style.opacity = 0;
+        initialButtons.style.opacity = 0;
+
+        setTimeout(() => {
+            title.style.display = 'none';
+            initialButtons.style.display = 'none';
+
+            const panel = document.getElementById('exit-confirmation');
+            panel.style.display = 'flex';
+            panel.style.opacity = 0;
+            panel.style.transition = 'opacity 0.5s ease-in';
+            requestAnimationFrame(() => panel.style.opacity = 1);
+        }, 500);
+    }
+
+    hideExitConfirmation() {
+        const panel = document.getElementById('exit-confirmation');
+        panel.style.opacity = 0;
+        panel.style.transition = 'opacity 0.5s ease';
+
+        setTimeout(() => {
+            panel.style.display = 'none';
+
+            const title = document.getElementById('title-text');
+            const initialButtons = document.getElementById('initial-buttons');
+
+            title.style.display = 'block';
+            initialButtons.style.display = 'flex';
+            title.style.opacity = 0;
+            initialButtons.style.opacity = 0;
+
+            requestAnimationFrame(() => {
+                title.style.transition = 'opacity 0.5s ease';
+                initialButtons.style.transition = 'opacity 0.5s ease';
+                title.style.opacity = 1;
+                initialButtons.style.opacity = 1;
+            });
+        }, 500);
+    }
+
     cleanup() {
-        // Clear bird interval when leaving the scene
-        if (this.birdInterval) {
-            clearInterval(this.birdInterval);
-        }
+        if (this.birdInterval) clearInterval(this.birdInterval);
     }
 }
-
