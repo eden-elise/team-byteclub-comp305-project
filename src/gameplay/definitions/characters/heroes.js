@@ -2,6 +2,7 @@ import { Entity } from '../../core/Entity.js';
 
 import { BaseDeathAnimation } from '../../animations/DeathAnimations.js';
 import { BaseDamageAnimation } from '../../animations/DamageAnimations.js';
+
 export class Knight extends Entity {
     constructor(isPlayer) {
         const stats = {

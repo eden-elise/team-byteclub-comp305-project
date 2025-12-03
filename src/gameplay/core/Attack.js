@@ -10,13 +10,24 @@ export class Attack extends Action {
      * basePower - base power of attack
      * statusEffect - optional status effect applied to target
      * statusEffectChance - percent chance that status effect will be applied
+     * icon - (path) icon to be shown in ui
+     * description - description of attack
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
     constructor(name, data, animationCallback = null) {
+
+        if (!data.icon) {
+            const cleaned = name.replace(/\s+/g, '');
+            const camel = cleaned[0].toLowerCase() + cleaned.slice(1);
+            data.icon = `../../assets/icons/attack-icons/${camel}.png`;
+        }
         super(name, data, animationCallback);
+
         this.basePower = data.basePower;
         this.statusEffect = data.statusEffect ?? null;
         this.statusEffectChance = data.statusEffectChance ?? 0;
+        this.icon = data.icon;
+        this.description = data.description;
     }
 
     /**

@@ -15,24 +15,28 @@ export class Item extends Action {
      * -defaultTarget
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {isConsumable: true, isVariableTarget: true}, animationCallback = null) {
-        const isVariableTarget = data.isVariableTarget ?? false;
-        super(name, isVariableTarget, animationCallback);
-        this.data = data;
+    constructor(name, data, animationCallback = null) {
+        const defaults = {
+            isConsumable: true,
+            isVariableTarget: true,
+            defaultTarget: 0
+        };
+        const finalData = { ...defaults, ...data };
+
+        super(name, finalData, animationCallback);
+        this.data = finalData;
     }
 
     /**
-     * Execute the item by applying its data properties
-     * Returns a Promise that resolves when the item use and animation are complete
+     * Apply the item's effects to the target
+     * This is separated so animations can call it at the right moment
      * @param {Entity} source - The entity using the item
      * @param {Entity} target - The target entity
      * @param {BattleEngine} battle - Reference to the battle engine
-     * @returns {Promise} Promise that resolves when item use and animation complete
+     * @returns {Promise} Promise that resolves when effects are applied
      */
-    async execute(source, target, battle) {
+    async applyEffects(source, target, battle) {
         if (!target.isAlive()) return Promise.resolve();
-
-        battle.logEvent(`${source.name} uses ${this.name}!`);
 
         // Apply heal if present
         if (this.data.heal !== undefined) {
@@ -62,12 +66,46 @@ export class Item extends Action {
                 }
             }
         }
+    }
+
+    /**
+     * Execute the item by applying its data properties
+     * Returns a Promise that resolves when the item use and animation are complete
+     * @param {Entity} source - The entity using the item
+     * @param {Entity} target - The target entity
+     * @param {BattleEngine} battle - Reference to the battle engine
+     * @returns {Promise} Promise that resolves when item use and animation complete
+     */
+    async execute(source, target, battle) {
+        if (!target.isAlive()) return Promise.resolve();
+
+        battle.logEvent(`${source.name} uses ${this.name}!`);
+
+        // Track if effects were applied during animation
+        let effectsApplied = false;
+        
+        // Create a callback for the animation to call at the appropriate moment
+        const applyEffectsCallback = async () => {
+            if (!effectsApplied) {
+                effectsApplied = true;
+                await this.applyEffects(source, target, battle);
+            }
+        };
+
+        // Play animation and wait for it to complete
+        // The animation can call applyEffectsCallback at the appropriate moment
+        if (this.animationCallback) {
+            await this.animationCallback(source, target, battle, applyEffectsCallback);
+        }
+
+        // If the animation didn't call the effects, apply them now
+        // (This maintains backward compatibility with animations that don't use the callback)
+        if (!effectsApplied) {
+            await applyEffectsCallback();
+        }
 
         // Remove consumable items from available actions after use
         this.removeIfConsumable(source);
-
-        // Play animation and wait for it to complete
-        await this.playAnimation(source, target, battle);
     }
 
     removeIfConsumable(source) {
