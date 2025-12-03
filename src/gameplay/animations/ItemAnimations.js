@@ -47,10 +47,11 @@ const DEFAULT_THROW_CONFIG = {
  * @param {Entity} source - The entity using the item
  * @param {Entity} target - The target entity
  * @param {BattleEngine} battle - Reference to the battle engine
+ * @param {Function} applyEffects - Optional callback to apply effects at impact moment
  * @param {ThrowAnimationConfig} config - Animation configuration
  * @returns {Promise} Promise that resolves when animation completes
  */
-export async function createThrowAnimation(source, target, battle, config = {}) {
+export async function createThrowAnimation(source, target, battle, applyEffects = null, config = {}) {
     const finalConfig = { ...DEFAULT_THROW_CONFIG, ...config };
     
     const targetPos = getElementPosition(document.getElementById(target.isPlayer ? "player-sprite" : "enemy-sprite"));
@@ -116,6 +117,11 @@ export async function createThrowAnimation(source, target, battle, config = {}) 
         element.style.transform = `translate(-50%, -50%) scale(${currentScale}) rotate(${currentRotation}deg)`;
     }, finalConfig.duration);
 
+    // Apply effects at the moment of impact (if callback provided)
+    if (applyEffects) {
+        await applyEffects();
+    }
+
     // Play impact sound
     if (finalConfig.soundPath) {
         await playSound(finalConfig.soundPath, finalConfig.soundVolume);
@@ -137,4 +143,4 @@ export async function createThrowAnimation(source, target, battle, config = {}) 
 }
 
 export const createThrowAnimationCallback = (config = {}) => 
-    (source, target, battle) => createThrowAnimation(source, target, battle, config);
+    (source, target, battle, applyEffects) => createThrowAnimation(source, target, battle, applyEffects, config);
