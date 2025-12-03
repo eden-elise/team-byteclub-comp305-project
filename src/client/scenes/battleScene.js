@@ -298,31 +298,36 @@ export class BattleSceneController {
 
         const inventorySlot = this.inventory[index];
         const itemClass = getItemByName(inventorySlot.name);
+        const itemInstance = new itemClass();
+
+        // Store the item instance and inventory index
+        this.selectedItem = itemInstance;
+        this.pendingItem = index;
 
         // Check if item needs target selection
-        if (itemClass.data.isVariableTarget) {
-            this.showTargetSelection(index);
+        if (itemInstance.data.isVariableTarget) {
+            this.showTargetSelection();
         } else {
-            this.isProcessingTurn = true;
-            this.disableActionButtons();
-            const defaultTarget = itemClass.data.defaultTarget === 1 ? this.enemy : this.player;
-            await this.executeItem(index, defaultTarget);
+            // Use default target
+            const defaultTarget = itemInstance.data.defaultTarget === 1 ? this.enemy : this.player;
+            await this.executeItem(defaultTarget);
         }
     }
 
-    showTargetSelection(inventoryIndex) {
+    showTargetSelection() {
         const container = document.getElementById('action-container');
         this.uiState = 'target-selection';
-        this.pendingItem = inventoryIndex;
 
         container.innerHTML = `
             <div class="target-selection-container">
                 <button id="btn-target-cancel" class="action-btn action-btn--back">Cancel</button>
-                <p class="target-selection-text">Select target for item</p>
+                <p class="target-selection-text">Select target for ${this.selectedItem.name}</p>
             </div>
         `;
 
         document.getElementById('btn-target-cancel').addEventListener('click', () => {
+            this.selectedItem = null;
+            this.pendingItem = null;
             this.showInventory();
         });
 
@@ -331,29 +336,25 @@ export class BattleSceneController {
     }
 
     async handleTargetSelection(target) {
-        if (this.pendingItem === null || this.isProcessingTurn) {
+        if (this.selectedItem === null || this.pendingItem === null || this.isProcessingTurn) {
             return;
         }
 
         document.getElementById('player-sprite').classList.remove('target-selectable');
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
-        await this.executeItem(this.pendingItem, target);
+        await this.executeItem(target);
     }
 
-    async executeItem(inventoryIndex, target) {
+    async executeItem(target) {
         this.isProcessingTurn = true;
         this.disableActionButtons();
 
+        const inventoryIndex = this.pendingItem;
+        const itemInstance = this.selectedItem;
         const inventorySlot = this.inventory[inventoryIndex];
-        const itemClass = getItemByName(inventorySlot.name);
 
-        if (!itemClass.data.isVariableTarget) {
-            target = itemClass.data.defaultTarget === 0 ? this.player : this.enemy;
-        }
-            
-        const itemInstance = new itemClass();
-
+        // Execute the item
         await this.battleSequence.processTurn(this.player, itemInstance, target);
 
         // Decrement quantity and remove from inventory if needed
@@ -364,6 +365,11 @@ export class BattleSceneController {
 
         this.updateEntityStats();
 
+        // Clear selected item
+        this.selectedItem = null;
+        this.pendingItem = null;
+
+        // Rotate turn order
         this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
         this.isProcessingTurn = false;
         this.showActionButtons();

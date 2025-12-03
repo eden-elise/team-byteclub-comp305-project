@@ -15,10 +15,16 @@ export class Item extends Action {
      * -defaultTarget
      * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
      */
-    constructor(name, data = {isConsumable: true, isVariableTarget: true}, animationCallback = null) {
-        const isVariableTarget = data.isVariableTarget ?? false;
-        super(name, isVariableTarget, animationCallback);
-        this.data = data;
+    constructor(name, data, animationCallback = null) {
+        const defaults = {
+            isConsumable: true,
+            isVariableTarget: true,
+            defaultTarget: 0
+        };
+        const finalData = { ...defaults, ...data };
+        
+        super(name, finalData, animationCallback);
+        this.data = finalData;
     }
 
     /**
