@@ -27,8 +27,7 @@ async function initApp() {
                 if (sceneToLoad === 'battleScene') {
                     await startBattle();
                 } else {
-                    // If we have other scenes in the future, handle them here
-                    // For now, we only really have battleScene as a gameplay scene
+                    // Future scenes can be handled here
                     await startBattle();
                 }
             }
@@ -62,30 +61,22 @@ async function loadCharacterSelect() {
 async function startBattle() {
     const player = gameState.characterEntity;
     
-    // Create a default enemy (simple logic for now)
     const enemy = new (player.name === 'Knight' ? Archer : Knight)(false);
-
-    // Create battle sequence
     const battleSequence = new BattleSequence(player, enemy);
 
-    // Load the battle scene
     await loadScene('battleScene');
-    
-    // Initialize the battle scene controller
     const battleController = new BattleSceneController(battleSequence, player.items);
     
-    // Hook into battle end to update stats
     const originalHandleBattleEnd = battleController.handleBattleEnd.bind(battleController);
     battleController.handleBattleEnd = (result) => {
         originalHandleBattleEnd(result);
-        // Update stats in the JSON structure
         if (gameState.currentSaveData) {
             gameState.currentSaveData.world.battlesFought++;
             if (result.winner === player) {
                 gameState.currentSaveData.world.battlesWon++;
             }
         }
-        gameState.saveGame(); // Save after battle
+        gameState.saveGame();
     };
 
     window.battleController = battleController;
@@ -97,12 +88,11 @@ document.addEventListener('keydown', e => {
         gameState.clearSave();
         localStorage.clear();
         sessionStorage.clear();
-        location.reload(); // Reload to restart fresh
+        location.reload();
     }
 });
 
 async function init() {
-    // Start the app when page loads
     await initApp().catch(console.error);
 }
 
