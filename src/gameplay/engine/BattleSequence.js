@@ -95,19 +95,11 @@ export class BattleSequence {
      * Handles variable target selection if needed and waits for animations to complete
      * @param {Entity} entity - The entity taking the turn
      * @param {Action} action - The action to perform
-     * @param {Entity} target - The target entity (ignored if action.variableTarget is true)
+     * @param {Entity} target - The target entity (ignored if action.isVariableTarget is true)
      * @returns {Promise} Promise that resolves when the turn and all animations are complete
      */
     async processTurn(entity, action, target) {
-        // If action requires target selection, prompt for it
-        let finalTarget = target;
-        if (action.variableTarget && this.targetSelectionCallback) {
-            const availableTargets = [this.player, this.enemy].filter(u => u.isAlive());
-            finalTarget = await this.targetSelectionCallback(action, availableTargets);
-        }
-
-        // Process the turn (which will wait for animations)
-        await this.battleEngine.processTurn(entity, action, finalTarget);
+        await this.battleEngine.processTurn(entity, action, target);
     }
 
     /**

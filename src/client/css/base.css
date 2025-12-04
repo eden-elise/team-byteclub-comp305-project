@@ -1,0 +1,41 @@
+:root {
+    --color-bg-primary: #1C1411;
+    --color-bg-secondary: rgba(42, 31, 27, 0.9);
+    --color-bg-radial-light: rgba(42, 31, 27, 0.3);
+    --color-bg-radial-dark: rgba(28, 20, 17, 1);
+    --color-text-primary: #F3E8D8;
+    --color-text-secondary: #B49D90;
+    --color-text-gold: #E2C07A;
+    --color-text-gold-alt: #c99d7a;
+    --color-stone: #4B3B36;
+    --color-stone-dark: #3a2a26;
+    --color-stone-darker: #2A1F1B;
+    --color-hp: #B73A2E;
+    --color-hp-glow: rgba(183, 58, 46, 0.6);
+    --color-mana: #3f50a8;
+    --color-mana-glow: rgba(63, 80, 168, 0.6);
+    --color-defend: #8b7355;
+    --color-btn-bg: #2A1F1B;
+    --color-btn-hover: #4B3B36;
+    --color-btn-active: #5a4a45;
+    --color-btn-border: #4B3B36;
+    --color-btn-border-hover: #E2C07A;
+    --shadow-glow-red: 0 0 20px rgba(183, 58, 46, 0.4);
+    --shadow-glow-gold: 0 0 15px rgba(226, 192, 122, 0.3);
+    --shadow-box: 0 0 15px rgba(0, 0, 0, 0.5);
+    --font-primary: 'Crimson Text', serif;
+    --font-heading: 'Cinzel', serif;
+    --size-container-width: 90vw;
+    --size-border-radius: 0.5rem;
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
