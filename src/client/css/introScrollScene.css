@@ -1,7 +1,9 @@
 #intro-scroll-scene {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(to bottom, #1a0f0d 0%, #2d1810 50%, #1a0f0d 100%);
+    background:
+            radial-gradient(ellipse at 50% 60%, rgba(45, 24, 16, 0.3) 0%, transparent 50%),
+            linear-gradient(to bottom, #1C1411 0%, #0d0a08 100%);
     overflow: hidden;
     position: relative;
     perspective: 400px;
@@ -10,8 +12,7 @@
     justify-content: center;
 }
 
-
-/* starfield background */
+/* Starfield background */
 .stars {
     position: absolute;
     top: 0;
@@ -29,15 +30,229 @@
     background-size: 200% 200%;
     background-position: 0% 0%;
     animation: twinkle 3s ease-in-out infinite;
-    opacity: 0.6;
+    opacity: 0.8;
+    filter: hue-rotate(30deg) brightness(1.2);
 }
 
 @keyframes twinkle {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 0.3; }
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.4; }
 }
 
-/* scroll container - now targets <article> */
+/* Fireflies */
+.firefly {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 0.4vw;
+    height: 0.4vw;
+    margin: -0.2vw 0 0 9.8vw;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.firefly::before,
+.firefly::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform-origin: -10vw;
+}
+
+.firefly::before {
+    background: black;
+    opacity: 0.4;
+    animation: drift 10s ease alternate infinite;
+}
+
+.firefly::after {
+    background: white;
+    opacity: 0;
+    box-shadow: 0 0 0vw 0vw var(--color-text-gold, #E2C07A);
+    animation: drift 10s ease alternate infinite, flash 6s ease infinite;
+}
+
+/* Individual firefly animations */
+.firefly:nth-child(1) {
+    animation: move1 200s ease alternate infinite;
+}
+.firefly:nth-child(1)::after {
+    animation-delay: 0s, 1s;
+    animation-duration: 12s, 7s;
+}
+
+.firefly:nth-child(2) {
+    animation: move2 180s ease alternate infinite;
+}
+.firefly:nth-child(2)::after {
+    animation-delay: 0s, 3s;
+    animation-duration: 9s, 6s;
+}
+
+.firefly:nth-child(3) {
+    animation: move3 220s ease alternate infinite;
+}
+.firefly:nth-child(3)::after {
+    animation-delay: 0s, 2s;
+    animation-duration: 11s, 8s;
+}
+
+.firefly:nth-child(4) {
+    animation: move4 190s ease alternate infinite;
+}
+.firefly:nth-child(4)::after {
+    animation-delay: 0s, 4s;
+    animation-duration: 10s, 5s;
+}
+
+.firefly:nth-child(5) {
+    animation: move5 210s ease alternate infinite;
+}
+.firefly:nth-child(5)::after {
+    animation-delay: 0s, 1.5s;
+    animation-duration: 13s, 7s;
+}
+
+.firefly:nth-child(6) {
+    animation: move6 195s ease alternate infinite;
+}
+.firefly:nth-child(6)::after {
+    animation-delay: 0s, 2.5s;
+    animation-duration: 8s, 6.5s;
+}
+
+.firefly:nth-child(7) {
+    animation: move7 205s ease alternate infinite;
+}
+.firefly:nth-child(7)::after {
+    animation-delay: 0s, 3.5s;
+    animation-duration: 11s, 5.5s;
+}
+
+.firefly:nth-child(8) {
+    animation: move8 185s ease alternate infinite;
+}
+.firefly:nth-child(8)::after {
+    animation-delay: 0s, 0.5s;
+    animation-duration: 9s, 7.5s;
+}
+
+.firefly:nth-child(9) {
+    animation: move9 215s ease alternate infinite;
+}
+.firefly:nth-child(9)::after {
+    animation-delay: 0s, 4.5s;
+    animation-duration: 12s, 6s;
+}
+
+.firefly:nth-child(10) {
+    animation: move10 200s ease alternate infinite;
+}
+.firefly:nth-child(10)::after {
+    animation-delay: 0s, 2s;
+    animation-duration: 10s, 8s;
+}
+
+/* Firefly movement animations */
+@keyframes move1 {
+    0% { transform: translateX(-30vw) translateY(-20vh) scale(0.5); }
+    25% { transform: translateX(20vw) translateY(30vh) scale(0.8); }
+    50% { transform: translateX(-10vw) translateY(-30vh) scale(0.6); }
+    75% { transform: translateX(30vw) translateY(10vh) scale(0.9); }
+    100% { transform: translateX(-25vw) translateY(25vh) scale(0.7); }
+}
+
+@keyframes move2 {
+    0% { transform: translateX(40vw) translateY(15vh) scale(0.7); }
+    25% { transform: translateX(-20vw) translateY(-25vh) scale(0.5); }
+    50% { transform: translateX(10vw) translateY(35vh) scale(0.9); }
+    75% { transform: translateX(-35vw) translateY(-10vh) scale(0.6); }
+    100% { transform: translateX(25vw) translateY(20vh) scale(0.8); }
+}
+
+@keyframes move3 {
+    0% { transform: translateX(-15vw) translateY(40vh) scale(0.8); }
+    25% { transform: translateX(35vw) translateY(-15vh) scale(0.6); }
+    50% { transform: translateX(-25vw) translateY(10vh) scale(0.7); }
+    75% { transform: translateX(15vw) translateY(-35vh) scale(0.9); }
+    100% { transform: translateX(-40vw) translateY(5vh) scale(0.5); }
+}
+
+@keyframes move4 {
+    0% { transform: translateX(25vw) translateY(-30vh) scale(0.6); }
+    25% { transform: translateX(-30vw) translateY(20vh) scale(0.8); }
+    50% { transform: translateX(35vw) translateY(-5vh) scale(0.7); }
+    75% { transform: translateX(-5vw) translateY(30vh) scale(0.5); }
+    100% { transform: translateX(20vw) translateY(-25vh) scale(0.9); }
+}
+
+@keyframes move5 {
+    0% { transform: translateX(-35vw) translateY(-5vh) scale(0.9); }
+    25% { transform: translateX(15vw) translateY(25vh) scale(0.6); }
+    50% { transform: translateX(-20vw) translateY(-30vh) scale(0.8); }
+    75% { transform: translateX(40vw) translateY(15vh) scale(0.5); }
+    100% { transform: translateX(-10vw) translateY(35vh) scale(0.7); }
+}
+
+@keyframes move6 {
+    0% { transform: translateX(10vw) translateY(35vh) scale(0.5); }
+    25% { transform: translateX(-40vw) translateY(-10vh) scale(0.9); }
+    50% { transform: translateX(30vw) translateY(20vh) scale(0.7); }
+    75% { transform: translateX(-15vw) translateY(-25vh) scale(0.6); }
+    100% { transform: translateX(35vw) translateY(5vh) scale(0.8); }
+}
+
+@keyframes move7 {
+    0% { transform: translateX(-20vw) translateY(10vh) scale(0.7); }
+    25% { transform: translateX(30vw) translateY(-35vh) scale(0.5); }
+    50% { transform: translateX(-35vw) translateY(25vh) scale(0.9); }
+    75% { transform: translateX(5vw) translateY(-15vh) scale(0.8); }
+    100% { transform: translateX(-25vw) translateY(30vh) scale(0.6); }
+}
+
+@keyframes move8 {
+    0% { transform: translateX(35vw) translateY(-25vh) scale(0.8); }
+    25% { transform: translateX(-10vw) translateY(15vh) scale(0.6); }
+    50% { transform: translateX(25vw) translateY(-40vh) scale(0.5); }
+    75% { transform: translateX(-30vw) translateY(5vh) scale(0.9); }
+    100% { transform: translateX(15vw) translateY(30vh) scale(0.7); }
+}
+
+@keyframes move9 {
+    0% { transform: translateX(-25vw) translateY(-35vh) scale(0.6); }
+    25% { transform: translateX(40vw) translateY(10vh) scale(0.8); }
+    50% { transform: translateX(-5vw) translateY(40vh) scale(0.7); }
+    75% { transform: translateX(20vw) translateY(-20vh) scale(0.5); }
+    100% { transform: translateX(-40vw) translateY(15vh) scale(0.9); }
+}
+
+@keyframes move10 {
+    0% { transform: translateX(5vw) translateY(20vh) scale(0.9); }
+    25% { transform: translateX(-30vw) translateY(-30vh) scale(0.7); }
+    50% { transform: translateX(40vw) translateY(5vh) scale(0.6); }
+    75% { transform: translateX(-15vw) translateY(35vh) scale(0.8); }
+    100% { transform: translateX(30vw) translateY(-10vh) scale(0.5); }
+}
+
+@keyframes drift {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes flash {
+    0%, 30%, 100% {
+        opacity: 0;
+        box-shadow: 0 0 0vw 0vw var(--color-text-gold, #E2C07A);
+    }
+    5% {
+        opacity: 1;
+        box-shadow: 0 0 2vw 0.4vw var(--color-text-gold, #E2C07A);
+    }
+}
+
+/* Scroll container */
 .scroll-container {
     position: absolute;
     bottom: -100%;
@@ -51,6 +266,7 @@
     transform: rotateX(25deg);
     transform-origin: 50% 100%;
     animation: scroll 45s linear forwards;
+    z-index: 2;
 }
 
 @keyframes scroll {
@@ -70,7 +286,7 @@
     }
 }
 
-/* episode title */
+/* Episode title */
 .episode-title {
     text-align: center;
     margin-bottom: 4rem;
@@ -92,7 +308,7 @@
     letter-spacing: 0.1rem;
 }
 
-/* content paragraphs */
+/* Content paragraphs */
 .scroll-content {
     margin-bottom: 2rem;
     text-indent: 2rem;
@@ -102,7 +318,7 @@
     text-indent: 0;
 }
 
-/* skip hint */
+/* Skip hint */
 .skip-hint {
     position: absolute;
     bottom: 20px;
@@ -112,6 +328,7 @@
     font-family: var(--font-primary, 'Crimson Text', serif);
     font-size: 1rem;
     animation: pulse 2s ease-in-out infinite;
+    z-index: 3;
 }
 
 @keyframes pulse {
@@ -119,18 +336,15 @@
     50% { opacity: 0.3; }
 }
 
-/* faster scroll for smaller screens */
+/* Faster scroll for smaller screens */
 @media (max-width: 768px) {
     .scroll-container {
         width: 80%;
         font-size: 1.4rem;
+        animation: scroll 35s linear forwards;
     }
 
     .episode-title h1 {
         font-size: 2.5rem;
-    }
-
-    .scroll-container {
-        animation: scroll 35s linear forwards;
     }
 }
