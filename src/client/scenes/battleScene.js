@@ -49,6 +49,8 @@ export class BattleSceneController {
     }
 
     setupEventListeners() {
+        const music = document.getElementById('battle-background');
+        music.play().catch(err => console.log(err));
         // Listen for battle log updates
         const originalLogEvent = this.battleEngine.logEvent.bind(this.battleEngine);
         this.battleEngine.logEvent = (message) => {
