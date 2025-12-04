@@ -4,21 +4,22 @@
 import { loadScene } from './sceneLoader.js';
 import { CharacterSelectSceneController } from './scenes/characterSelectScene.js';
 import { MainMenuSceneController } from './scenes/mainMenuScene.js';
-import { BattleSequence } from '../gameplay/engine/BattleSequence.js';
 import { BattleSceneController } from './scenes/battleScene.js';
+import { ExplorationSceneController } from './scenes/explorationScene.js';
 import { Knight, Archer } from '../gameplay/definitions/characters/heroes.js';
 import { gameState } from '../gameplay/state/GameState.js';
 import { OptionsModalController } from './components/optionsModal.js';
+import { TEST_ROOM } from '../gameplay/exploration/roomRegistry.js';
 
 
 async function initApp() {
     // Initialize global options
     new OptionsModalController();
 
-    // Load Main Menu first
-    await loadScene('mainMenuScene', 'battleScene');
+    // FOR TESTING: Load exploration scene directly
+    //await startExploration();
 
-    const mainMenuController = new MainMenuSceneController({
+/*    const mainMenuController = new MainMenuSceneController({
         onContinue: async () => {
             console.log("Continuing game...");
             const saveData = gameState.loadGame();
@@ -45,6 +46,7 @@ async function initApp() {
             }
         }
     });
+*/
 }
 
 async function loadCharacterSelect() {
@@ -59,36 +61,61 @@ async function loadCharacterSelect() {
 }
 
 async function startBattle() {
-    const player = gameState.characterEntity;
+    console.log("Starting battle...");
+    let player = gameState.characterEntity;
+
+    if (!player) {
+        // Create a temporary player for testing
+        player = new Knight(true);
+    }
     
     const enemy = new (player.name === 'Knight' ? Archer : Knight)(false);
-    const battleSequence = new BattleSequence(player, enemy);
 
     await loadScene('battleScene');
-    const battleController = new BattleSceneController(battleSequence, player.items);
-    
-    const originalHandleBattleEnd = battleController.handleBattleEnd.bind(battleController);
-    battleController.handleBattleEnd = (result) => {
-        originalHandleBattleEnd(result);
-        if (gameState.currentSaveData) {
-            gameState.currentSaveData.world.battlesFought++;
-            if (result.winner === player) {
-                gameState.currentSaveData.world.battlesWon++;
+    const battleController = new BattleSceneController(player, enemy, player.items, 
+        async (winner) => {
+            if (winner === player) {
+                await startExploration();
+            } else {
+                // make this some sort of death scene
+                await startBattle();
             }
         }
-        gameState.saveGame();
-    };
+    );
 
     window.battleController = battleController;
 }
 
+async function startExploration() {
+    // For testing, use a default player if none exists
+    let player = gameState.characterEntity;
+    
+    if (!player) {
+        // Create a temporary player for testing
+        player = new Knight(true);
+    }
+
+    // Load the exploration scene
+    await loadScene('explorationScene');
+    
+    // Initialize the exploration controller with the test room
+    const explorationController = new ExplorationSceneController(TEST_ROOM, player);
+    
+    window.explorationController = explorationController;
+}
+
 // debug -- reset if you press r
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', async e => {
     if (e.key === 'r' || e.key === 'R') {
+        await startExploration();
+    } else if (e.key === 'e' || e.key === 'E') {
+        await startBattle();
+    } else if (e.key === 'c' || e.key === 'C') {
         gameState.clearSave();
         localStorage.clear();
         sessionStorage.clear();
         location.reload();
+
     }
 });
 

@@ -382,7 +382,7 @@ body {
 .action-panel {
     display: flex;
     flex-direction: column;
-    flex: 0 0 auto; /* Allow panel to grow */
+    flex: 0 0 auto;
 }
 
 .action-container {
@@ -395,7 +395,6 @@ body {
 
 .action-buttons-container {
     display: grid;
-    /* The buttons don't need to stretch, so we align them at the start */
     align-content: start;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
@@ -406,7 +405,7 @@ body {
     background: linear-gradient(135deg, var(--color-btn-bg), var(--color-stone-darker));
     color: var(--color-text-primary);
     border: 2px solid var(--color-btn-border);
-    padding: 2vh 0;
+    padding: 7vh 0;
     font-family: var(--font-heading);
     font-size: clamp(0.9rem, 1.5vw, 1.2rem);
     font-weight: 600;
@@ -426,13 +425,13 @@ body {
 
 .action-btn--primary {
     font-size: clamp(1rem, 1.8vw, 1.4rem);
-    padding: 2.5vh 0;
+    padding: 7vh 0;
 }
 
 .action-btn--back {
     background: linear-gradient(135deg, var(--color-stone-dark), var(--color-stone-darker));
     font-size: 1rem;
-    padding: 1vh 2vw;
+    padding: 7vh 0;
     min-width: 8vw;
 }
 

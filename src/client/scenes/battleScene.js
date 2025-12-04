@@ -1,68 +1,64 @@
-// Import battle system classes
 import { getAttackByName } from '../../gameplay/definitions/attacks/attackRegistry.js';
 import { getItemByName } from '../../gameplay/definitions/items/itemRegistry.js';
+import '../components/TypewriterTextbox.js';
+import { createSpeaker } from '../components/TypewriterTextbox.js';
 
 /**
- * BattleSceneController - Manages the UI and connects it to the battle engine
- * This class should be instantiated from the calling page with a BattleSequence
+ * BattleSceneController - Manages the UI and battle logic independently
+ * This class is now self-contained and doesn't require external engine classes
  */
 export class BattleSceneController {
-    constructor(battleSequence, inventory = []) {
-        this.battleSequence = battleSequence;
-        this.battleEngine = battleSequence.getBattleEngine();
-        this.player = battleSequence.player;
-        this.enemy = battleSequence.enemy;
+    constructor(player, enemy, inventory = [], onBattleEnd) {
+        this.onBattleEnd = onBattleEnd;
+
+        this.player = player;
+        this.enemy = enemy;
         this.inventory = inventory; // Separate inventory array
         this.currentTurnEntity = null;
-        this.turnCount = 0;
         this.isProcessingTurn = false;
+
+        // Battle state
+        this.turnOrderQueue = []; // List<Entity>
 
         // UI state management
         this.uiState = 'actions'; // 'actions', 'inventory', 'target-selection'
         this.selectedItem = null;
         this.pendingItem = null; // Item waiting for target selection
+        
+        // Typewriter controller
+        this.typewriterController = null;
 
-        // Apply flex layout to the main battle container for proper scaling
-        const battleContainer = document.querySelector('.battle-container');
-        if (battleContainer) {
-            battleContainer.style.display = 'flex';
-            battleContainer.style.flexDirection = 'column';
-            battleContainer.style.height = '100vh'; // Ensure container fills viewport height
-        }
         this.initializeUI();
         this.setupEventListeners();
         this.startBattle();
     }
 
     initializeUI() {
-        // Set player info
         document.getElementById('player-name').textContent = this.player.name.toUpperCase();
         document.getElementById('player-sprite').src = this.player.image;
 
-        // Set enemy info
         document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
         document.getElementById('enemy-sprite').src = this.enemy.image;
         this.updateEntityStats();
 
-        // Initialize action panel
+        // Initialize typewriter controller
+        this.typewriterController = document.getElementById('combat-log-text');
+        this.typewriterController.init({
+            defaultSpeed: 20,
+            showCursor: false,
+            autoAdvance: true,
+            autoAdvanceDelay: 800
+        });
+
         this.showActionButtons();
     }
 
     setupEventListeners() {
-        // Listen for battle log updates
-        const originalLogEvent = this.battleEngine.logEvent.bind(this.battleEngine);
-        this.battleEngine.logEvent = (message) => {
-            originalLogEvent(message);
-            this.addLogEntry(message);
-        };
-
-        // Add click listeners for target selection
         document.getElementById('player-sprite').addEventListener('click', () => {
             if (this.uiState === 'target-selection') {
                 this.handleTargetSelection(this.player);
             }
         });
-
         document.getElementById('enemy-sprite').addEventListener('click', () => {
             if (this.uiState === 'target-selection') {
                 this.handleTargetSelection(this.enemy);
@@ -71,66 +67,65 @@ export class BattleSceneController {
     }
 
     async startBattle() {
-        // Start the battle sequence
-        const battlePromise = this.battleSequence.start();
-
-        // Handle battle end
-        battlePromise.then(result => {
-            this.handleBattleEnd(result);
-        });
+        // Initialize battle
+        if (this.player.stats.SPEED >= this.enemy.stats.SPEED) {
+            this.turnOrderQueue.push(this.player, this.enemy);
+        } else {
+            this.turnOrderQueue.push(this.enemy, this.player);
+        }
+        this.addLogEntry(`${this.player.name} vs ${this.enemy.name}`);
 
         // Start the first turn
         this.processNextTurn();
     }
 
+    /**
+     * Process a single turn for an entity
+     * @param {Entity} entity - The entity taking the turn
+     * @param {Action} action - The action to perform
+     * @param {Entity} target - The target entity
+     * @returns {Promise} Promise that resolves when the turn and animations are complete
+     */
+    async processTurn(entity, action, target) {
+        this.addLogEntry(`--- ${entity.name}'s turn ---`);
+
+        // 1. Process pre-turn status effects
+        entity.processStatusEffectsTurnStart(this);
+
+        // 2. Execute the action (waits for animation to complete)
+        if (action) {
+            await action.execute(entity, target, this);
+        }
+
+        // 3. Process post-turn status effects (decrements duration, removes expired effects)
+        entity.processStatusEffectsTurnEnd(this);
+
+        // 4. Check for win/loss conditions
+        this.checkBattleEnd();
+    }
+
+    // Check battle end
+    checkBattleEnd() {
+        if (!this.player.isAlive()) {
+            this.addLogEntry(`${this.enemy.name} wins!`);
+            this.onBattleEnd(this.enemy);
+        } else if (!this.enemy.isAlive()) {
+            this.addLogEntry(`${this.player.name} wins!`);
+            this.onBattleEnd(this.player);
+        }
+    }
+
     async processNextTurn() {
-        if (!this.battleSequence.isActive() || this.isProcessingTurn) {
-            return;
-        }
-
-        // Check if battle ended
-        if (!this.player.isAlive() || !this.enemy.isAlive()) {
-            return;
-        }
-
+        await this.waitForTypewriter();
         this.isProcessingTurn = true;
-        this.turnCount++;
 
-        // Get the current entity from turn order
-        let turnOrder = this.battleEngine.turnOrderQueue;
-        if (turnOrder.length === 0) {
-            this.battleEngine.determineTurnOrder();
-            turnOrder = this.battleEngine.turnOrderQueue;
-        }
-
-        // Find next alive entity in queue
-        let nextEntity = null;
-        for (const entity of turnOrder) {
-            if (entity.isAlive()) {
-                nextEntity = entity;
-                break;
-            }
-        }
-
-        // If no alive entity found, end battle
-        if (!nextEntity) {
-            this.isProcessingTurn = false;
-            return;
-        }
-
-        // Rotate queue so next entity is first
-        while (turnOrder[0] !== nextEntity) {
-            turnOrder.push(turnOrder.shift());
-        }
-
-        this.currentTurnEntity = nextEntity;
+        this.currentTurnEntity = this.turnOrderQueue.shift();
         const isPlayerTurn = this.currentTurnEntity === this.player;
 
-        // Update UI to show whose turn it is
         if (isPlayerTurn) {
             this.showActionButtons();
             this.enableActionButtons();
-            this.isProcessingTurn = false; // Allow player to make a choice
+            this.isProcessingTurn = false;
         } else {
             this.showActionButtons();
             this.disableActionButtons();
@@ -140,23 +135,19 @@ export class BattleSceneController {
 
     async processEnemyTurn() {
         // at some point we should make this a global variable then they can chooes to speed up or slow down enemy turns
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 500));
         // Simple AI: Use first available action on player
         const attackName = getAttackByName(this.enemy.moves[0]);
         if (attackName && this.player.isAlive()) {
             const attackInstance = new attackName();
-            await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
+            await this.processTurn(this.enemy, attackInstance, this.player);
+            
             this.updateEntityStats();
 
-            // Rotate turn order: move current entity to end
-            this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
-
+            this.turnOrderQueue.push(this.currentTurnEntity);
             this.isProcessingTurn = false;
 
-            // Continue to next turn if battle is still active
-            if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
-                setTimeout(() => this.processNextTurn(), 1000);
-            }
+            setTimeout(() => this.processNextTurn(), 500);
         } else {
             this.isProcessingTurn = false;
         }
@@ -164,15 +155,10 @@ export class BattleSceneController {
 
     showActionButtons() {
         const container = document.getElementById('action-container');
-        // Allow container to size to its content
-        container.style.flex = '0 0 auto';
 
         this.uiState = 'actions';
         this.selectedItem = null;
         this.pendingItem = null;
-
-        // Show combat log
-        document.getElementById('combat-log').style.display = '';
 
         // Remove target selection highlights
         document.getElementById('player-sprite').classList.remove('target-selectable');
@@ -223,9 +209,6 @@ export class BattleSceneController {
         // Remove target selection highlights
         document.getElementById('player-sprite').classList.remove('target-selectable');
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
-
-        // Hide combat log
-        document.getElementById('combat-log').style.display = 'none';
 
 
         // Build inventory list HTML
@@ -355,7 +338,10 @@ export class BattleSceneController {
         const inventorySlot = this.inventory[inventoryIndex];
 
         // Execute the item
-        await this.battleSequence.processTurn(this.player, itemInstance, target);
+        await this.processTurn(this.player, itemInstance, target);
+        
+        // Wait for all typewriter messages to finish
+        await this.waitForTypewriter();
 
         // Decrement quantity and remove from inventory if needed
         inventorySlot.quantity -= 1;
@@ -370,43 +356,32 @@ export class BattleSceneController {
         this.pendingItem = null;
 
         // Rotate turn order
-        this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
+        this.turnOrderQueue.push(this.currentTurnEntity);
         this.isProcessingTurn = false;
         this.showActionButtons();
 
-        // Continue to next turn if battle is still active
-        if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
-            setTimeout(() => this.processNextTurn(), 1000);
-        }
+        setTimeout(() => this.processNextTurn(), 500);
     }
 
     async handleActionClick(action) {
-        if (this.isProcessingTurn || this.currentTurnEntity !== this.player || !this.battleSequence.isActive()) {
-            return;
-        }
+        if (this.isProcessingTurn || this.currentTurnEntity !== this.player) return;
 
-        this.isProcessingTurn = true;
         this.disableActionButtons();
 
-        // Process the turn
-        await this.battleSequence.processTurn(this.player, action, this.enemy);
+        this.isProcessingTurn = true;
+        await this.processTurn(this.player, action, this.enemy);
+        
+        // Wait for all typewriter messages to finish
+        await this.waitForTypewriter();
 
-        // Update UI
         this.updateEntityStats();
 
-        // Rotate turn order: move current entity to end
-        this.battleEngine.turnOrderQueue.push(this.battleEngine.turnOrderQueue.shift());
+        this.turnOrderQueue.push(this.currentTurnEntity);
 
-        this.completePlayerTurn();
-    }
-
-    completePlayerTurn() {
         this.isProcessingTurn = false;
 
-        // Continue to next turn if battle is still active
-        if (this.battleSequence.isActive() && this.player.isAlive() && this.enemy.isAlive()) {
-            setTimeout(() => this.processNextTurn(), 1000);
-        }
+        this.checkBattleEnd();
+        setTimeout(() => this.processNextTurn(), 500);
     }
 
     enableActionButtons() {
@@ -476,34 +451,99 @@ export class BattleSceneController {
     }
 
     addLogEntry(message) {
-        const logContent = document.getElementById('combat-log-content');
-        const entry = document.createElement('p');
-        entry.className = 'combat-log__entry';
-
-        // Determine entry style based on message content
-        if (message.includes('wins!') || message.includes('victory')) {
-            entry.className += ' combat-log__entry--victory';
-        } else if (message.includes('defeated') || message.includes('loses')) {
-            entry.className += ' combat-log__entry--defeat';
-        } else if (message.includes(this.player.name)) {
-            entry.className += ' combat-log__entry--player';
-        } else if (message.includes(this.enemy.name)) {
-            entry.className += ' combat-log__entry--enemy';
+        if (!this.typewriterController) return;
+        
+        // Determine speaker and styling based on message content
+        let speaker = null;
+        let styledMessage = message;
+        let speed = 20;
+        
+        // Turn indicator messages - centered
+        if (message.includes("'s turn")) {
+            styledMessage = `[style: important]${message}[/]`;
+            speaker = createSpeaker('', {
+                orientation: 'center',
+                showPrefix: false,
+                color: '#ffaa00'
+            });
+            speed = 15;
         }
-
-        entry.textContent = message;
-        logContent.appendChild(entry);
-
-        // Auto-scroll to bottom
-        const combatLog = document.getElementById('combat-log');
-        combatLog.scrollTop = combatLog.scrollHeight;
+        // Victory/Defeat messages - centered with special effects
+        else if (message.includes('wins!') || message.includes('victory') || message.includes('victorious')) {
+            styledMessage = `[style: important, effect: glowing]${message}[/]`;
+            speaker = createSpeaker('', {
+                orientation: 'center',
+                showPrefix: false,
+                color: '#ffd700'
+            });
+            speed = 30;
+        } 
+        // Defeat messages
+        else if (message.includes('defeated') || message.includes('loses')) {
+            styledMessage = `[color: #ff4444, style: yelling]${message}[/]`;
+            speaker = createSpeaker('', {
+                orientation: 'center',
+                showPrefix: false
+            });
+            speed = 25;
+        }
+        // Player action messages - left aligned
+        else if (message.includes(this.player.name)) {
+            // Check for special effects like critical hits or status effects
+            if (message.toLowerCase().includes('critical') || message.includes('!')) {
+                styledMessage = message.replace(/critical/gi, '[style: yelling, effect: shaking]CRITICAL[/]');
+                styledMessage = styledMessage.replace(/!/g, '[color: #ff6600]![/]');
+            }
+            speaker = createSpeaker(this.player.name, {
+                orientation: 'left',
+                color: '#4af',
+                prefix: '',
+                showPrefix: false
+            });
+        }
+        // Enemy action messages - left aligned
+        else if (message.includes(this.enemy.name)) {
+            // Check for special effects
+            if (message.toLowerCase().includes('critical') || message.includes('!')) {
+                styledMessage = message.replace(/critical/gi, '[style: yelling, effect: shaking]CRITICAL[/]');
+                styledMessage = styledMessage.replace(/!/g, '[color: #ff6600]![/]');
+            }
+            speaker = createSpeaker(this.enemy.name, {
+                orientation: 'left',
+                color: '#f44',
+                prefix: '',
+                showPrefix: false
+            });
+        }
+        // Generic messages - left aligned
+        else {
+            speaker = createSpeaker('', {
+                orientation: 'left',
+                showPrefix: false,
+                color: '#aaa'
+            });
+        }
+        
+        // Add status effect messages with special styling
+        if (message.toLowerCase().includes('poison') || message.toLowerCase().includes('burn')) {
+            styledMessage = styledMessage.replace(/poison/gi, '[color: #9c27b0, effect: fade]poison[/]');
+            styledMessage = styledMessage.replace(/burn/gi, '[color: #ff5722, effect: waving]burn[/]');
+        }
+        if (message.toLowerCase().includes('heal')) {
+            styledMessage = styledMessage.replace(/heal/gi, '[color: #4caf50, effect: glowing]heal[/]');
+        }
+        
+        this.typewriterController.queue(styledMessage, {
+            speed: speed,
+            speaker: speaker
+        });
     }
 
-    handleBattleEnd(result) {
-        this.disableActionButtons();
-        this.addLogEntry(`Battle ended! ${result.winner.name} is victorious!`);
-
-        // Disable further interactions
-        this.isProcessingTurn = true;
+    //Wait for the typewriter to finish displaying all queued messages
+    async waitForTypewriter() {
+        while (this.typewriterController.getQueueLength() > 0 || this.typewriterController.isActive()) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 }

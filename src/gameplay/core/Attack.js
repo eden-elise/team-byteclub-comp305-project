@@ -35,13 +35,13 @@ export class Attack extends Action {
      * Returns a Promise that resolves when the attack and animation are complete
      * @param {Entity} source - The entity performing the attack
      * @param {Entity} target - The target entity
-     * @param {BattleEngine} battle - Reference to the battle engine
+     * @param {TypewriterTextbox} textbox - textbox to log to
      * @returns {Promise} Promise that resolves when attack and animation complete
      */
-    async execute(source, target, battle) {
+    async execute(source, target, textbox) {
         if (!target.isAlive()) return Promise.resolve();
 
-        battle.logEvent(`${source.name} uses ${this.name}!`);
+        textbox.addLogEntry(`${source.name} uses ${this.name}!`);
 
         // Calculate damage: (source ATTACK * basePower) - (target DEFEND / 2)
         const baseDamage = source.stats.ATTACK * this.basePower;
@@ -49,19 +49,19 @@ export class Attack extends Action {
         const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
 
         // Play animation and wait for it to complete
-        await this.playAnimation(source, target, battle);
+        await this.playAnimation(source, target, textbox);
 
         await target.takeDamage(damage);
-        battle.logEvent(`${target.name} takes ${damage} damage!`);
+        textbox.addLogEntry(`${target.name} takes ${damage} damage!`);
 
         if (!target.isAlive()) {
-            battle.logEvent(`${target.name} is defeated!`);
+            textbox.addLogEntry(`${target.name} is defeated!`);
         }
         
         // Apply status effect if applicable
         if (this.statusEffect && Math.random() < this.statusEffectChance) {
-            target.addStatusEffect(this.statusEffect, battle);
-            battle.logEvent(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
+            target.addStatusEffect(this.statusEffect, textbox);
+            textbox.addLogEntry(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
         }
     }
 }

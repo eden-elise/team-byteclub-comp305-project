@@ -72,10 +72,10 @@ export class Entity {
     /**
      * Add a status effect to this entity
      * @param {StatusEffect} statusEffect - The status effect to add
-     * @param {BattleEngine} battleEngine - The battle engine (optional, for callbacks)
+     * @param {textbox} textbox - The textbox (optional, for callbacks)
      */
-    addStatusEffect(statusEffect, battleEngine = null) {
-        statusEffect.apply(this, battleEngine);
+    addStatusEffect(statusEffect, textbox = null) {
+        statusEffect.apply(this, textbox);
         this.activeEffects.push(statusEffect);
     }
 
@@ -113,25 +113,25 @@ export class Entity {
 
     /**
      * Process turn start for all active status effects
-     * @param {BattleEngine} battleEngine - The battle engine
+     * @param {textbox} textbox - The textbox
      */
-    processStatusEffectsTurnStart(battleEngine) {
+    processStatusEffectsTurnStart(textbox) {
         // Create a copy to avoid issues if effects are removed during iteration
         const effects = [...this.activeEffects];
         for (const effect of effects) {
-            effect.processTurnStart(this, battleEngine);
+            effect.processTurnStart(this, textbox);
         }
     }
 
     /**
      * Process turn end for all active status effects
-     * @param {BattleEngine} battleEngine - The battle engine
+     * @param {textbox} textbox - The textbox
      */
-    processStatusEffectsTurnEnd(battleEngine) {
+    processStatusEffectsTurnEnd(textbox) {
         // Create a copy to avoid issues if effects are removed during iteration
         const effects = [...this.activeEffects];
         for (const effect of effects) {
-            effect.processTurnEnd(this, battleEngine);
+            effect.processTurnEnd(this, textbox);
         }
     }
 }

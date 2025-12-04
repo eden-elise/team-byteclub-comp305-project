@@ -23,12 +23,12 @@ export class RegenerationPotion extends Item {
     constructor() {
         super('Regeneration Potion', RegenerationPotion.data, RegenerationPotion.animationCallback);
     }
-    async execute(source, target, battle) {
-        super.execute(source, target, battle);
+    async execute(source, target, textbox) {
+        super.execute(source, target, textbox);
         const regenerationEffect = new StatusEffects.RegenerationStatusEffect();
         regenerationEffect.duration = Math.floor(Math.random() * 3) + 3;
-        target.addStatusEffect(regenerationEffect, battle);
-        battle.logEvent(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
+        target.addStatusEffect(regenerationEffect, textbox);
+        textbox.addLogEntry(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
     }
 }
 
@@ -41,12 +41,12 @@ export class AdrenalinePotion extends Item {
     constructor() {
         super('Adrenaline Potion', AdrenalinePotion.data, AdrenalinePotion.animationCallback);
     }
-    async execute(source, target, battle) {
-        super.execute(source, target, battle);
+    async execute(source, target, textbox) {
+        super.execute(source, target, textbox);
         const duration = 2;
         const adrenalineEffect = new StatusEffects.AdrenalineStatusEffect();
-        target.addStatusEffect(adrenalineEffect, battle);
-        battle.logEvent(`${target.name} has adrenaline for ${duration} turns!`);
+        target.addStatusEffect(adrenalineEffect, textbox);
+        textbox.addLogEntry(`${target.name} has adrenaline for ${duration} turns!`);
     }
 }
 
@@ -60,12 +60,12 @@ export class PoisonPotion extends Item {
     constructor() {
         super('Poison Potion', PoisonPotion.data, PoisonPotion.animationCallback);
     }
-    async execute(source, target, battle) {
-        super.execute(source, target, battle);
+    async execute(source, target, textbox) {
+        super.execute(source, target, textbox);
         const poisonEffect = new StatusEffects.PoisonStatusEffect();
         poisonEffect.duration = Math.floor(Math.random() * 4) + 2;
-        target.addStatusEffect(poisonEffect, battle);
-        battle.logEvent(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
+        target.addStatusEffect(poisonEffect, textbox);
+        textbox.addLogEntry(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
     }
 }
 
@@ -79,13 +79,13 @@ export class FirePotion extends Item {
     constructor() {
         super('Fire Potion', FirePotion.data, FirePotion.animationCallback);
     }
-    async execute(source, target, battle) {
-        super.execute(source, target, battle);
+    async execute(source, target, textbox) {
+        super.execute(source, target, textbox);
         const duration = 3;
         const burnEffect = new StatusEffects.BurnStatusEffect();
         burnEffect.duration = 3;
-        target.addStatusEffect(burnEffect, battle);
-        battle.logEvent(`${target.name} is burned for ${duration} turns!`);
+        target.addStatusEffect(burnEffect, textbox);
+        textbox.addLogEntry(`${target.name} is burned for ${duration} turns!`);
     }
 }
 
@@ -99,12 +99,12 @@ export class FreezePotion extends Item {
     constructor() {
         super('Freeze Potion', FreezePotion.data, FreezePotion.animationCallback);
     }
-    async execute(source, target, battle) {
-        super.execute(source, target, battle);
+    async execute(source, target, textbox) {
+        super.execute(source, target, textbox);
         const freezeEffect = new StatusEffects.FreezeStatusEffect();
         freezeEffect.duration = 1;
-        target.addStatusEffect(freezeEffect, battle);
-        battle.logEvent(`${target.name} is burned for 1 turn!`);
+        target.addStatusEffect(freezeEffect, textbox);
+        textbox.addLogEntry(`${target.name} is burned for 1 turn!`);
     }
 }
 
@@ -117,43 +117,43 @@ export class MysteryPotion extends Item {
     constructor() {
         super('Mystery Potion', MysteryPotion.data, MysteryPotion.animationCallback);
     }
-    async execute(source, target, battle) {
+    async execute(source, target, textbox) {
         const num = Math.random();
         if (Math.random() < 0.5 + 0.25 * (source.stats.LUCK - target.stats.LUCK) / (source.stats.LUCK + target.stats.LUCK)) {
             if (num <= 0.33) {
                 target.heal(40);
-                battle.logEvent(`${target.name} has healed 40 health!`);
+                textbox.addLogEntry(`${target.name} has healed 40 health!`);
             } else if (num < 0.67) {
                 const duration = 2;
                 const adrenalineEffect = new StatusEffects.AdrenalineStatusEffect();
-                target.addStatusEffect(adrenalineEffect, battle);
-                battle.logEvent(`${target.name} has adrenaline for ${duration} turns!`);
+                target.addStatusEffect(adrenalineEffect, textbox);
+                textbox.addLogEntry(`${target.name} has adrenaline for ${duration} turns!`);
             } else {
                 const regenerationEffect = new StatusEffects.RegenerationStatusEffect();
                 regenerationEffect.duration = Math.floor(Math.random() * 3) + 3;
-                target.addStatusEffect(regenerationEffect, battle);
-                battle.logEvent(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
+                target.addStatusEffect(regenerationEffect, textbox);
+                textbox.addLogEntry(`${target.name} has regeneration for ${regenerationEffect.duration} turns!`);
             }
         } else {
             if (num <= 0.33) {
                 const freezeEffect = new StatusEffects.FreezeStatusEffect();
                 freezeEffect.duration = 1;
-                target.addStatusEffect(freezeEffect, battle);
-                battle.logEvent(`${target.name} is burned for 1 turn!`);
+                target.addStatusEffect(freezeEffect, textbox);
+                textbox.addLogEntry(`${target.name} is burned for 1 turn!`);
             } else if (num < 0.67) {
                 const poisonEffect = new StatusEffects.PoisonStatusEffect();
                 poisonEffect.duration = Math.floor(Math.random() * 4) + 2;
-                target.addStatusEffect(poisonEffect, battle);
-                battle.logEvent(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
+                target.addStatusEffect(poisonEffect, textbox);
+                textbox.addLogEntry(`${target.name} is poisoned for ${poisonEffect.duration} turns!`);
             } else {
                 const duration = 3;
                 const burnEffect = new StatusEffects.BurnStatusEffect();
                 burnEffect.duration = 3;
-                target.addStatusEffect(burnEffect, battle);
-                battle.logEvent(`${target.name} is burned for ${duration} turns!`);
+                target.addStatusEffect(burnEffect, textbox);
+                textbox.addLogEntry(`${target.name} is burned for ${duration} turns!`);
             }
         }
-        super.execute(source, target, battle);
+        super.execute(source, target, textbox);
     }
 }
 
