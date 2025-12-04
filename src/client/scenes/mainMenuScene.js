@@ -33,9 +33,16 @@ export class MainMenuSceneController {
     }
 
     setupListeners() {
+        const menuMusic = document.getElementById('menu-lobby');
+        menuMusic.play().catch(err => console.log(err));
         // Play button → show secondary menu
         const btnPlay = document.getElementById('btn-play');
-        btnPlay.addEventListener('click', () => this.showSecondaryMenu());
+        btnPlay.addEventListener('click', () => {
+            const music = document.getElementById('play');
+            music.play().catch(err => console.log(err));
+
+            this.showSecondaryMenu();
+        });
 
         // Exit button → show exit confirmation
         const btnExit = document.getElementById('btn-exit');
@@ -52,6 +59,8 @@ export class MainMenuSceneController {
         const btnContinue = document.getElementById('btn-continue');
         if (btnContinue) {
             btnContinue.addEventListener('click', () => {
+                const music = document.getElementById('battle-intro');
+                music.play().catch(err => console.log(err));
                 if (this.callbacks.onContinue) this.callbacks.onContinue();
             });
         }
