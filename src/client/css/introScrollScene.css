@@ -1,0 +1,598 @@
+/* ===================================
+   Gothic Dusk Scroll Scene
+   A twilight parchment experience
+   =================================== */
+
+#intro-scroll-scene {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Dusk gradient - deep purples, blues, and warm orange glow at horizon */
+    background:
+        /* Subtle vignette */
+            radial-gradient(ellipse at center, transparent 40%, rgba(10, 5, 15, 0.8) 100%),
+                /* Warm dusk glow at bottom */
+            linear-gradient(to top,
+            rgba(139, 69, 19, 0.3) 0%,
+            rgba(75, 0, 50, 0.4) 20%,
+            rgba(25, 12, 40, 0.9) 50%,
+            #0d0a12 100%
+            );
+    background-color: #0d0a12;
+}
+
+/* ===================================
+   Atmospheric Elements
+   =================================== */
+
+/* Starfield - dimmer for dusk */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background:
+            radial-gradient(1.5px 1.5px at 20% 15%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(2px 2px at 10% 8%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1.5px 1.5px at 50% 5%, rgba(255,255,255,0.6), transparent);
+    background-size: 200% 200%;
+    animation: twinkle 4s ease-in-out infinite;
+    opacity: 0.4;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.2; }
+}
+
+/* Dusk horizon glow */
+.dusk-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background:
+            radial-gradient(ellipse 120% 50% at 50% 100%,
+            rgba(180, 100, 50, 0.4) 0%,
+            rgba(120, 40, 80, 0.2) 40%,
+            transparent 70%
+            );
+    pointer-events: none;
+}
+
+/* ===================================
+   Fireflies (dimmer, more amber)
+   =================================== */
+
+.firefly {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 0.4vw;
+    height: 0.4vw;
+    margin: -0.2vw 0 0 9.8vw;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.firefly::before,
+.firefly::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform-origin: -10vw;
+}
+
+.firefly::before {
+    background: rgba(0,0,0,0.3);
+    opacity: 0.3;
+    animation: drift 10s ease alternate infinite;
+}
+
+.firefly::after {
+    background: #ffd27a;
+    opacity: 0;
+    box-shadow: 0 0 0vw 0vw #d4a857;
+    animation: drift 10s ease alternate infinite, flash 6s ease infinite;
+}
+
+/* Individual firefly animations */
+.firefly:nth-child(1) { animation: move1 200s ease alternate infinite; }
+.firefly:nth-child(1)::after { animation-delay: 0s, 1s; animation-duration: 12s, 7s; }
+
+.firefly:nth-child(2) { animation: move2 180s ease alternate infinite; }
+.firefly:nth-child(2)::after { animation-delay: 0s, 3s; animation-duration: 9s, 6s; }
+
+.firefly:nth-child(3) { animation: move3 220s ease alternate infinite; }
+.firefly:nth-child(3)::after { animation-delay: 0s, 2s; animation-duration: 11s, 8s; }
+
+.firefly:nth-child(4) { animation: move4 190s ease alternate infinite; }
+.firefly:nth-child(4)::after { animation-delay: 0s, 4s; animation-duration: 10s, 5s; }
+
+.firefly:nth-child(5) { animation: move5 210s ease alternate infinite; }
+.firefly:nth-child(5)::after { animation-delay: 0s, 1.5s; animation-duration: 13s, 7s; }
+
+.firefly:nth-child(6) { animation: move6 195s ease alternate infinite; }
+.firefly:nth-child(6)::after { animation-delay: 0s, 2.5s; animation-duration: 8s, 6.5s; }
+
+.firefly:nth-child(7) { animation: move7 205s ease alternate infinite; }
+.firefly:nth-child(7)::after { animation-delay: 0s, 3.5s; animation-duration: 11s, 5.5s; }
+
+.firefly:nth-child(8) { animation: move8 185s ease alternate infinite; }
+.firefly:nth-child(8)::after { animation-delay: 0s, 0.5s; animation-duration: 9s, 7.5s; }
+
+.firefly:nth-child(9) { animation: move9 215s ease alternate infinite; }
+.firefly:nth-child(9)::after { animation-delay: 0s, 4.5s; animation-duration: 12s, 6s; }
+
+.firefly:nth-child(10) { animation: move10 200s ease alternate infinite; }
+.firefly:nth-child(10)::after { animation-delay: 0s, 2s; animation-duration: 10s, 8s; }
+
+/* Firefly movement animations */
+@keyframes move1 {
+    0% { transform: translateX(-30vw) translateY(-20vh) scale(0.5); }
+    25% { transform: translateX(20vw) translateY(30vh) scale(0.8); }
+    50% { transform: translateX(-10vw) translateY(-30vh) scale(0.6); }
+    75% { transform: translateX(30vw) translateY(10vh) scale(0.9); }
+    100% { transform: translateX(-25vw) translateY(25vh) scale(0.7); }
+}
+
+@keyframes move2 {
+    0% { transform: translateX(40vw) translateY(15vh) scale(0.7); }
+    25% { transform: translateX(-20vw) translateY(-25vh) scale(0.5); }
+    50% { transform: translateX(10vw) translateY(35vh) scale(0.9); }
+    75% { transform: translateX(-35vw) translateY(-10vh) scale(0.6); }
+    100% { transform: translateX(25vw) translateY(20vh) scale(0.8); }
+}
+
+@keyframes move3 {
+    0% { transform: translateX(-15vw) translateY(40vh) scale(0.8); }
+    25% { transform: translateX(35vw) translateY(-15vh) scale(0.6); }
+    50% { transform: translateX(-25vw) translateY(10vh) scale(0.7); }
+    75% { transform: translateX(15vw) translateY(-35vh) scale(0.9); }
+    100% { transform: translateX(-40vw) translateY(5vh) scale(0.5); }
+}
+
+@keyframes move4 {
+    0% { transform: translateX(25vw) translateY(-30vh) scale(0.6); }
+    25% { transform: translateX(-30vw) translateY(20vh) scale(0.8); }
+    50% { transform: translateX(35vw) translateY(-5vh) scale(0.7); }
+    75% { transform: translateX(-5vw) translateY(30vh) scale(0.5); }
+    100% { transform: translateX(20vw) translateY(-25vh) scale(0.9); }
+}
+
+@keyframes move5 {
+    0% { transform: translateX(-35vw) translateY(-5vh) scale(0.9); }
+    25% { transform: translateX(15vw) translateY(25vh) scale(0.6); }
+    50% { transform: translateX(-20vw) translateY(-30vh) scale(0.8); }
+    75% { transform: translateX(40vw) translateY(15vh) scale(0.5); }
+    100% { transform: translateX(-10vw) translateY(35vh) scale(0.7); }
+}
+
+@keyframes move6 {
+    0% { transform: translateX(10vw) translateY(35vh) scale(0.5); }
+    25% { transform: translateX(-40vw) translateY(-10vh) scale(0.9); }
+    50% { transform: translateX(30vw) translateY(20vh) scale(0.7); }
+    75% { transform: translateX(-15vw) translateY(-25vh) scale(0.6); }
+    100% { transform: translateX(35vw) translateY(5vh) scale(0.8); }
+}
+
+@keyframes move7 {
+    0% { transform: translateX(-20vw) translateY(10vh) scale(0.7); }
+    25% { transform: translateX(30vw) translateY(-35vh) scale(0.5); }
+    50% { transform: translateX(-35vw) translateY(25vh) scale(0.9); }
+    75% { transform: translateX(5vw) translateY(-15vh) scale(0.8); }
+    100% { transform: translateX(-25vw) translateY(30vh) scale(0.6); }
+}
+
+@keyframes move8 {
+    0% { transform: translateX(35vw) translateY(-25vh) scale(0.8); }
+    25% { transform: translateX(-10vw) translateY(15vh) scale(0.6); }
+    50% { transform: translateX(25vw) translateY(-40vh) scale(0.5); }
+    75% { transform: translateX(-30vw) translateY(5vh) scale(0.9); }
+    100% { transform: translateX(15vw) translateY(30vh) scale(0.7); }
+}
+
+@keyframes move9 {
+    0% { transform: translateX(-25vw) translateY(-35vh) scale(0.6); }
+    25% { transform: translateX(40vw) translateY(10vh) scale(0.8); }
+    50% { transform: translateX(-5vw) translateY(40vh) scale(0.7); }
+    75% { transform: translateX(20vw) translateY(-20vh) scale(0.5); }
+    100% { transform: translateX(-40vw) translateY(15vh) scale(0.9); }
+}
+
+@keyframes move10 {
+    0% { transform: translateX(5vw) translateY(20vh) scale(0.9); }
+    25% { transform: translateX(-30vw) translateY(-30vh) scale(0.7); }
+    50% { transform: translateX(40vw) translateY(5vh) scale(0.6); }
+    75% { transform: translateX(-15vw) translateY(35vh) scale(0.8); }
+    100% { transform: translateX(30vw) translateY(-10vh) scale(0.5); }
+}
+
+@keyframes drift {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes flash {
+    0%, 30%, 100% {
+        opacity: 0;
+        box-shadow: 0 0 0vw 0vw #d4a857;
+    }
+    5% {
+        opacity: 1;
+        box-shadow: 0 0 2vw 0.4vw #d4a857;
+    }
+}
+
+/* ===================================
+   The Scroll (Parchment Background)
+   =================================== */
+
+.scroll-wrapper {
+    position: relative;
+    width: 70%;
+    max-width: 900px;
+    height: 85vh;
+    display: flex;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* Scroll body - the parchment */
+.scroll-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background:
+        /* Parchment texture with age spots */
+            radial-gradient(ellipse at 30% 20%, rgba(139, 90, 43, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(101, 67, 33, 0.1) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 50%, rgba(139, 90, 43, 0.08) 0%, transparent 60%),
+                /* Base parchment gradient */
+            linear-gradient(to bottom,
+            #d4c4a8 0%,
+            #e8dcc8 10%,
+            #f5ead6 30%,
+            #f0e4ce 50%,
+            #e8dcc4 70%,
+            #ddd0b8 90%,
+            #c9b896 100%
+            );
+    border-radius: 8px;
+    box-shadow:
+        /* Inner shadow for depth */
+            inset 0 0 60px rgba(101, 67, 33, 0.3),
+            inset 0 0 20px rgba(139, 90, 43, 0.2),
+                /* Outer shadow */
+            0 10px 40px rgba(0, 0, 0, 0.5),
+            0 0 100px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* Aged edges effect */
+.scroll-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        /* Burn/age marks on edges */
+            linear-gradient(to right, rgba(101, 67, 33, 0.4) 0%, transparent 3%),
+            linear-gradient(to left, rgba(101, 67, 33, 0.4) 0%, transparent 3%),
+            linear-gradient(to bottom, rgba(101, 67, 33, 0.3) 0%, transparent 5%),
+            linear-gradient(to top, rgba(101, 67, 33, 0.3) 0%, transparent 5%);
+    pointer-events: none;
+    border-radius: 8px;
+}
+
+/* Gothic ornamental border */
+.scroll-body::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 2px solid rgba(80, 50, 30, 0.4);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+/* Decorative corner flourishes */
+.scroll-corner {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.scroll-corner::before,
+.scroll-corner::after {
+    content: '';
+    position: absolute;
+    background: rgba(80, 50, 30, 0.5);
+}
+
+.scroll-corner.top-left {
+    top: 20px;
+    left: 20px;
+}
+.scroll-corner.top-left::before {
+    width: 40px;
+    height: 2px;
+    top: 0;
+    left: 0;
+}
+.scroll-corner.top-left::after {
+    width: 2px;
+    height: 40px;
+    top: 0;
+    left: 0;
+}
+
+.scroll-corner.top-right {
+    top: 20px;
+    right: 20px;
+}
+.scroll-corner.top-right::before {
+    width: 40px;
+    height: 2px;
+    top: 0;
+    right: 0;
+}
+.scroll-corner.top-right::after {
+    width: 2px;
+    height: 40px;
+    top: 0;
+    right: 0;
+}
+
+.scroll-corner.bottom-left {
+    bottom: 20px;
+    left: 20px;
+}
+.scroll-corner.bottom-left::before {
+    width: 40px;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+}
+.scroll-corner.bottom-left::after {
+    width: 2px;
+    height: 40px;
+    bottom: 0;
+    left: 0;
+}
+
+.scroll-corner.bottom-right {
+    bottom: 20px;
+    right: 20px;
+}
+.scroll-corner.bottom-right::before {
+    width: 40px;
+    height: 2px;
+    bottom: 0;
+    right: 0;
+}
+.scroll-corner.bottom-right::after {
+    width: 2px;
+    height: 40px;
+    bottom: 0;
+    right: 0;
+}
+
+/* ===================================
+   Scroll Content (The Text)
+   =================================== */
+
+.scroll-container {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    right: 50px;
+    bottom: 50px;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.scroll-text-wrapper {
+    position: absolute;
+    width: 100%;
+    padding: 0 20px;
+    transform: translateY(100%);
+    animation: scrollText 50s linear forwards;
+    will-change: transform;
+}
+
+@keyframes scrollText {
+    0% {
+        transform: translateY(20%);
+    }
+    100% {
+        transform: translateY(-250%);
+    }
+}
+
+/* Episode title */
+.episode-title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.episode-title h1 {
+    font-family: var(--font-heading, 'Cinzel', serif);
+    font-size: 2.8rem;
+    letter-spacing: 0.4rem;
+    margin-bottom: 0.8rem;
+    color: #2d1810;
+    text-shadow:
+            1px 1px 0 rgba(139, 90, 43, 0.3),
+            2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    font-family: var(--font-primary, 'Crimson Text', serif);
+    font-size: 1.3rem;
+    font-style: italic;
+    color: #4a3020;
+    letter-spacing: 0.15rem;
+}
+
+/* Gothic divider */
+.gothic-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+    gap: 15px;
+}
+
+.gothic-divider::before,
+.gothic-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+            to var(--direction, right),
+            transparent,
+            rgba(80, 50, 30, 0.5) 50%,
+            transparent
+    );
+}
+
+.gothic-divider::before {
+    --direction: right;
+}
+
+.gothic-divider::after {
+    --direction: left;
+}
+
+.gothic-divider span {
+    color: rgba(80, 50, 30, 0.6);
+    font-size: 1.5rem;
+}
+
+/* Content paragraphs - ink on parchment */
+.scroll-content {
+    font-family: var(--font-primary, 'Crimson Text', serif);
+    font-size: 1.4rem;
+    line-height: 2;
+    color: #1a0f0a;
+    text-align: justify;
+    margin-bottom: 1.8rem;
+    text-indent: 2rem;
+    opacity: 0;
+    animation: fadeInText 0.8s ease forwards;
+    /* Ink effect */
+    text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.scroll-content:first-of-type {
+    text-indent: 0;
+}
+
+/* Staggered animation for "writing" effect */
+.scroll-content:nth-child(1) { animation-delay: 0s; }
+.scroll-content:nth-child(2) { animation-delay: 0.8s; }
+.scroll-content:nth-child(3) { animation-delay: 1.6s; }
+.scroll-content:nth-child(4) { animation-delay: 2.4s; }
+.scroll-content:nth-child(5) { animation-delay: 3.2s; }
+.scroll-content:nth-child(6) { animation-delay: 4s; }
+.scroll-content:nth-child(7) { animation-delay: 4.8s; }
+.scroll-content:nth-child(8) { animation-delay: 5.6s; }
+
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* Quill cursor effect for writing animation */
+.writing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background: #2d1810;
+    margin-left: 2px;
+    animation: cursorBlink 0.8s ease-in-out infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Drop cap for first letter (gothic style) */
+.scroll-content.first-paragraph::first-letter {
+    font-family: var(--font-heading, 'Cinzel', serif);
+    font-size: 4rem;
+    float: left;
+    line-height: 0.8;
+    padding-right: 10px;
+    padding-top: 5px;
+    color: #4a2010;
+    text-shadow: 2px 2px 0 rgba(139, 90, 43, 0.3);
+}
+
+/* ===================================
+   Skip Hint
+   =================================== */
+
+.skip-hint {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(200, 180, 150, 0.7);
+    font-family: var(--font-primary, 'Crimson Text', serif);
+    font-size: 0.95rem;
+    letter-spacing: 0.1rem;
+    animation: pulse 2.5s ease-in-out infinite;
+    z-index: 10;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+}
+
+/* ===================================
+   Ink Splatter Decorations
+   =================================== */
+
+.ink-splatter {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(ellipse, rgba(30, 15, 10, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.ink-splatter:nth-child(1) { top: 15%; left: 8%; transform: scale(1.5) rotate(45deg); }
+.ink-splatter:nth-child(2) { top: 45%; right: 5%; transform: scale(0.8); }
+.ink-splatter:nth-child(3) { bottom: 20%; left: 12%; transform: scale(1.2) rotate(-30deg); }
