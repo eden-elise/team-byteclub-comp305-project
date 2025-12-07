@@ -9,6 +9,7 @@ import { BattleSceneController } from './scenes/battleScene.js';
 import { Knight, Archer } from '../gameplay/definitions/characters/heroes.js';
 import { gameState } from '../gameplay/state/GameState.js';
 import { OptionsModalController } from './components/optionsModal.js';
+import { IntroScrollSceneController } from './scenes/introScrollScene.js';
 
 
 async function initApp() {
@@ -53,9 +54,20 @@ async function loadCharacterSelect() {
     const selectController = new CharacterSelectSceneController(async (characterData) => {
         // Initialize new game state
         gameState.startNewGame(characterData.id);
+        await loadIntroScroll();
         await startBattle();
     });
     window.characterSelectController = selectController;
+}
+
+async function loadIntroScroll() {
+    await loadScene('introScrollScene');
+
+    return new Promise((resolve) => {
+        new IntroScrollSceneController({
+            onComplete: resolve
+        });
+    });
 }
 
 async function startBattle() {
