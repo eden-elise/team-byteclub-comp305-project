@@ -1,4 +1,4 @@
-import { StatusEffect } from '../../core/StatusEffect.js';
+import { StatusEffect } from '../core/StatusEffect.js';
 
 export class RegenerationStatusEffect extends StatusEffect {
     constructor() {

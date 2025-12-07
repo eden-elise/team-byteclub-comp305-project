@@ -1,5 +1,5 @@
-import { Attack } from '../../core/Attack.js';
-import { createBaseAttackAnimationCallback } from '../../animations/AttackAnimations.js';
+import { Attack } from '../core/Attack.js';
+import { createBaseAttackAnimationCallback } from '../animations/AttackAnimations.js';
 
 export class BasicStrike extends Attack {
     static data = {

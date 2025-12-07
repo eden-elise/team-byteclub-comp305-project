@@ -1,5 +1,5 @@
-import { Item } from '../../core/Item.js';
-import { createThrowAnimationCallback } from '../../animations/ItemAnimations.js';
+import { Item } from '../core/Item.js';
+import { createThrowAnimationCallback } from '../animations/ItemAnimations.js';
 import * as StatusEffects from '../status-effects/statusEffectRegistry.js';
 
 export class HealthPotion extends Item {
