@@ -5,10 +5,10 @@
 import '../components/TypewriterTextbox.js';
 
 export class ExplorationSceneController {
-    constructor(room, player) {
+    constructor(room, player, startEventIndex = 0) {
         this.room = room;
         this.player = player;
-        this.currentEventIndex = 0;
+        this.currentEventIndex = startEventIndex;
         this.isProcessingEvent = false;
         
         // Track entities by position
@@ -70,11 +70,14 @@ export class ExplorationSceneController {
         // Process event based on type
         await this.handleEvent(event);
 
-        // If the event is a choice, we pause execution here.
+        // If the event is a choice or battle, we pause execution here.
         // The choice handler will trigger the next event manually.
-        if (event.type === 'choice') {
-            this.currentEventIndex++;
-            this.isProcessingEvent = false;
+        // The battle handler will reload the scene, so we don't need to continue.
+        if (event.type === 'choice' || event.type === 'battle') {
+            if (event.type === 'choice') {
+                 this.currentEventIndex++;
+                 this.isProcessingEvent = false;
+            }
             return;
         }
 
@@ -102,9 +105,32 @@ export class ExplorationSceneController {
             case 'background-change':
                 await this.changeBackground(event.params);
                 break;
+            case 'battle':
+                await this.handleBattle(event.params);
+                break;
             default:
                 console.warn(`Unknown event type: ${event.type}`);
                 await this.processNextEvent();
+        }
+    }
+
+    async handleBattle(params) {
+        const { enemy } = params;
+        
+        // Save state so we return to the NEXT event after battle
+        // We increment currentEventIndex by 1 because we want to resume AFTER this battle event
+        const { gameState } = await import('../gameplay/state/GameState.js');
+        gameState.setExplorationState(this.room.id, this.currentEventIndex + 1);
+
+        // Start battle
+        if (window.gameApp && window.gameApp.startBattle) {
+            await window.gameApp.startBattle(enemy, async () => {
+                // On win, return to exploration
+                // We don't need to pass roomId because startExploration checks gameState
+                await window.gameApp.startExploration();
+            });
+        } else {
+            console.error('GameApp not initialized');
         }
     }
 
@@ -261,21 +287,36 @@ export class ExplorationSceneController {
     }
 
     handleRoomComplete() {
-        // Room has finished all events
-        
-        // Show a default "Continue" button or handle room completion
         const choiceContainer = document.getElementById('choice-container');
-        choiceContainer.innerHTML = `
-            <button class="choice-btn choice-btn--continue">Continue</button>
-        `;
+        choiceContainer.innerHTML = '';
 
-        // Add event listener for continue button
-        const continueBtn = choiceContainer.querySelector('.choice-btn--continue');
-        continueBtn.addEventListener('click', () => {
-            // This would typically transition to the next room or scene
-            console.log('Continuing to next room...');
-            // TODO: Implement room transition logic
+        this.room.connections.forEach(connectionId => {
+            const button = document.createElement('button');
+            button.className = 'choice-btn choice-btn--continue';
+            button.textContent = `Go to ${connectionId.replace(/_/g, ' ')}`; 
+            
+            button.addEventListener('click', () => {
+                this.transitionToRoom(connectionId);
+            });
+            choiceContainer.appendChild(button);
         });
+    }
+
+    async transitionToRoom(roomId) {
+        const { getRoomById } = await import('../gameplay/exploration/roomRegistry.js');
+        const newRoom = getRoomById(roomId);
+        
+        if (newRoom) {
+            this.room = newRoom;
+            this.currentEventIndex = 0;
+            this.isProcessingEvent = false;
+            
+            document.getElementById('choice-container').innerHTML = '';
+            
+            await this.startRoom();
+        } else {
+            console.error(`Could not find room: ${roomId}`);
+        }
     }
 
     // Utility methods that can be called from room event callbacks
