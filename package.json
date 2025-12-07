@@ -17,5 +17,10 @@
     "url": "https://github.com/eden-elise/team-byteclub-comp305-project/issues"
   },
   "homepage": "https://github.com/eden-elise/team-byteclub-comp305-project#readme",
-  "dependencies": {}
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4"
+  }
 }
