@@ -5,9 +5,10 @@
  */
 
 export class Room {
-    constructor(id, events) {
+    constructor(id, events, connections) {
         this.id = id;
         this.events = events;
+        this.connections = connections;
     }
 
     

@@ -13,66 +13,23 @@ import { IntroScrollSceneController } from './scenes/introScrollScene.js';
 import { TEST_ROOM } from '../gameplay/exploration/roomRegistry.js';
 
 
+import { getRoomById } from '../gameplay/exploration/roomRegistry.js';
+
 async function initApp() {
     // Initialize global options
     new OptionsModalController();
 
+    // Expose game functions globally
+    window.gameApp = {
+        startBattle,
+        startExploration
+    };
+
     // FOR TESTING: Load exploration scene directly
-    //await startExploration();
-
-/*    const mainMenuController = new MainMenuSceneController({
-        onContinue: async () => {
-            console.log("Continuing game...");
-            const saveData = gameState.loadGame();
-            if (saveData) {
-                const sceneToLoad = saveData.world.currentScene || 'battleScene';
-                if (sceneToLoad === 'battleScene') {
-                    await startBattle();
-                } else {
-                    // Future scenes can be handled here
-                    await startBattle();
-                }
-            }
-        },
-        onNewGame: async () => {
-            console.log("Starting new game...");
-            await loadCharacterSelect();
-        },
-        onLoadFile: async (jsonData) => {
-            console.log("Loading from file...");
-            if (gameState.loadFromFile(jsonData)) {
-                await startBattle();
-            } else {
-                alert("Failed to load save file.");
-            }
-        }
-    });
-*/
+    // await startExploration();
 }
 
-async function loadCharacterSelect() {
-    await loadScene('characterSelectScene', 'battleScene');
-    
-    const selectController = new CharacterSelectSceneController(async (characterData) => {
-        // Initialize new game state
-        gameState.startNewGame(characterData.id);
-        await loadIntroScroll();
-        await startBattle();
-    });
-    window.characterSelectController = selectController;
-}
-
-async function loadIntroScroll() {
-    await loadScene('introScrollScene');
-
-    return new Promise((resolve) => {
-        new IntroScrollSceneController({
-            onComplete: resolve
-        });
-    });
-}
-
-async function startBattle() {
+async function startBattle(enemyEntity, onWinCallback) {
     console.log("Starting battle...");
     let player = gameState.characterEntity;
 
@@ -81,16 +38,23 @@ async function startBattle() {
         player = new Knight(true);
     }
     
-    const enemy = new (player.name === 'Knight' ? Archer : Knight)(false);
+    // Use provided enemy or default for testing
+    const enemy = enemyEntity || new (player.name === 'Knight' ? Archer : Knight)(false);
 
     await loadScene('battleScene');
     const battleController = new BattleSceneController(player, enemy, player.items, 
         async (winner) => {
             if (winner === player) {
-                await startExploration();
+                if (onWinCallback) {
+                    await onWinCallback();
+                } else {
+                    await startExploration();
+                }
             } else {
                 // make this some sort of death scene
-                await startBattle();
+                // For now, reload battle
+                console.log("Player lost. Restarting battle...");
+                await startBattle(enemy, onWinCallback);
             }
         }
     );
@@ -98,7 +62,7 @@ async function startBattle() {
     window.battleController = battleController;
 }
 
-async function startExploration() {
+async function startExploration(roomId = null) {
     // For testing, use a default player if none exists
     let player = gameState.characterEntity;
     
@@ -107,11 +71,34 @@ async function startExploration() {
         player = new Knight(true);
     }
 
+    // Determine which room to load
+    let roomToLoad = TEST_ROOM;
+    let startEventIndex = 0;
+
+    // 1. If roomId is passed, use it
+    if (roomId) {
+        const room = getRoomById(roomId);
+        if (room) {
+            roomToLoad = room;
+        }
+    } 
+    // 2. Check saved state
+    else {
+        const savedState = gameState.getExplorationState();
+        if (savedState) {
+            const room = getRoomById(savedState.roomId);
+            if (room) {
+                roomToLoad = room;
+                startEventIndex = savedState.eventIndex || 0;
+            }
+        }
+    }
+
     // Load the exploration scene
     await loadScene('explorationScene');
     
-    // Initialize the exploration controller with the test room
-    const explorationController = new ExplorationSceneController(TEST_ROOM, player);
+    // Initialize the exploration controller
+    const explorationController = new ExplorationSceneController(roomToLoad, player, startEventIndex);
     
     window.explorationController = explorationController;
 }
