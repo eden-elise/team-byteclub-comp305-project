@@ -1,4 +1,5 @@
 import { Knight, Archer } from '../../gameplay/definitions/characters/heroes.js';
+import { audioManager } from '../utils/AudioManager.js';
 
 export class CharacterSelectSceneController {
     /**
@@ -25,11 +26,14 @@ export class CharacterSelectSceneController {
     }
 
     init() {
+        audioManager.stop('loading-screen');
+        audioManager.play('character-choice', true);
         this.renderCharacterOptions();
         
         const startBtn = document.getElementById('btn-start-game');
         if (startBtn) {
             startBtn.addEventListener('click', () => {
+                audioManager.play('button-click');
                 this.handleStartGame();
             });
         }
@@ -65,6 +69,7 @@ export class CharacterSelectSceneController {
             `;
 
             card.addEventListener('click', () => {
+                audioManager.play('button-click');
                 this.selectCharacter(index);
                 
                 // Update visual selection state
@@ -118,6 +123,9 @@ export class CharacterSelectSceneController {
 
     handleStartGame() {
         if (!this.selectedCharacter) return;
+
+        audioManager.stop('character-choice');
+
 
         if (this.onCharacterSelected) {
             this.onCharacterSelected(this.selectedCharacter);
