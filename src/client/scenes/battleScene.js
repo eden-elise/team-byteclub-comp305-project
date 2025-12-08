@@ -2,6 +2,7 @@ import { getAttackByName } from '../../gameplay/definitions/attacks/attackRegist
 import { getItemByName } from '../../gameplay/definitions/items/itemRegistry.js';
 import '../components/TypewriterTextbox.js';
 import { createSpeaker } from '../components/TypewriterTextbox.js';
+import { audioManager } from "../utils/AudioManager.js";
 
 /**
  * BattleSceneController - Manages the UI and battle logic independently
@@ -13,6 +14,8 @@ export class BattleSceneController {
 
         this.player = player;
         this.enemy = enemy;
+        audioManager.play('battle-background', true);  // Start battle music looping
+        
         this.inventory = inventory; // Separate inventory array
         this.currentTurnEntity = null;
         this.isProcessingTurn = false;
@@ -54,8 +57,6 @@ export class BattleSceneController {
     }
 
     setupEventListeners() {
-        const music = document.getElementById('battle-background');
-        music.play().catch(err => console.log(err));
         // Listen for battle log updates
         const originalLogEvent = this.battleEngine.logEvent.bind(this.battleEngine);
         this.battleEngine.logEvent = (message) => {
@@ -152,6 +153,8 @@ export class BattleSceneController {
             const attackInstance = new attackName();
             await this.processTurn(this.enemy, attackInstance, this.player);
             
+            audioManager.play("enemy-hit");
+            await this.battleSequence.processTurn(this.enemy, attackInstance, this.player);
             this.updateEntityStats();
 
             this.turnOrderQueue.push(this.currentTurnEntity);
@@ -175,6 +178,7 @@ export class BattleSceneController {
         document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
         if (this.currentTurnEntity === this.player) {
+            audioManager.play("button-click");
             const attacks = this.player.moves;
             
             let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0]}</button>`;
@@ -193,6 +197,7 @@ export class BattleSceneController {
                 const attackName = getAttackByName(attacks[0]);
                 const attackInstance = new attackName();
                 this.handleActionClick(attackInstance);
+
             });
             document.getElementById('btn-attack-2').addEventListener('click', () => { 
                 const attackName = getAttackByName(attacks[1]);
@@ -211,6 +216,7 @@ export class BattleSceneController {
     }
 
     showInventory() {
+        audioManager.play("inventory");
         const container = document.getElementById('action-container');
         this.uiState = 'inventory';
         this.selectedItem = null;
@@ -285,6 +291,7 @@ export class BattleSceneController {
     }
 
     async selectInventoryItem(index) {
+        audioManager.play("button-click");
         if (this.isProcessingTurn) {
             return;
         }
@@ -308,6 +315,7 @@ export class BattleSceneController {
     }
 
     showTargetSelection() {
+        audioManager.play("button-click");
         const container = document.getElementById('action-container');
         this.uiState = 'target-selection';
 
@@ -340,12 +348,28 @@ export class BattleSceneController {
     }
 
     async executeItem(target) {
+
         this.isProcessingTurn = true;
         this.disableActionButtons();
 
         const inventoryIndex = this.pendingItem;
         const itemInstance = this.selectedItem;
         const inventorySlot = this.inventory[inventoryIndex];
+
+        try {
+            const itemName = (itemInstance && itemInstance.data && itemInstance.data.name)
+                ? itemInstance.data.name.toLowerCase()
+                : (inventorySlot && inventorySlot.name ? inventorySlot.name.toLowerCase() : '');
+
+            if (itemName.includes("health")) audioManager.play("health-potion");
+            else if (itemName.includes("poison")) audioManager.play("poison-potion");
+            else if (itemName.includes("fire")) audioManager.play("fire-potion");
+            else if (itemName.includes("mystery")) audioManager.play("mystery-potion");
+            // else: no potion keyword matched — don't play a potion SFX (keeps behavior unchanged)
+        } catch (e) {
+            // Defensive: log if something unexpected happened (won't break game)
+            console.warn("Audio play skipped — could not determine item name.", e);
+        }
 
         // Execute the item
         await this.processTurn(this.player, itemInstance, target);
@@ -383,6 +407,13 @@ export class BattleSceneController {
         
         // Wait for all typewriter messages to finish
         await this.waitForTypewriter();
+        try {
+            const attackName = action.name.toLowerCase();
+            if (attackName.includes("strike")) audioManager.play("mp-strike");
+            else if (attackName.includes("heavy")) audioManager.play("mp-heavy");
+        } catch (e) {
+            console.warn("Attack sound skipped", e);
+        }
 
         this.updateEntityStats();
 

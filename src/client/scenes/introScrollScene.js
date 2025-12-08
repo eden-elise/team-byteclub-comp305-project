@@ -1,3 +1,5 @@
+import { audioManager } from '../utils/AudioManager.js';
+
 /**
  * @fileoverview Controller for the gothic-themed intro scroll scene.
  * Manages the animated parchment scroll with typewriter text effects,
@@ -79,6 +81,9 @@ export class IntroScrollSceneController {
      * @returns {void}
      */
     init() {
+        audioManager.stop('character-select');
+        audioManager.play('scroll-background', true);
+
         this.loadCSS();
         this.setupAnimationEnd();
         this.setupSkipHandlers();
@@ -230,6 +235,8 @@ export class IntroScrollSceneController {
         if (this.scrollComplete) return;
 
         this.scrollComplete = true;
+        audioManager.stop('scroll-background');
+
 
         /** @type {HTMLElement|null} */
         const scene = document.getElementById('intro-scroll-scene');

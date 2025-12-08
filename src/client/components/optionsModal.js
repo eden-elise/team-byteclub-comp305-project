@@ -1,4 +1,6 @@
 import { gameState } from '../../gameplay/state/GameState.js';
+import { audioManager } from '../utils/AudioManager.js';
+
 
 export class OptionsModalController {
     constructor() {
@@ -30,10 +32,16 @@ export class OptionsModalController {
 
     setupListeners() {
         // Toggle button
-        document.getElementById('options-btn').addEventListener('click', () => this.open());
+        document.getElementById('options-btn').addEventListener('click', () => {
+            audioManager.play('button-click');
+            this.open()
+        });
         
         // Close button
-        document.getElementById('options-close').addEventListener('click', () => this.close());
+        document.getElementById('options-close').addEventListener('click', () => {
+            audioManager.play('button-click');
+            this.close()
+        });
         
         // Close on click outside
         this.overlay.addEventListener('click', (e) => {
@@ -42,7 +50,9 @@ export class OptionsModalController {
 
         // Settings listeners
         document.getElementById('opt-volume').addEventListener('change', (e) => {
-            this.updateSetting('volume', parseInt(e.target.value));
+            const volume = parseInt(e.target.value);  // ADD THIS LINE - define volume
+            this.updateSetting('volume', volume);
+            audioManager.setMasterVolume(volume);
         });
 
         document.getElementById('opt-text-speed').addEventListener('change', (e) => {
@@ -93,7 +103,7 @@ export class OptionsModalController {
         // But we can check if there are settings in the currentSaveData
         
         const settings = gameState.currentSaveData?.settings || {
-            volume: 50,
+            volume: 100,
             textSpeed: 'medium',
             language: 'en',
             battleSpeed: 1.0
@@ -103,6 +113,8 @@ export class OptionsModalController {
         document.getElementById('opt-text-speed').value = settings.textSpeed;
         document.getElementById('opt-language').value = settings.language;
         document.getElementById('opt-battle-speed').value = settings.battleSpeed;
+
+        audioManager.setMasterVolume(settings.volume);
     }
 
     updateSetting(key, value) {
