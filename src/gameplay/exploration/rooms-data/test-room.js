@@ -1,4 +1,4 @@
-import { Knight } from '../../definitions/characters/heroes.js';
+import { Knight } from '../../definitions/heroesRegistry.js';
 import { FadeOutAnimation, SlideInAnimation } from '../../animations/ExplorationAnimations.js';
 
 export const testRoom = {

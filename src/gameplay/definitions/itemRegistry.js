@@ -1,6 +1,6 @@
 import { Item } from '../core/Item.js';
 import { createThrowAnimationCallback } from '../animations/ItemAnimations.js';
-import * as StatusEffects from '../status-effects/statusEffectRegistry.js';
+import * as StatusEffects from './statusEffectRegistry.js';
 
 export class HealthPotion extends Item {
     static data = {

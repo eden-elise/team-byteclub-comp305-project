@@ -3,6 +3,8 @@
  * This class handles dialogue, choices, character animations, and room progression
  */
 import '../components/TypewriterTextbox.js';
+import { getRoomById } from '../../gameplay/exploration/roomRegistry.js';
+import { gameState } from '../../gameplay/state/GameState.js';
 
 export class ExplorationSceneController {
     constructor(room, player, startEventIndex = 0) {
@@ -76,8 +78,8 @@ export class ExplorationSceneController {
         if (event.type === 'choice' || event.type === 'battle') {
             if (event.type === 'choice') {
                  this.currentEventIndex++;
-                 this.isProcessingEvent = false;
             }
+            this.isProcessingEvent = false;
             return;
         }
 
@@ -117,17 +119,20 @@ export class ExplorationSceneController {
     async handleBattle(params) {
         const { enemy } = params;
         
-        // Save state so we return to the NEXT event after battle
-        // We increment currentEventIndex by 1 because we want to resume AFTER this battle event
-        const { gameState } = await import('../gameplay/state/GameState.js');
-        gameState.setExplorationState(this.room.id, this.currentEventIndex + 1);
+        // Save current state: room, event index to resume after battle
+        const currentFloor = gameState.currentSaveData?.world?.currentFloor || 'floor-1';
+        if (gameState.currentSaveData && gameState.currentSaveData.world) {
+            gameState.currentSaveData.world.currentRoom = this.room.id;
+            gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
+            gameState.saveGame();
+        }
 
         // Start battle
         if (window.gameApp && window.gameApp.startBattle) {
             await window.gameApp.startBattle(enemy, async () => {
-                // On win, return to exploration
-                // We don't need to pass roomId because startExploration checks gameState
-                await window.gameApp.startExploration();
+                // On win, return to exploration at the same room, next event
+                console.log(`Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`);
+                await window.gameApp.startFloorExploration(currentFloor);
             });
         } else {
             console.error('GameApp not initialized');
@@ -303,7 +308,6 @@ export class ExplorationSceneController {
     }
 
     async transitionToRoom(roomId) {
-        const { getRoomById } = await import('../gameplay/exploration/roomRegistry.js');
         const newRoom = getRoomById(roomId);
         
         if (newRoom) {
@@ -313,6 +317,7 @@ export class ExplorationSceneController {
             
             document.getElementById('choice-container').innerHTML = '';
             
+            console.log(`Transitioning to room: ${roomId}`);
             await this.startRoom();
         } else {
             console.error(`Could not find room: ${roomId}`);

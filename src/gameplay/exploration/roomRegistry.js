@@ -1,21 +1,30 @@
 import { Room } from './Room.js';
+import * as Floor1Rooms from './rooms-data/floor-1.js';
+import * as Floor2Rooms from './rooms-data/floor-2.js';
+import * as Floor3Rooms from './rooms-data/floor-3.js';
+import * as Floor4Rooms from './rooms-data/floor-4.js';
+import * as Floor5Rooms from './rooms-data/floor-5.js';
+import * as TestRooms from './rooms-data/test-room.js';
 
 /**
  * Room Registry - Defines all rooms in the game
- * Automatically loads all room definitions from ./rooms-data/
+ * Manually imports all room definitions from ./rooms-data/
  */
 
 const rooms = {};
 
-/** 
- * We want to load every file from the rooms-data folder so we can organize 
- * and make multiple files for organization and ease of access
- * */
-const roomModules = import.meta.glob('./rooms-data/*.js', { eager: true });
+// Combine all room modules
+const roomModules = [
+    Floor1Rooms,
+    Floor2Rooms,
+    Floor3Rooms,
+    Floor4Rooms,
+    Floor5Rooms,
+    TestRooms
+];
 
-for (const path in roomModules) {
-    const module = roomModules[path];
-    
+// Register all rooms
+for (const module of roomModules) {
     // Iterate through all exports in the module
     for (const exportName in module) {
         const roomData = module[exportName];
@@ -23,12 +32,14 @@ for (const path in roomModules) {
         // Check if it looks like a room definition
         if (roomData && roomData.id && Array.isArray(roomData.events)) {
             if (rooms[roomData.id]) {
-                console.warn(`Duplicate room ID found: "${roomData.id}" in ${path}. Overwriting.`);
+                console.warn(`Duplicate room ID found: "${roomData.id}". Overwriting.`);
             }
             rooms[roomData.id] = new Room(roomData.id, roomData.events, roomData.connections);
         }
     }
 }
+
+console.log(`Loaded ${Object.keys(rooms).length} rooms:`, Object.keys(rooms));
 
 /**
  * Get a room by its ID

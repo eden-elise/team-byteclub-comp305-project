@@ -1,83 +1,16 @@
-import { Knight } from '../../definitions/characters/heroes.js';
+import { Knight } from '../../definitions/heroesRegistry.js';
+import { FadeInAnimation, FadeOutAnimation, SlideInAnimation } from '../../animations/ExplorationAnimations.js';
 
-// ... (keep existing imports and constants)
-
-// Create a factory function for the Warden to ensure a fresh instance
-const createWardenEnemy = () => {
-    const warden = new Knight(false);
-    warden.name = 'Warden';
-    warden.image = '../../src/assets/art/backgrounds/floor-1/Warden.png';
-    // Optionally buff stats
-    warden.maxHP = 50;
-    warden.currentHP = 50;
-    return warden;
+const BACKGROUNDS = {
+    CELL: '../../src/assets/art/backgrounds/floor-1/Starting Cell.png',
+    CORRIDOR: '../../src/assets/art/backgrounds/floor-1/CoC.png',
+    RITUAL: '../../src/assets/art/backgrounds/floor-1/Small Ritual Chamber.png',
+    WARDEN_CELL: '../../src/assets/art/backgrounds/floor-1/wardens_cell.png'
 };
 
-export const F1_FIGHT = {
-    id: 'F1_FIGHT',
-    events: [
-        {
-            type: 'background-change',
-            params: { background: BACKGROUNDS.WARDEN_CELL }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'The third cell contains a shape.',
-                speaker: SPEAKERS.NARRATOR
-            }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'At first I take it for a heap of discarded rags. Then the rags move, unfolding into the outline of a human form.',
-                speaker: SPEAKERS.NARRATOR
-            }
-        },
-        {
-            type: 'entity-enter',
-            params: {
-                entity: WARDEN_ENTITY, // Visual only for exploration
-                position: 'right',
-                animation: SlideInAnimation
-            }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'A mask glints faintly in the dark: iron, cracked down the center, covering everything but the eyes.',
-                speaker: SPEAKERS.NARRATOR
-            }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'Subject awake. Iteration... [effect: fade]lost[/]. No matter. Corridor protocol engaged.',
-                speaker: SPEAKERS.WARDEN
-            }
-        },
-        {
-            type: 'battle',
-            params: {
-                enemy: createWardenEnemy()
-            }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'Chains [effect: shaking]clatter[/]. The thing shudders once, then collapses.',
-                speaker: SPEAKERS.NARRATOR
-            }
-        },
-        {
-            type: 'entity-leave',
-            params: {
-                position: 'right',
-                animation: FadeOutAnimation
-            }
-        }
-    ],
-    connections: ['F1_EXIT_TO_F2']
+const WARDEN_ENTITY = {
+    name: 'Warden',
+    image: '../../src/assets/art/backgrounds/floor-1/Warden.png'
 };
 
 // Reusable speaker definitions
@@ -107,6 +40,17 @@ const SPEAKERS = {
         orientation: 'center',
         fontWeight: 'bold'
     }
+};
+
+// TODO: fix this to be right (adding enemy registry and using taht)
+const createWardenEnemy = () => {
+    const warden = new Knight(false);
+    warden.name = 'Warden';
+    warden.image = '../../src/assets/art/backgrounds/floor-1/Warden.png';
+    // Optionally buff stats
+    warden.maxHP = 50;
+    warden.currentHP = 50;
+    return warden;
 };
 
 export const F1_INTRO_WAKE = {
@@ -387,7 +331,7 @@ export const F1_FIGHT = {
         {
             type: 'entity-enter',
             params: {
-                entity: WARDEN_ENTITY,
+                entity: WARDEN_ENTITY, // Visual only for exploration
                 position: 'right',
                 animation: SlideInAnimation
             }
@@ -407,17 +351,9 @@ export const F1_FIGHT = {
             }
         },
         {
-            type: 'dialogue',
+            type: 'battle',
             params: {
-                text: 'The warden swings its chains. I duck out of the way. Before I can think it lashes out again and I twist.',
-                speaker: SPEAKERS.NARRATOR
-            }
-        },
-        {
-            type: 'dialogue',
-            params: {
-                text: 'There is a shard of broken iron near my foot. I scoop it up and drive it into the soft gap beneath the mask.',
-                speaker: SPEAKERS.PLAYER
+                enemy: createWardenEnemy()
             }
         },
         {

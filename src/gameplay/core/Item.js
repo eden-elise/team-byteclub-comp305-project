@@ -1,9 +1,10 @@
-import { TypewriterTextbox } from '../../client/components/TypewriterTextbox.js';
 import { Action } from './Action.js';
 
 /**
  * A non-combat utility or consumable item
  * Item data can contain properties like: { heal: 200, damage: 50, isConsumable: true, isVariableTarget: false, defaultTarget: 0, etc. }
+ * 
+ * @typedef {import('../../client/components/TypewriterTextbox.js').TypewriterTextbox} TypewriterTextbox
  */
 export class Item extends Action {
     /**

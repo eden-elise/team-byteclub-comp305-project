@@ -100,6 +100,21 @@ Presents the player with clickable options.
 }
 ```
 
+### 6. Battle Event
+Starts a battle with a specified enemy. The scene will reload after the battle, resuming at the next event in the list.
+
+*   `enemy`: The enemy entity instance to fight.
+
+**Example:**
+```javascript
+{
+    type: 'battle',
+    params: {
+        enemy: createWardenEnemy() // Function returning an Entity instance
+    }
+}
+```
+
 ## Text Styling & Effects
 
 You can style text using tags: `[tag: value]content[/]`.

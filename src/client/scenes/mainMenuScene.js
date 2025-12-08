@@ -1,4 +1,5 @@
 import { gameState } from '../../gameplay/state/GameState.js';
+import { audioManager } from "../utils/AudioManager.js";
 
 export class MainMenuSceneController {
     constructor(callbacks) {
@@ -33,43 +34,51 @@ export class MainMenuSceneController {
     }
 
     setupListeners() {
-        const menuMusic = document.getElementById('menu-lobby');
-        menuMusic.play().catch(err => console.log(err));
         // Play button → show secondary menu
         const btnPlay = document.getElementById('btn-play');
         btnPlay.addEventListener('click', () => {
-            const music = document.getElementById('play');
-            music.play().catch(err => console.log(err));
-
             this.showSecondaryMenu();
+            audioManager.play("button-click");
         });
 
         // Exit button → show exit confirmation
         const btnExit = document.getElementById('btn-exit');
-        btnExit.addEventListener('click', () => this.showExitConfirmation());
+        btnExit.addEventListener('click', () => {
+            this.showExitConfirmation()
+            audioManager.play("button-click");
+        });
 
         // Exit confirmation buttons
         const btnExitYes = document.getElementById('btn-exit-yes');
-        btnExitYes.addEventListener('click', () => window.close());
+        btnExitYes.addEventListener('click', () => {
+            window.close()
+            audioManager.play("button-click");
+        });
 
         const btnExitNo = document.getElementById('btn-exit-no');
-        btnExitNo.addEventListener('click', () => this.hideExitConfirmation());
+        btnExitNo.addEventListener('click', () => {
+            this.hideExitConfirmation()
+            audioManager.play("button-click");
+        });
 
         // Continue / New Game / Load File buttons
         const btnContinue = document.getElementById('btn-continue');
         if (btnContinue) {
             btnContinue.addEventListener('click', () => {
-                const music = document.getElementById('battle-intro');
-                music.play().catch(err => console.log(err));
+                audioManager.stop('loading-screen');
                 if (this.callbacks.onContinue) this.callbacks.onContinue();
+                audioManager.play("button-click");
             });
         }
 
         document.getElementById('btn-new-game').addEventListener('click', () => {
+            audioManager.stop('loading-screen');
             if (this.callbacks.onNewGame) this.callbacks.onNewGame();
+            audioManager.play("button-click");
         });
 
         document.getElementById('btn-load-file').addEventListener('click', () => {
+            audioManager.play("button-click");
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
@@ -81,6 +90,7 @@ export class MainMenuSceneController {
                 reader.onload = (event) => {
                     try {
                         const json = JSON.parse(event.target.result);
+                        audioManager.stop('loading-screen');
                         if (this.callbacks.onLoadFile) this.callbacks.onLoadFile(json);
                     } catch (err) {
                         console.error('Error parsing save file:', err);
@@ -96,7 +106,10 @@ export class MainMenuSceneController {
         // Back button in secondary menu
         const btnBack = document.getElementById('btn-back');
         if (btnBack) {
-            btnBack.addEventListener('click', () => this.hideSecondaryMenu());
+            btnBack.addEventListener('click', () => {
+                this.hideSecondaryMenu()
+                audioManager.play("button-click");
+            });
         }
 
         this.setupUserInputDetection();
@@ -107,6 +120,11 @@ export class MainMenuSceneController {
             if (!this.animationComplete && !this.userInterrupted) {
                 this.userInterrupted = true;
                 this.skipToButtons();
+            }
+
+            if (!this.musicStarted) {
+                this.musicStarted = true;
+                audioManager.play('loading-screen', true);
             }
         };
         document.addEventListener('keydown', handleUserInput, { once: true });
