@@ -38,3 +38,54 @@ export class FreezeStatusEffect extends StatusEffect {
     }
 }
 
+/**
+ * Memory Drain - Reduces target's ATTACK stat
+ * Applied by Dravik's Memory Wipe ability
+ */
+export class MemoryDrainStatusEffect extends StatusEffect {
+    constructor() {
+        super(
+            'Memory Drain',
+            'Reduces attack power as memories fade',
+            3,
+            'memory-drain-icon.png',
+            { ATTACK: -5 }  // Stat modifier: -5 ATK
+        );
+    }
+}
+
+/**
+ * Dark Resonance - Deals damage over time from the sigil's corruption
+ * Applied by Dravik's Sigil Surge ability
+ */
+export class DarkResonanceStatusEffect extends StatusEffect {
+    constructor() {
+        super(
+            'Dark Resonance',
+            'The sigil burns with dark energy, dealing 6 damage per turn',
+            3,
+            'dark-resonance-icon.png'
+        );
+        this.onTurnStart = async (entity, textbox) => {
+            await entity.takeDamage(6);
+            textbox.addLogEntry(`${entity.name} takes 6 damage from Dark Resonance!`);
+        };
+    }
+}
+
+/**
+ * Alchemical Shield - Reduces incoming damage
+ * Dravik can buff himself with this
+ */
+export class AlchemicalShieldStatusEffect extends StatusEffect {
+    constructor() {
+        super(
+            'Alchemical Shield',
+            'A protective barrier that increases defense',
+            2,
+            'alchemical-shield-icon.png',
+            { DEFEND: 10 }  // Stat modifier: +10 DEF
+        );
+    }
+}
+
