@@ -2,6 +2,7 @@
 
 import { FadeInAnimation, FadeOutAnimation, SlideInAnimation } from '../../animations/ExplorationAnimations.js';
 import { Knight } from '../../definitions/heroesRegistry.js';
+import { createCursedScholar } from '../../definitions/enemiesRegistry.js';
 
 // Backgrounds used in Floor 2
 const BACKGROUNDS = {
@@ -312,7 +313,7 @@ export const F2_CURSED_SCHOLAR_FIGHT = {
         {
             type: 'battle',
             params: {
-                enemy: createCursedScholarEnemy()
+                enemy: createCursedScholar()
             }
         },
         {
