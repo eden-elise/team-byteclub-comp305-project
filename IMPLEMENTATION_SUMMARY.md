@@ -1,6 +1,7 @@
 # Main Application Flow Implementation
 
 ## Overview
+
 Your game now has a complete flow from `index.html` → `main.js` → all scenes with proper scene loading, state management, and progression through all 5 floors.
 
 ## Application Flow
@@ -28,6 +29,7 @@ Main Menu Scene
 ## How It Works
 
 ### 1. **index.html Setup**
+
 - Single `<div id="app"></div>` container
 - Loads `main.js` as a module
 - sceneLoader.js dynamically loads scene HTML and CSS
@@ -37,12 +39,14 @@ Main Menu Scene
 #### Key Functions:
 
 **`initApp()`**
+
 - Initializes the application on page load
 - Sets up the OptionsModal
 - Loads the main menu scene
 - Exposes global game functions: `startFloorExploration`, `startBattle`, `startNewGame`, `continueGame`
 
 **`startNewGame()`**
+
 1. Loads `characterSelectScene.html`
 2. Player selects Knight or Archer
 3. Creates character entity and saves game state
@@ -50,12 +54,14 @@ Main Menu Scene
 5. After intro completes → calls `startFloorExploration('floor-1')`
 
 **`continueGame()`**
+
 1. Loads save data from localStorage
 2. Hydrates the character entity
 3. Resumes from the last floor
 4. Falls back to `startNewGame()` if no save exists
 
 **`startFloorExploration(floorId)`**
+
 1. Gets the room data for the specified floor (floor-1, floor-2, etc.)
 2. Loads `explorationScene.html`
 3. Initializes ExplorationSceneController with the room
@@ -64,6 +70,7 @@ Main Menu Scene
    - If all 5 floors completed → Return to main menu
 
 **`startBattle(enemyEntity, onWinCallback)`**
+
 1. Loads `battleScene.html`
 2. Initializes BattleSceneController
 3. On player victory:
@@ -73,6 +80,7 @@ Main Menu Scene
    - Allows retry of the same battle
 
 ### 3. **Scene Loading via sceneLoader.js**
+
 - `loadScene(sceneName)` dynamically loads:
   - `scenes/{sceneName}.html`
   - `css/{sceneName}.css`
@@ -80,6 +88,7 @@ Main Menu Scene
 - Handles CSS cleanup (removes old scene CSS before loading new)
 
 ### 4. **Game State Management (GameState.js)**
+
 - Saves character data, floor progress, and metadata to localStorage
 - `saveGame()` - Persists current state
 - `loadGame()` - Restores from localStorage
@@ -87,6 +96,7 @@ Main Menu Scene
 - `clearSave()` - Resets game state
 
 ### 5. **Room/Floor System**
+
 - Uses `roomRegistry.js` to load all floors from `/rooms-data/`
 - Floors: `floor-1.js`, `floor-2.js`, `floor-3.js`, `floor-4.js`, `floor-5.js`
 - Each floor contains rooms with events and enemy encounters
@@ -95,6 +105,7 @@ Main Menu Scene
 ## Debug Keyboard Shortcuts
 
 While testing, you can use:
+
 - **R** - Restart current floor
 - **E** - Start a test battle
 - **C** - Clear all saves and reload app
@@ -103,6 +114,7 @@ While testing, you can use:
 ## Audio Integration
 
 All audio is preloaded on app start:
+
 - Loading screen, button clicks, battle music
 - Victory/death sounds
 - Inventory and potion effects
@@ -139,4 +151,3 @@ All audio is preloaded on app start:
 6. Complete all 5 floors
 7. Return to main menu on completion
 8. Use "Continue" to resume from saved progress
-

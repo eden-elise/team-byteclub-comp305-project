@@ -1,175 +1,177 @@
 <div class="character-select-scene">
-    <div class="character-select-container">
-        <h1 class="character-select-title">Select Your Hero</h1>
-        
-        <div id="character-list" class="character-list">
-            <!-- Character options will be injected here -->
-        </div>
+  <div class="character-select-container">
+    <h1 class="character-select-title">Select Your Hero</h1>
 
-        <div id="character-info" class="character-info">
-            <div class="character-info-content">
-                <h2 id="info-name" class="character-info-name"></h2>
-                <div class="character-info-sprite-container">
-                    <img id="info-sprite" src="" alt="Character Sprite" class="character-info-sprite">
-                </div>
-                <p id="info-description" class="character-info-description"></p>
-                
-                <div id="info-stats" class="character-info-stats">
-                    <!-- Stats injected here -->
-                </div>
-
-                <div class="character-info-button-container">
-                    <button id="btn-start-game" class="action-btn action-btn--primary">Start Adventure</button>
-                </div>
-            </div>
-        </div>
+    <div id="character-list" class="character-list">
+      <!-- Character options will be injected here -->
     </div>
+
+    <div id="character-info" class="character-info">
+      <div class="character-info-content">
+        <h2 id="info-name" class="character-info-name"></h2>
+        <div class="character-info-sprite-container">
+          <img id="info-sprite" src="" alt="Character Sprite" class="character-info-sprite" />
+        </div>
+        <p id="info-description" class="character-info-description"></p>
+
+        <div id="info-stats" class="character-info-stats">
+          <!-- Stats injected here -->
+        </div>
+
+        <div class="character-info-button-container">
+          <button id="btn-start-game" class="action-btn action-btn--primary">
+            Start Adventure
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
-    .character-select-scene {
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        padding: 2vh 2vw;
-        box-sizing: border-box;
-    }
+  .character-select-scene {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 2vh 2vw;
+    box-sizing: border-box;
+  }
 
-    .character-select-container {
-        width: 100%;
-        max-width: 90vw;
-        height: 100%;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 2vh 1vw;
-        box-sizing: border-box;
-    }
+  .character-select-container {
+    width: 100%;
+    max-width: 90vw;
+    height: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2vh 1vw;
+    box-sizing: border-box;
+  }
 
-    .character-select-title {
-        font-family: var(--font-heading);
-        color: var(--color-text-gold);
-        font-size: clamp(1.5rem, 4vw, 3rem);
-        margin: 0 0 2vh 0;
-        text-shadow: 2px 2px 4px black;
-        text-align: center;
-        flex-shrink: 0;
-    }
+  .character-select-title {
+    font-family: var(--font-heading);
+    color: var(--color-text-gold);
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    margin: 0 0 2vh 0;
+    text-shadow: 2px 2px 4px black;
+    text-align: center;
+    flex-shrink: 0;
+  }
 
-    .character-list {
-        display: flex;
-        gap: clamp(1rem, 2vw, 3rem);
-        margin-bottom: 2vh;
-        flex-wrap: wrap;
-        justify-content: center;
-        flex-shrink: 0;
-        width: 100%;
-    }
+  .character-list {
+    display: flex;
+    gap: clamp(1rem, 2vw, 3rem);
+    margin-bottom: 2vh;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 100%;
+  }
 
-    .character-info {
-        width: 100%;
-        max-width: min(60vw, 800px);
-        display: none;
-        flex-shrink: 0;
-        animation: fadeIn 0.5s ease;
-        margin-bottom: 2vh;
-    }
+  .character-info {
+    width: 100%;
+    max-width: min(60vw, 800px);
+    display: none;
+    flex-shrink: 0;
+    animation: fadeIn 0.5s ease;
+    margin-bottom: 2vh;
+  }
 
-    .character-info.visible {
-        display: block;
-    }
+  .character-info.visible {
+    display: block;
+  }
 
-    .character-info-content {
-        background: var(--color-stone-darker);
-        border: 2px solid var(--color-stone-dark);
-        border-radius: var(--size-border-radius);
-        padding: clamp(1rem, 2vh, 2rem);
-        box-sizing: border-box;
-    }
+  .character-info-content {
+    background: var(--color-stone-darker);
+    border: 2px solid var(--color-stone-dark);
+    border-radius: var(--size-border-radius);
+    padding: clamp(1rem, 2vh, 2rem);
+    box-sizing: border-box;
+  }
 
-    .character-info-name {
-        text-align: center;
-        font-size: clamp(1.2rem, 3vw, 2rem);
-        color: var(--color-text-gold);
-        margin: 0 0 1.5vh 0;
-        font-family: var(--font-heading);
-    }
+  .character-info-name {
+    text-align: center;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--color-text-gold);
+    margin: 0 0 1.5vh 0;
+    font-family: var(--font-heading);
+  }
 
-    .character-info-sprite-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1.5vh;
-    }
+  .character-info-sprite-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5vh;
+  }
 
-    .character-info-sprite {
-        height: clamp(80px, 12vh, 150px);
-        image-rendering: pixelated;
-        filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-    }
+  .character-info-sprite {
+    height: clamp(80px, 12vh, 150px);
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+  }
 
-    .character-info-description {
-        margin: 0 0 2vh 0;
-        color: var(--color-text-secondary);
-        text-align: center;
-        font-style: italic;
-        font-size: clamp(0.8rem, 1.5vw, 1rem);
-        line-height: 1.5;
-    }
+  .character-info-description {
+    margin: 0 0 2vh 0;
+    color: var(--color-text-secondary);
+    text-align: center;
+    font-style: italic;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    line-height: 1.5;
+  }
 
-    .character-info-stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: clamp(0.5rem, 1vw, 1.5rem);
-        margin-bottom: 2vh;
-        background: rgba(0,0,0,0.2);
-        padding: clamp(0.8rem, 1.5vh, 1.5rem);
-        border-radius: var(--size-border-radius);
-    }
+  .character-info-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.5rem, 1vw, 1.5rem);
+    margin-bottom: 2vh;
+    background: rgba(0, 0, 0, 0.2);
+    padding: clamp(0.8rem, 1.5vh, 1.5rem);
+    border-radius: var(--size-border-radius);
+  }
 
-    .character-info-button-container {
-        text-align: center;
-    }
+  .character-info-button-container {
+    text-align: center;
+  }
 
-    .character-info-button-container .action-btn {
-        width: auto;
-        display: inline-flex;
-        padding: clamp(0.8rem, 1.5vh, 1.2rem) clamp(1.5rem, 3vw, 3rem);
-        font-size: clamp(0.9rem, 1.8vw, 1.2rem);
-    }
+  .character-info-button-container .action-btn {
+    width: auto;
+    display: inline-flex;
+    padding: clamp(0.8rem, 1.5vh, 1.2rem) clamp(1.5rem, 3vw, 3rem);
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-    /* Ensure scrollbar styling if needed */
-    .character-select-container::-webkit-scrollbar {
-        width: 8px;
-    }
+  /* Ensure scrollbar styling if needed */
+  .character-select-container::-webkit-scrollbar {
+    width: 8px;
+  }
 
-    .character-select-container::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-    }
+  .character-select-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
 
-    .character-select-container::-webkit-scrollbar-thumb {
-        background: var(--color-stone-dark);
-        border-radius: 4px;
-    }
+  .character-select-container::-webkit-scrollbar-thumb {
+    background: var(--color-stone-dark);
+    border-radius: 4px;
+  }
 
-    .character-select-container::-webkit-scrollbar-thumb:hover {
-        background: var(--color-text-gold);
-    }
+  .character-select-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-gold);
+  }
 </style>

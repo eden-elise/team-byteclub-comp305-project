@@ -26,34 +26,30 @@ import { BaseDamageAnimation } from '../animations/DamageAnimations.js';
  *   - Result: Fast-paced fight, rewards aggressive play with healing support
  */
 export class LordDravik extends Entity {
-    constructor() {
-        const stats = {
-            ATTACK: 22,
-            DEFEND: 28,
-            SPEED: 11,
-            LUCK: 18
-        };
+  constructor() {
+    const stats = {
+      ATTACK: 22,
+      DEFEND: 28,
+      SPEED: 11,
+      LUCK: 18,
+    };
 
-        const moves = [
-            'Memory Wipe',
-            'Sigil Surge',
-            'Alchemist Strike'
-        ];
+    const moves = ['Memory Wipe', 'Sigil Surge', 'Alchemist Strike'];
 
-        const items = [];
+    const items = [];
 
-        super(
-            'Lord Dravik',
-            220,  // HP - balanced for 8-12 turn fight
-            stats,
-            moves,
-            items,
-            '../../src/assets/art/characters/dravik.png',
-            () => BaseDeathAnimation(false),
-            false,
-            () => BaseDamageAnimation(false)
-        );
-    }
+    super(
+      'Lord Dravik',
+      220, // HP - balanced for 8-12 turn fight
+      stats,
+      moves,
+      items,
+      '../../src/assets/art/characters/dravik.png',
+      () => BaseDeathAnimation(false),
+      false,
+      () => BaseDamageAnimation(false)
+    );
+  }
 }
 
 /**
@@ -61,7 +57,7 @@ export class LordDravik extends Entity {
  * Use this in floor-5.js room data
  */
 export const createLordDravik = () => {
-    return new LordDravik();
+  return new LordDravik();
 };
 
 export class CursedScholar extends Entity {
@@ -70,7 +66,7 @@ export class CursedScholar extends Entity {
       ATTACK: 18,
       DEFEND: 18,
       SPEED: 12,
-      LUCK: 14
+      LUCK: 14,
     };
     const moves = ['Mind Leech', 'Runic Snare']; // make sure these are in AttackMap
     const items = [];
