@@ -55,3 +55,52 @@ export {
     SCHOLAR_ENTITY
 };
 
+export const F3_INTRO = {
+    id: 'F3_INTRO',
+    background: BACKGROUNDS.AISLE,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.AISLE
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'The air shifts. Gone is the cold stone — replaced by dust, glass, and the crackle of arcane residue.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'This was once a place of thought. Study. Control. Now it rots under ink and memory.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: '...I know this place.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'We did the math here. We were proud of it. Gods... what did we make?'
+        }
+    ],
+    connections: ['F3_MAIN_HALL']
+};
+
+export const F3_MAIN_HALL = {
+    id: 'F3_MAIN_HALL',
+    background: BACKGROUNDS.AISLE,
+    events: [
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'The hallway stretches — branching into shadowed alcoves, shattered labs, and silenced tomes.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'I should look around. Maybe... maybe something’s left.'
+        }
+    ],
+    connections: ['F3_WORKBENCH', 'F3_STUDY', 'F3_READING_ROOM']
+};
