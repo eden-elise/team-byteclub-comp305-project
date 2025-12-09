@@ -263,3 +263,40 @@ export const F3_CURSED_SCHOLAR_FIGHT = {
     ],
     connections: ['F3_STAIRS_UP']
 };
+
+export const F3_STAIRS_UP = {
+    id: 'F3_STAIRS_UP',
+    background: BACKGROUNDS.AISLE,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.AISLE
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'A shard of thought flickers midair. Waiting. Remembering.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: '[style: whispering]...We made the ritual. Me and the Scholar.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'We knew what it would cost. We did it anyway.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: '[effect: glowing]Shard 3 unlocked: [color:#ffd700]“Co-Author of Oblivion.”[/color]'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'The air trembles. A staircase spirals upward, beckoning you into Floor 4.'
+        }
+    ],
+    connections: ['F4_INTRO']
+};
