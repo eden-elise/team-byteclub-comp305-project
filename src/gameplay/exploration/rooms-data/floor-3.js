@@ -64,6 +64,15 @@ export const F3_INTRO = {
             background: BACKGROUNDS.AISLE
         },
         {
+            type: 'entity-enter',
+            params: {
+                entity: 'player',
+                position: 'left',
+                animation: FadeInAnimation
+            }
+        },
+
+        {
             type: 'dialogue',
             speaker: SPEAKERS.NARRATOR,
             text: 'The air shifts. Gone is the cold stone — replaced by dust, glass, and the crackle of arcane residue.'
