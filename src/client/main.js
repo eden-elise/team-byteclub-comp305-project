@@ -15,7 +15,7 @@ import { audioManager } from "./utils/AudioManager.js";
 const FLOOR_ROOMS = {
     'floor-1': 'F1_INTRO_WAKE',
     'floor-2': 'F2_INTRO',
-    // 'floor-3': 'F3_FLOOR_INTRO',
+    'floor-3': 'F3_INTRO',
     'floor-4': 'F4_TOWER_INTRO'
     // 'floor-5': 'F5_FLOOR_INTRO'
 };
