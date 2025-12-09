@@ -139,6 +139,59 @@ export function createSpeaker(name, options = {}) {
 }
 
 /**
+ * Normalize speaker object with default values
+ */
+function normalizeSpeaker(speaker) {
+    if (!speaker) return null;
+
+    return {
+        prefix: speaker.prefix || `${speaker.name}: `,
+        color: speaker.color || '#ffffff',
+        fontWeight: speaker.fontWeight || 'bold',
+        fontSize: speaker.fontSize || '1em',
+        orientation: speaker.orientation || 'left',
+        showPrefix: speaker.showPrefix !== undefined ? speaker.showPrefix : true,
+        ...speaker,
+    };
+}
+
+/**
+ * Create a character span element for typewriter effect
+ */
+function createCharSpan(char, index, effect) {
+    const charSpan = document.createElement('span');
+    charSpan.textContent = char;
+    charSpan.style.display = effect ? 'inline-block' : 'inline';
+    charSpan.style.willChange = effect ? 'transform' : 'auto';
+
+    if (char === ' ') {
+        charSpan.style.width = '0.25em';
+    }
+
+    if (effect) {
+        charSpan.dataset.effect = effect;
+        charSpan.dataset.index = index;
+    }
+
+    return charSpan;
+}
+
+/**
+ * Get text alignment from speaker orientation
+ */
+function getTextAlignment(speaker) {
+    if (!speaker) return 'center';
+
+    const orientationMap = {
+        right: 'right',
+        center: 'center',
+        left: 'left',
+    };
+
+    return orientationMap[speaker.orientation] || 'left';
+}
+
+/**
  * Typewriter Textbox Web Component
  */
 export class TypewriterTextbox extends HTMLElement {
@@ -278,37 +331,23 @@ export class TypewriterTextbox extends HTMLElement {
    * Add text to the queue
    */
   queue(text, options = {}) {
-    // Normalize speaker object to ensure showPrefix defaults to true
-    let speaker = options.speaker || null;
-    if (speaker) {
-      // Set defaults for missing properties
-      speaker = {
-        prefix: speaker.prefix || `${speaker.name}: `,
-        color: speaker.color || '#ffffff',
-        fontWeight: speaker.fontWeight || 'bold',
-        fontSize: speaker.fontSize || '1em',
-        orientation: speaker.orientation || 'left',
-        showPrefix: speaker.showPrefix !== undefined ? speaker.showPrefix : true,
-        ...speaker,
-      };
-    }
+      this._queue.push({
+          ...options,
+          text,
+          speaker: normalizeSpeaker(options.speaker),
+          speed: options.speed || this.config.defaultSpeed,
+          onComplete: options.onComplete || null,
+      });
 
-    this._queue.push({
-      ...options,
-      text,
-      speaker: speaker,
-      speed: options.speed || this.config.defaultSpeed,
-      onComplete: options.onComplete || null,
-    });
+      if (!this.isProcessing) {
+          this._processQueue();
+      }
 
-    if (!this.isProcessing) {
-      this._processQueue();
-    }
-
-    return this;
+      return this;
   }
 
-  async _processQueue() {
+
+    async _processQueue() {
     if (this.isProcessing || this._queue.length === 0) return;
 
     this.isProcessing = true;
@@ -348,124 +387,100 @@ export class TypewriterTextbox extends HTMLElement {
     }
   }
 
-  async _displayEntry(entry) {
-    this.skipRequested = false;
-    this.currentSpeaker = entry.speaker;
+    async _displayEntry(entry) {
+        this.skipRequested = false;
+        this.currentSpeaker = entry.speaker;
+        this.textContainer.innerHTML = '';
+        this.textContainer.style.textAlign = getTextAlignment(entry.speaker);
 
-    // Clear previous content
-    this.textContainer.innerHTML = '';
+        this._addSpeakerPrefix(entry.speaker);
 
-    // Add speaker prefix
-    if (entry.speaker && entry.speaker.showPrefix === true) {
-      const speakerSpan = document.createElement('span');
-      speakerSpan.textContent = entry.speaker.prefix || `${entry.speaker.name}: `;
-      speakerSpan.style.color = entry.speaker.color || '#ffffff';
-      speakerSpan.style.fontWeight = entry.speaker.fontWeight || 'bold';
-      speakerSpan.style.fontSize = entry.speaker.fontSize || '1em';
-      speakerSpan.style.display = 'inline-block';
-      speakerSpan.style.marginRight = '0.5em';
-      this.textContainer.appendChild(speakerSpan);
-    }
-
-    // Apply orientation to the container
-    if (entry.speaker) {
-      if (entry.speaker.orientation === 'right') {
-        this.textContainer.style.textAlign = 'right';
-      } else if (entry.speaker.orientation === 'center') {
-        this.textContainer.style.textAlign = 'center';
-      } else {
-        this.textContainer.style.textAlign = 'left';
-      }
-    } else {
-      this.textContainer.style.textAlign = 'center'; // Default
-    }
-
-    const segments = parseStyledText(entry.text);
-
-    for (const segment of segments) {
-      await this._typeSegment(segment, entry.speed);
-    }
-
-    if (this.cursorElement && (!this.config.autoAdvance || entry.waitForInput)) {
-      this.textContainer.appendChild(this.cursorElement);
-    }
-  }
-
-  async _typeSegment(segment, speed) {
-    this.isTyping = true;
-    const container = document.createElement('span');
-    container.style.display = 'inline'; // Ensure container respects transforms of children
-    container.style.wordBreak = 'keep-all';
-
-    Object.entries(segment.styles).forEach(([key, value]) => {
-      container.style[key] = value;
-    });
-
-    this.textContainer.appendChild(container);
-    for (let i = 0; i < segment.text.length; i++) {
-      const char = segment.text[i];
-      const charSpan = document.createElement('span');
-      charSpan.textContent = char;
-      charSpan.style.display = segment.effect ? 'inline-block' : 'inline';
-      charSpan.style.willChange = segment.effect ? 'transform' : 'auto';
-
-      // Preserve spaces
-      if (char === ' ') {
-        charSpan.style.width = '0.25em';
-      }
-
-      if (segment.effect) {
-        charSpan.dataset.effect = segment.effect;
-        charSpan.dataset.index = i;
-        this._applyEffect(charSpan);
-      }
-
-      container.appendChild(charSpan);
-
-      // If skip is requested, instantly add all remaining characters
-      if (this.skipRequested) {
-        // Continue loop to add remaining characters instantly
-        for (let j = i + 1; j < segment.text.length; j++) {
-          const remainingChar = segment.text[j];
-          const remainingSpan = document.createElement('span');
-          remainingSpan.textContent = remainingChar;
-          remainingSpan.style.display = 'inline-block';
-          remainingSpan.style.willChange = 'transform';
-
-          if (remainingChar === ' ') {
-            remainingSpan.style.width = '0.25em';
-          }
-
-          if (segment.effect) {
-            remainingSpan.dataset.effect = segment.effect;
-            remainingSpan.dataset.index = j;
-            this._applyEffect(remainingSpan);
-          }
-
-          container.appendChild(remainingSpan);
+        const segments = parseStyledText(entry.text);
+        for (const segment of segments) {
+            await this._typeSegment(segment, entry.speed);
         }
-        break; // Exit the main loop
-      }
 
-      if (this.config.soundEffect && char.trim()) {
-        this.config.soundEffect(char);
-      }
-
-      if (this.config.onCharacter) {
-        this.config.onCharacter(char, i);
-      }
-
-      let delay = this.skipRequested ? this.config.skipSpeed : speed;
-      if (['.', '!', '?'].includes(char)) {
-        delay += this.config.punctuationDelay;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, delay));
+        if (this.cursorElement && (!this.config.autoAdvance || entry.waitForInput)) {
+            this.textContainer.appendChild(this.cursorElement);
+        }
     }
-    this.isTyping = false;
-  }
 
-  _applyEffect(charSpan) {
+    _addSpeakerPrefix(speaker) {
+        if (!speaker || speaker.showPrefix !== true) return;
+
+        const speakerSpan = document.createElement('span');
+        speakerSpan.textContent = speaker.prefix;
+        speakerSpan.style.color = speaker.color;
+        speakerSpan.style.fontWeight = speaker.fontWeight;
+        speakerSpan.style.fontSize = speaker.fontSize;
+        speakerSpan.style.display = 'inline-block';
+        speakerSpan.style.marginRight = '0.5em';
+        this.textContainer.appendChild(speakerSpan);
+    }
+
+
+    async _typeSegment(segment, speed) {
+        this.isTyping = true;
+        const container = this._createSegmentContainer(segment.styles);
+        this.textContainer.appendChild(container);
+
+        for (let i = 0; i < segment.text.length; i++) {
+            const charSpan = createCharSpan(segment.text[i], i, segment.effect);
+            if (segment.effect) {
+                this._applyEffect(charSpan);
+            }
+            container.appendChild(charSpan);
+
+            if (this.skipRequested) {
+                this._addRemainingChars(segment, container, i + 1);
+                break;
+            }
+
+            this._triggerCharCallbacks(segment.text[i], i);
+            await this._waitForCharDelay(segment.text[i], speed);
+        }
+        this.isTyping = false;
+    }
+
+    _createSegmentContainer(styles) {
+        const container = document.createElement('span');
+        container.style.display = 'inline';
+        container.style.wordBreak = 'keep-all';
+        Object.entries(styles).forEach(([key, value]) => {
+            container.style[key] = value;
+        });
+        return container;
+    }
+
+    _addRemainingChars(segment, container, startIndex) {
+        for (let j = startIndex; j < segment.text.length; j++) {
+            const charSpan = createCharSpan(segment.text[j], j, segment.effect);
+            if (segment.effect) {
+                this._applyEffect(charSpan);
+            }
+            container.appendChild(charSpan);
+        }
+    }
+
+    _triggerCharCallbacks(char, index) {
+        if (this.config.soundEffect && char.trim()) {
+            this.config.soundEffect(char);
+        }
+        if (this.config.onCharacter) {
+            this.config.onCharacter(char, index);
+        }
+    }
+
+    _waitForCharDelay(char, speed) {
+        let delay = this.skipRequested ? this.config.skipSpeed : speed;
+        if (['.', '!', '?'].includes(char)) {
+            delay += this.config.punctuationDelay;
+        }
+        return new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+
+    _applyEffect(charSpan) {
     const effect = charSpan.dataset.effect;
     const index = parseInt(charSpan.dataset.index);
     const effectFn = TEXT_EFFECTS[effect];
