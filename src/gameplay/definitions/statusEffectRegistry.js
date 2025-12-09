@@ -49,7 +49,7 @@ export class MemoryDrainStatusEffect extends StatusEffect {
             'Reduces attack power as memories fade',
             3,
             'memory-drain-icon.png',
-            { ATTACK: -5 }  // Stat modifier: -5 ATK
+            { ATTACK: -3 }  // Stat modifier: -3 ATK
         );
     }
 }
@@ -67,7 +67,7 @@ export class DarkResonanceStatusEffect extends StatusEffect {
             'dark-resonance-icon.png'
         );
         this.onTurnStart = async (entity, textbox) => {
-            await entity.takeDamage(6);
+            await entity.takeDamage(4);
             textbox.addLogEntry(`${entity.name} takes 6 damage from Dark Resonance!`);
         };
     }
@@ -84,7 +84,7 @@ export class AlchemicalShieldStatusEffect extends StatusEffect {
             'A protective barrier that increases defense',
             2,
             'alchemical-shield-icon.png',
-            { DEFEND: 10 }  // Stat modifier: +10 DEF
+            { DEFEND: 5 }  // Stat modifier: +5 DEF
         );
     }
 }

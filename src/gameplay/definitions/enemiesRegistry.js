@@ -7,7 +7,7 @@ import { BaseDamageAnimation } from '../animations/DamageAnimations.js';
  *
  * DESIGN PHILOSOPHY:
  * - HP (220): High enough to require multiple turns, low enough to be beatable
- * - ATK (26): Threatens both heroes but doesn't one-shot anyone
+ * - ATK (22): Threatens both heroes but doesn't one-shot anyone
  * - DEF (28): Reduces incoming damage but doesn't make fights too long
  * - SPEED (11): Between Knight (8) and Archer (14) - Archer goes first, Knight goes second
  * - LUCK (18): High luck reduces Mystery Potion effectiveness against him
@@ -28,7 +28,7 @@ import { BaseDamageAnimation } from '../animations/DamageAnimations.js';
 export class LordDravik extends Entity {
     constructor() {
         const stats = {
-            ATTACK: 26,
+            ATTACK: 22,
             DEFEND: 28,
             SPEED: 11,
             LUCK: 18
