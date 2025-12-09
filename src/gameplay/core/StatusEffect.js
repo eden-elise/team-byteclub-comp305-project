@@ -19,7 +19,7 @@ export class StatusEffect {
         this.description = description;
         this.duration = duration; // -1 means permanent
         this.remainingTurns = duration;
-        this.icon = icon; // Path to icon image (for UI use, not used by this class)
+        this.icon = '../../../src/assets/icons/status-icons/' + icon; // Path to icon image (for UI use, not used by this class)
         this.statModifiers = statModifiers; // Object like { ATTACK: 5, DEFEND: -2 }
         this.entity = null; // Reference to the entity this effect is applied to
 

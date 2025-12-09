@@ -1,4 +1,4 @@
-import { Knight, Archer } from '../definitions/characters/heroes.js';
+import { Knight, Archer } from '../definitions/heroesRegistry.js';
 import { createNewSave } from './SaveSchema.js';
 
 const CHARACTER_CLASSES = {

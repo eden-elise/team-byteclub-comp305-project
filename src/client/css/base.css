@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Alagard';
+    src: url('../../assets/fonts/alagard.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --color-bg-primary: #1C1411;
     --color-bg-secondary: rgba(42, 31, 27, 0.9);
@@ -23,8 +30,8 @@
     --shadow-glow-red: 0 0 20px rgba(183, 58, 46, 0.4);
     --shadow-glow-gold: 0 0 15px rgba(226, 192, 122, 0.3);
     --shadow-box: 0 0 15px rgba(0, 0, 0, 0.5);
-    --font-primary: 'Crimson Text', serif;
-    --font-heading: 'Cinzel', serif;
+    --font-primary: 'Alagard', serif;
+    --font-heading: 'Alagard', serif;
     --size-container-width: 90vw;
     --size-border-radius: 0.5rem;
     --transition-fast: 0.2s ease;

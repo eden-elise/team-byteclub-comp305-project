@@ -1,4 +1,4 @@
-import { Knight, Archer } from '../../gameplay/definitions/characters/heroes.js';
+import { Knight, Archer } from '../../gameplay/definitions/heroesRegistry.js';
 import { audioManager } from '../utils/AudioManager.js';
 
 export class CharacterSelectSceneController {
