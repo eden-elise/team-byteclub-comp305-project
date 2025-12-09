@@ -463,5 +463,6 @@ export const F1_EXIT_TO_F2 = {
             }
         }
     ],
-    connections: ['F3_INTRO']
+    
+    connections: ['F2_INTRO']
 };
