@@ -227,3 +227,39 @@ export const F3_CORE_ARCHIVE = {
     ],
     connections: ['F3_CURSED_SCHOLAR_FIGHT']
 };
+
+export const F3_CURSED_SCHOLAR_FIGHT = {
+    id: 'F3_CURSED_SCHOLAR_FIGHT',
+    background: BACKGROUNDS.ARCHIVE,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.ARCHIVE
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: '[effect: shaking]Ink explodes outward. Sigils burn mid-air. The Cursed Scholar rises, screaming equations.'
+        },
+        {
+            type: 'battle',
+            enemy: createCursedScholarEnemy()
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.SCHOLAR,
+            text: '[effect: glitching] It will break... it must break... I... I forgot why...'
+        },
+        {
+            type: 'entity-leave',
+            entity: SCHOLAR_ENTITY,
+            animation: FadeOutAnimation
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'As the ink fades, silence returns. Something flickers in the air ahead.'
+        }
+    ],
+    connections: ['F3_STAIRS_UP']
+};
