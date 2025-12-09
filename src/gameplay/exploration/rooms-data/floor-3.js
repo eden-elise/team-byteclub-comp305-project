@@ -104,3 +104,62 @@ export const F3_MAIN_HALL = {
     ],
     connections: ['F3_WORKBENCH', 'F3_STUDY', 'F3_READING_ROOM']
 };
+
+export const F3_WORKBENCH = {
+    id: 'F3_WORKBENCH',
+    background: BACKGROUNDS.WORKBENCH,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.WORKBENCH
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'Schematics are strewn across the bench — blueprints of memory cages, rune-bonded phials, and alchemical feedback loops.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'We built machines to erase... and called it mercy.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'No components left worth salvaging.'
+        }
+    ],
+    connections: ['F3_MAIN_HALL']
+};
+
+export const F3_STUDY = {
+    id: 'F3_STUDY',
+    background: BACKGROUNDS.WORKBENCH,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.WORKBENCH
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'A private nook. Pages torn from journals. Names scratched out. A single vial rests, glowing faintly.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'That’s... the anchor. The memory phial I hid for myself.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'Still stable. This could hold me together when it starts to break.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'You take the [color:#99e6ff]Memory Anchor Phial[/color].'
+        }
+    ],
+    connections: ['F3_MAIN_HALL']
+};
