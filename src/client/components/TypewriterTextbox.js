@@ -215,6 +215,8 @@ export class TypewriterTextbox extends HTMLElement {
             }
             .text-container {
                 white-space: pre-wrap;
+                word-wrap: break-word;       
+                overflow-wrap: break-word;
                 position: relative;
                 color: inherit;
             }
@@ -395,7 +397,8 @@ export class TypewriterTextbox extends HTMLElement {
     async _typeSegment(segment, speed) {
         this.isTyping = true;
         const container = document.createElement('span');
-        container.style.display = 'inline-block'; // Ensure container respects transforms of children
+        container.style.display = 'inline'; // Ensure container respects transforms of children
+        container.style.wordBreak = 'keep-all';
         
         Object.entries(segment.styles).forEach(([key, value]) => {
             container.style[key] = value;
@@ -407,8 +410,8 @@ export class TypewriterTextbox extends HTMLElement {
             const char = segment.text[i];
             const charSpan = document.createElement('span');
             charSpan.textContent = char;
-            charSpan.style.display = 'inline-block';
-            charSpan.style.willChange = 'transform'; // Optimize for animations
+            charSpan.style.display = segment.effect ? 'inline-block' : 'inline';
+            charSpan.style.willChange = segment.effect ? 'transform' : 'auto';
             
             // Preserve spaces
             if (char === ' ') {
