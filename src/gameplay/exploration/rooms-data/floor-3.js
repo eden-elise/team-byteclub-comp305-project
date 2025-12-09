@@ -163,3 +163,67 @@ export const F3_STUDY = {
     ],
     connections: ['F3_MAIN_HALL']
 };
+
+export const F3_READING_ROOM = {
+    id: 'F3_READING_ROOM',
+    background: BACKGROUNDS.READING_ROOM,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.READING_ROOM
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'Someone is muttering between shelves. Pages flip on their own.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'That voice... I know it.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.SCHOLAR,
+            text: '...they will not remember... they cannot... they must not...'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.NARRATOR,
+            text: 'Ink tendrils pulse along the walls. The source waits deeper within.'
+        }
+    ],
+    connections: ['F3_CORE_ARCHIVE']
+};
+
+export const F3_CORE_ARCHIVE = {
+    id: 'F3_CORE_ARCHIVE',
+    background: BACKGROUNDS.ARCHIVE,
+    events: [
+        {
+            type: 'background-change',
+            background: BACKGROUNDS.ARCHIVE
+        },
+        {
+            type: 'entity-enter',
+            entity: SCHOLAR_ENTITY,
+            animation: SlideInAnimation
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.SCHOLAR,
+            text: 'You should not have come. The ritual holds only if we forget!'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.PLAYER,
+            text: 'I helped make it. I have the right to remember.'
+        },
+        {
+            type: 'dialogue',
+            speaker: SPEAKERS.SCHOLAR,
+            text: 'Then we are both damned.'
+        }
+    ],
+    connections: ['F3_CURSED_SCHOLAR_FIGHT']
+};
