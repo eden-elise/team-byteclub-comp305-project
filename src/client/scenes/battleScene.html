@@ -1,59 +1,58 @@
 <section>
-    <main id="battle-screen" class="battle-container">
-        <header id="battle-header" class="battle-header">
-            <section class="combatant combatant--player" aria-label="Player Status">
-                <h2 class="combatant__name" id="player-name">PLAYER</h2>
-                <figure class="combatant__avatar">
-                    <img id="player-sprite" src="" alt="Player" class="combatant__sprite">
-                </figure>
-                <div class="combatant__stats">
-                    <div class="status-icon-stack status-icon-stack--player" id="player-status-icons"></div>
-                    <div class="stat-bar stat-bar--hp">
-                        <div class="stat-bar__wrapper">
-                            <progress id="player-hp" class="stat-bar__progress" max="100" value="100"></progress>
-                            <span class="stat-bar__label-inside">
-                                HP: <span id="player-hp-text">100</span>/<span id="player-hp-max">100</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="battle-divider" aria-hidden="true"></div>
-
-            <section class="combatant combatant--enemy" aria-label="Enemy Status">
-                <h2 class="combatant__name combatant__name--enemy" id="enemy-name">ENEMY</h2>
-                <figure class="combatant__avatar">
-                    <img id="enemy-sprite" src="" alt="Enemy" class="combatant__sprite">
-                </figure>
-                <div class="combatant__stats">
-                    <div class="status-icon-stack status-icon-stack--enemy" id="enemy-status-icons"></div>
-                    <div class="stat-bar stat-bar--hp">
-                        <div class="stat-bar__wrapper">
-                            <progress id="enemy-hp" class="stat-bar__progress" max="100" value="100"></progress>
-                            <span class="stat-bar__label-inside" style="left:82%;">
-                                HP: <span id="enemy-hp-text">100</span>/<span id="enemy-hp-max">100</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-            </section>
-        </header>
-
-        <nav id="action-panel" class="action-panel" aria-label="Combat Actions">
-            <div id="action-container" class="action-container">
-                <!-- Action buttons or inventory will be shown here -->
+  <main id="battle-screen" class="battle-container">
+    <header id="battle-header" class="battle-header">
+      <section class="combatant combatant--player" aria-label="Player Status">
+        <h2 class="combatant__name" id="player-name">PLAYER</h2>
+        <figure class="combatant__avatar">
+          <img id="player-sprite" src="" alt="Player" class="combatant__sprite" />
+        </figure>
+        <div class="combatant__stats">
+          <div class="status-icon-stack status-icon-stack--player" id="player-status-icons"></div>
+          <div class="stat-bar stat-bar--hp">
+            <div class="stat-bar__wrapper">
+              <progress id="player-hp" class="stat-bar__progress" max="100" value="100"></progress>
+              <span class="stat-bar__label-inside">
+                HP: <span id="player-hp-text">100</span>/<span id="player-hp-max">100</span>
+              </span>
             </div>
-        </nav>
+          </div>
+        </div>
+      </section>
 
-        <section id="combat-log" class="combat-log" aria-live="polite" aria-label="Combat Messages">
-            <typewriter-textbox id="combat-log-text" class="combat-log__text"></typewriter-textbox>
-        </section>
-    </main>
-    <div id="status-tooltip" class="status-icon-tooltip" style="display: none;"></div>
+      <div class="battle-divider" aria-hidden="true"></div>
 
-    <audio id="battle-background" loop>
-        <source src="../../src/assets/media/BattleBackground.mp3" type="audio/mpeg">
-    </audio>
+      <section class="combatant combatant--enemy" aria-label="Enemy Status">
+        <h2 class="combatant__name combatant__name--enemy" id="enemy-name">ENEMY</h2>
+        <figure class="combatant__avatar">
+          <img id="enemy-sprite" src="" alt="Enemy" class="combatant__sprite" />
+        </figure>
+        <div class="combatant__stats">
+          <div class="status-icon-stack status-icon-stack--enemy" id="enemy-status-icons"></div>
+          <div class="stat-bar stat-bar--hp">
+            <div class="stat-bar__wrapper">
+              <progress id="enemy-hp" class="stat-bar__progress" max="100" value="100"></progress>
+              <span class="stat-bar__label-inside" style="left: 82%">
+                HP: <span id="enemy-hp-text">100</span>/<span id="enemy-hp-max">100</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <nav id="action-panel" class="action-panel" aria-label="Combat Actions">
+      <div id="action-container" class="action-container">
+        <!-- Action buttons or inventory will be shown here -->
+      </div>
+    </nav>
+
+    <section id="combat-log" class="combat-log" aria-live="polite" aria-label="Combat Messages">
+      <typewriter-textbox id="combat-log-text" class="combat-log__text"></typewriter-textbox>
+    </section>
+  </main>
+  <div id="status-tooltip" class="status-icon-tooltip" style="display: none"></div>
+
+  <audio id="battle-background" loop>
+    <source src="../../src/assets/media/BattleBackground.mp3" type="audio/mpeg" />
+  </audio>
 </section>

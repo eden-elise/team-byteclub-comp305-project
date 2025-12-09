@@ -14,29 +14,22 @@ import * as TestRooms from './rooms-data/test-room.js';
 const rooms = {};
 
 // Combine all room modules
-const roomModules = [
-    Floor1Rooms,
-    Floor2Rooms,
-    Floor3Rooms,
-    Floor4Rooms,
-    Floor5Rooms,
-    TestRooms
-];
+const roomModules = [Floor1Rooms, Floor2Rooms, Floor3Rooms, Floor4Rooms, Floor5Rooms, TestRooms];
 
 // Register all rooms
 for (const module of roomModules) {
-    // Iterate through all exports in the module
-    for (const exportName in module) {
-        const roomData = module[exportName];
-        
-        // Check if it looks like a room definition
-        if (roomData && roomData.id && Array.isArray(roomData.events)) {
-            if (rooms[roomData.id]) {
-                console.warn(`Duplicate room ID found: "${roomData.id}". Overwriting.`);
-            }
-            rooms[roomData.id] = new Room(roomData.id, roomData.events, roomData.connections);
-        }
+  // Iterate through all exports in the module
+  for (const exportName in module) {
+    const roomData = module[exportName];
+
+    // Check if it looks like a room definition
+    if (roomData && roomData.id && Array.isArray(roomData.events)) {
+      if (rooms[roomData.id]) {
+        console.warn(`Duplicate room ID found: "${roomData.id}". Overwriting.`);
+      }
+      rooms[roomData.id] = new Room(roomData.id, roomData.events, roomData.connections);
     }
+  }
 }
 
 console.log(`Loaded ${Object.keys(rooms).length} rooms:`, Object.keys(rooms));
@@ -47,12 +40,12 @@ console.log(`Loaded ${Object.keys(rooms).length} rooms:`, Object.keys(rooms));
  * @returns {Room} The room instance
  */
 export function getRoomById(roomId) {
-    const room = rooms[roomId];
-    if (!room) {
-        console.warn(`Room with ID "${roomId}" not found`);
-        return null;
-    }
-    return room;
+  const room = rooms[roomId];
+  if (!room) {
+    console.warn(`Room with ID "${roomId}" not found`);
+    return null;
+  }
+  return room;
 }
 
 /**
@@ -60,7 +53,7 @@ export function getRoomById(roomId) {
  * @returns {Array<string>} Array of room IDs
  */
 export function getAllRoomIds() {
-    return Object.keys(rooms);
+  return Object.keys(rooms);
 }
 
 /**
@@ -69,7 +62,7 @@ export function getAllRoomIds() {
  * @returns {boolean} True if room exists
  */
 export function roomExists(roomId) {
-    return roomId in rooms;
+  return roomId in rooms;
 }
 
 // Export the test room for easy access

@@ -1,33 +1,43 @@
 <section>
-    <main id="exploration-screen" class="exploration-container">
-        <header id="exploration-header" class="exploration-header">
-            <section class="character character--player" aria-label="Player Character" id="player-section" style="visibility: hidden;">
-                <h2 class="character__name" id="player-name">PLAYER</h2>
-                <figure class="character__avatar">
-                    <img id="player-sprite" src="" alt="Player" class="character__sprite">
-                </figure>
-            </section>
+  <main id="exploration-screen" class="exploration-container">
+    <header id="exploration-header" class="exploration-header">
+      <section
+        class="character character--player"
+        aria-label="Player Character"
+        id="player-section"
+        style="visibility: hidden"
+      >
+        <h2 class="character__name" id="player-name">PLAYER</h2>
+        <figure class="character__avatar">
+          <img id="player-sprite" src="" alt="Player" class="character__sprite" />
+        </figure>
+      </section>
 
-            <div class="exploration-divider" aria-hidden="true"></div>
+      <div class="exploration-divider" aria-hidden="true"></div>
 
-            <section class="character character--npc" aria-label="NPC Character" id="npc-section" style="visibility: hidden;">
-                <h2 class="character__name character__name--npc" id="npc-name">NPC</h2>
-                <figure class="character__avatar">
-                    <img id="npc-sprite" src="" alt="NPC" class="character__sprite">
-                </figure>
-            </section>
-        </header>
+      <section
+        class="character character--npc"
+        aria-label="NPC Character"
+        id="npc-section"
+        style="visibility: hidden"
+      >
+        <h2 class="character__name character__name--npc" id="npc-name">NPC</h2>
+        <figure class="character__avatar">
+          <img id="npc-sprite" src="" alt="NPC" class="character__sprite" />
+        </figure>
+      </section>
+    </header>
 
-        <section id="dialogue-panel" class="dialogue-panel" aria-live="polite" aria-label="Dialogue">
-            <div class="dialogue-panel__content" id="dialogue-content">
-                <p class="dialogue-panel__text" id="dialogue-text"></p>
-            </div>
-        </section>
+    <section id="dialogue-panel" class="dialogue-panel" aria-live="polite" aria-label="Dialogue">
+      <div class="dialogue-panel__content" id="dialogue-content">
+        <p class="dialogue-panel__text" id="dialogue-text"></p>
+      </div>
+    </section>
 
-        <nav id="choice-panel" class="choice-panel" aria-label="Choices">
-            <div id="choice-container" class="choice-container">
-                <!-- Choice buttons will be dynamically added here -->
-            </div>
-        </nav>
-    </main>
+    <nav id="choice-panel" class="choice-panel" aria-label="Choices">
+      <div id="choice-container" class="choice-container">
+        <!-- Choice buttons will be dynamically added here -->
+      </div>
+    </nav>
+  </main>
 </section>
