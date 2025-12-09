@@ -10,7 +10,7 @@ const BACKGROUNDS = {
 
 const WARDEN_ENTITY = {
     name: 'Warden',
-    image: '../../src/assets/art/backgrounds/floor-1/Warden.png'
+    image: '../../src/assets/art/characters/Warden.png'
 };
 
 // Reusable speaker definitions
@@ -463,5 +463,6 @@ export const F1_EXIT_TO_F2 = {
             }
         }
     ],
-    connections: ['F2_FLOOR_INTRO']
+    
+    connections: ['F2_INTRO']
 };

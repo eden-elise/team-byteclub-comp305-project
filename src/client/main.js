@@ -14,7 +14,7 @@ import { audioManager } from "./utils/AudioManager.js";
 // Only floor-1 has content currently; others will be added as they're implemented
 const FLOOR_ROOMS = {
     'floor-1': 'F1_INTRO_WAKE',
-    // 'floor-2': 'F2_FLOOR_INTRO',
+    'floor-2': 'F2_INTRO',
     'floor-3': 'F3_INTRO',
     'floor-4': 'F4_TOWER_INTRO'
     // 'floor-5': 'F5_FLOOR_INTRO'

@@ -123,6 +123,11 @@ export class BattleSceneController {
         }
     }
 
+    logEvent(message) {
+        this.addLogEntry(message);
+        }
+
+
     async processNextTurn() {
         await this.waitForTypewriter();
         this.isProcessingTurn = true;

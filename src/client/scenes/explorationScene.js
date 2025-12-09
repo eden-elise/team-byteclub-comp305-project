@@ -120,7 +120,8 @@ export class ExplorationSceneController {
         const { enemy } = params;
         
         // Save current state: room, event index to resume after battle
-        const currentFloor = gameState.currentSaveData?.world?.currentFloor || 'floor-1';
+        const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
+        const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
         if (gameState.currentSaveData && gameState.currentSaveData.world) {
             gameState.currentSaveData.world.currentRoom = this.room.id;
             gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;

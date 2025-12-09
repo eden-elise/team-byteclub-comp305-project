@@ -63,3 +63,32 @@ export class LordDravik extends Entity {
 export const createLordDravik = () => {
     return new LordDravik();
 };
+
+export class CursedScholar extends Entity {
+  constructor() {
+    const stats = {
+      ATTACK: 18,
+      DEFEND: 18,
+      SPEED: 12,
+      LUCK: 14
+    };
+    const moves = ['Mind Leech', 'Runic Snare']; // make sure these are in AttackMap
+    const items = [];
+
+    super(
+      'Cursed Scholar',
+      150, // tougher than Warden, softer than Dravik
+      stats,
+      moves,
+      items,
+      '../../src/assets/art/characters/Cursed Scholar.png',
+      () => BaseDeathAnimation(false),
+      false,
+      () => BaseDamageAnimation(false)
+    );
+  }
+}
+
+export const createCursedScholar = () => {
+  return new CursedScholar();
+};
