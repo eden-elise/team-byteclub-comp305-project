@@ -50,7 +50,7 @@ const SPEAKERS = {
 const createWardenEnemy = () => {
   const warden = new Knight(false);
   warden.name = 'Warden';
-  warden.image = '../../src/assets/art/backgrounds/floor-1/Warden.png';
+  warden.image = '../../src/assets/art/characters/Warden.png';
   // Optionally buff stats
   warden.maxHP = 50;
   warden.currentHP = 50;
