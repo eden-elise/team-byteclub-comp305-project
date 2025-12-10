@@ -382,6 +382,10 @@ export const F1_EXIT_TO_F2 = {
   id: 'F1_EXIT_TO_F2',
   events: [
     {
+      type: 'background-change',
+      params: { background: BACKGROUNDS.WARDEN_CELL },
+    },
+    {
       type: 'dialogue',
       params: {
         text: 'As it falls, something slips free from the folds of its robe: a small crystal ampoule filled with faintly [effect: glowing]glowing liquid[/].',

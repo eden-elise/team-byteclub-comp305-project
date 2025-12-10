@@ -348,7 +348,7 @@ export const F2_STAIRS_UP = {
   events: [
     {
       type: 'background-change',
-      params: { background: BACKGROUNDS.AISLE },
+      params: { background: BACKGROUNDS.ARCHIVE },
     },
     {
       type: 'dialogue',
