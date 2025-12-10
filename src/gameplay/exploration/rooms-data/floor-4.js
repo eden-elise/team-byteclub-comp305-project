@@ -615,16 +615,44 @@ export const F4_PLAYER_CHOICE = {
         speaker: SPEAKERS.PLAYER_THINKING,
       },
     },
-    {
-      type: 'dialogue',
-      params: {
-        text: 'But neither is he the sole author.',
-        speaker: SPEAKERS.PLAYER_THINKING,
+      {
+          type: 'dialogue',
+          params: {
+              text: 'But neither is he the sole author.',
+              speaker: SPEAKERS.PLAYER_THINKING,
+          },
       },
-    },
+      {
+          type: 'choice',
+          params: {
+              choices: [
+                  {
+                      text: 'Accept his offer',
+                      callback: async (controller) => {
+                          await controller.showDialogue({
+                              text: 'I... I accept.',
+                              speaker: SPEAKERS.PLAYER,
+                          });
+                          await controller.showDialogue({
+                              text: '[effect: glowing]Excellent[/]. Welcome back, apprentice. Let us begin the next iteration... together.',
+                              speaker: SPEAKERS.DRAVIK,
+                          });
+                          window.handleLoss();
+                      },
+                  },
+                  {
+                      text: 'Refuse and fight',
+                      callback: async (controller) => {
+                          // Continue to battle
+                      },
+                  },
+              ],
+          },
+      },
   ],
-  connections: ['F4_FINAL_BATTLE'],
+    connections: ['F4_FINAL_BATTLE'],
 };
+
 
 // ============================================
 // ROOM: F4_FINAL_BATTLE - The Boss Fight
