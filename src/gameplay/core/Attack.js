@@ -4,65 +4,63 @@ import { Action } from './Action.js';
  * A combat move focused on dealing damage
  */
 export class Attack extends Action {
-    /**
-     * @param {string} name - Display name of the attack
-     * @param {object} data - attack data: 
-     * basePower - base power of attack
-     * statusEffect - optional status effect applied to target
-     * statusEffectChance - percent chance that status effect will be applied
-     * icon - (path) icon to be shown in ui
-     * description - description of attack
-     * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
-     */
-    constructor(name, data, animationCallback = null) {
+  /**
+   * @param {string} name - Display name of the attack
+   * @param {object} data - attack data:
+   * basePower - base power of attack
+   * statusEffect - optional status effect applied to target
+   * statusEffectChance - percent chance that status effect will be applied
+   * icon - (path) icon to be shown in ui
+   * description - description of attack
+   * @param {Function} animationCallback - Optional animation callback (source, target, battle) => Promise
+   */
+  constructor(name, data, animationCallback = null) {
+    if (!data.icon) {
+      const cleaned = name.replace(/\s+/g, '');
+      const camel = cleaned[0].toLowerCase() + cleaned.slice(1);
+      data.icon = `../../assets/icons/attack-icons/${camel}.png`;
+    }
+    super(name, data, animationCallback);
 
-        if (!data.icon) {
-            const cleaned = name.replace(/\s+/g, '');
-            const camel = cleaned[0].toLowerCase() + cleaned.slice(1);
-            data.icon = `../../assets/icons/attack-icons/${camel}.png`;
-        }
-        super(name, data, animationCallback);
+    this.basePower = data.basePower;
+    this.statusEffect = data.statusEffect ?? null;
+    this.statusEffectChance = data.statusEffectChance ?? 0;
+    this.icon = data.icon;
+    this.description = data.description;
+  }
 
-        this.basePower = data.basePower;
-        this.statusEffect = data.statusEffect ?? null;
-        this.statusEffectChance = data.statusEffectChance ?? 0;
-        this.icon = data.icon;
-        this.description = data.description;
+  /**
+   * Execute the attack
+   * Returns a Promise that resolves when the attack and animation are complete
+   * @param {Entity} source - The entity performing the attack
+   * @param {Entity} target - The target entity
+   * @param {TypewriterTextbox} textbox - textbox to log to
+   * @returns {Promise} Promise that resolves when attack and animation complete
+   */
+  async execute(source, target, textbox) {
+    if (!target.isAlive()) return Promise.resolve();
+
+    textbox.addLogEntry(`${source.name} uses ${this.name}!`);
+
+    // Calculate damage: (source ATTACK * basePower) - (target DEFEND / 2)
+    const baseDamage = source.stats.ATTACK * this.basePower;
+    const defenseReduction = target.stats.DEFEND / 2;
+    const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
+
+    // Play animation and wait for it to complete
+    await this.playAnimation(source, target, textbox);
+
+    await target.takeDamage(damage);
+    textbox.addLogEntry(`${target.name} takes ${damage} damage!`);
+
+    if (!target.isAlive()) {
+      textbox.addLogEntry(`${target.name} is defeated!`);
     }
 
-    /**
-     * Execute the attack
-     * Returns a Promise that resolves when the attack and animation are complete
-     * @param {Entity} source - The entity performing the attack
-     * @param {Entity} target - The target entity
-     * @param {TypewriterTextbox} textbox - textbox to log to
-     * @returns {Promise} Promise that resolves when attack and animation complete
-     */
-    async execute(source, target, textbox) {
-        if (!target.isAlive()) return Promise.resolve();
-
-        textbox.addLogEntry(`${source.name} uses ${this.name}!`);
-
-        // Calculate damage: (source ATTACK * basePower) - (target DEFEND / 2)
-        const baseDamage = source.stats.ATTACK * this.basePower;
-        const defenseReduction = target.stats.DEFEND / 2;
-        const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
-
-        // Play animation and wait for it to complete
-        await this.playAnimation(source, target, textbox);
-
-        await target.takeDamage(damage);
-        textbox.addLogEntry(`${target.name} takes ${damage} damage!`);
-
-        if (!target.isAlive()) {
-            textbox.addLogEntry(`${target.name} is defeated!`);
-        }
-        
-        // Apply status effect if applicable
-        if (this.statusEffect && Math.random() < this.statusEffectChance) {
-            target.addStatusEffect(this.statusEffect, textbox);
-            textbox.addLogEntry(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
-        }
+    // Apply status effect if applicable
+    if (this.statusEffect && Math.random() < this.statusEffectChance) {
+      target.addStatusEffect(this.statusEffect, textbox);
+      textbox.addLogEntry(`${target.name} now has ${this.statusEffect.name.toLowerCase()}!`);
     }
+  }
 }
-
