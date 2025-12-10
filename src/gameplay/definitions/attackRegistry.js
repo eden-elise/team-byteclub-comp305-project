@@ -3,7 +3,7 @@ import { createBaseAttackAnimationCallback } from '../animations/AttackAnimation
 import {
     MemoryDrainStatusEffect,
     DarkResonanceStatusEffect,
-    FreezeStatusEffect, PoisonStatusEffect,
+    FreezeStatusEffect, PoisonStatusEffect, BurnStatusEffect,
 } from './statusEffectRegistry.js';
 
 export class BasicStrike extends Attack {
@@ -73,6 +73,50 @@ export class PoisonArrow extends Attack {
         super('Poison Arrow', PoisonArrow.data, PoisonArrow.animationCallback);
     }
 }
+
+/**
+ * Fireball - Mage's basic attack
+ * med damage fireball that likely will inflict burn
+ */
+export class Fireball extends Attack {
+    static data = {
+        basePower: 1.4,
+        statusEffect: new BurnStatusEffect(),
+        statusEffectChance: 0.75,
+        description: 'A blazing sphere of fire that may ignite the target.',
+    };
+
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 25,
+        duration: 300,
+    });
+
+    constructor() {
+        super('Fireball', Fireball.data, Fireball.animationCallback);
+    }
+}
+
+/**
+ * ArcaneBlast - Mage's specialty attack
+ * high damage blast
+ */
+export class ArcaneBlast extends Attack {
+    static data = {
+        basePower: 1.9,
+        description: 'A concentrated burst of pure magical energy.',
+    };
+
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 20,
+        duration: 350,
+    });
+
+    constructor() {
+        super('Arcane Blast', ArcaneBlast.data, ArcaneBlast.animationCallback);
+    }
+}
+
+
 
 /**
  * Memory Wipe - Dravik's signature attack
@@ -195,6 +239,8 @@ export const AttackMap = {
   'Runic Snare': RunicSnare,
   'Piercing Shot': PiercingShot,
   'Poison Arrow': PoisonArrow,
+  'Fireball': Fireball,
+  'Arcane Blast': ArcaneBlast,
 };
 
 export function getAttackByName(name) {
