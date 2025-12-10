@@ -74,7 +74,7 @@ export class Mage extends Entity {
       SPEED: 23,
       LUCK: 25,
     };
-    const moves = ['Basic Strike', 'Heavy Swing'];
+    const moves = ['Fireball', 'Arcane Blast'];
 
     const items = [
       { name: 'Health Potion', quantity: 5 },
