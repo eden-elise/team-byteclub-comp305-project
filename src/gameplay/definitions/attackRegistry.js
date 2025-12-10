@@ -119,7 +119,7 @@ export class MindLeech extends Attack {
     battle.logEvent(`${target.name} takes ${damage} damage!`);
     if (!target.isAlive()) battle.logEvent(`${target.name} is defeated!`);
 
-    const lifesteal = Math.floor(damage * 0.25); // tweak this percent if needed
+    const lifesteal = Math.floor(damage * 0.5); // tweak this percent if needed
     if (lifesteal > 0) {
       source.heal(lifesteal);
       battle.logEvent(`${source.name} siphons ${lifesteal} HP!`);

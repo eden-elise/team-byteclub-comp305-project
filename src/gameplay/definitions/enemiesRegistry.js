@@ -73,7 +73,7 @@ export class CursedScholar extends Entity {
 
     super(
       'Cursed Scholar',
-      150, // tougher than Warden, softer than Dravik
+      120, // tougher than Warden, softer than Dravik
       stats,
       moves,
       items,
