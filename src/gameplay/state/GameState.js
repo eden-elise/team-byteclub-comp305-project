@@ -88,6 +88,30 @@ export class GameState {
     }
 
     /**
+     * Updates exploration state in the save data.
+     * @param {string} roomId
+     * @param {number} eventIndex
+     */
+    setExplorationState(roomId, eventIndex) {
+        if (!this.currentSaveData) return;
+        this.currentSaveData.world.currentRoomId = roomId;
+        this.currentSaveData.world.eventIndex = eventIndex;
+        this.saveGame();
+    }
+
+    /**
+     * Retrieves the saved exploration state
+     * @returns {{roomId: string, eventIndex: number}}
+     */
+    getExplorationState() {
+        if (!this.currentSaveData) return { roomId: null, eventIndex: 0 };
+        return {
+            roomId: this.currentSaveData.world.currentRoomId,
+            eventIndex: this.currentSaveData.world.eventIndex || 0
+        };
+    }
+
+    /**
      * Creates the Entity instance from the current JSON data
      */
     hydrateCharacter() {

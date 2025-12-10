@@ -19,7 +19,9 @@ export const DEFAULT_SAVE_DATA = {
         battlesFought: 0,
         battlesWon: 0,
         currentLocation: 'town',
-        currentScene: null
+        currentScene: null,
+        currentRoomId: null,
+        eventIndex: 0
     },
     settings: {
         volume: 50,
