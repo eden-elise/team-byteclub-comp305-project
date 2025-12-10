@@ -5,7 +5,6 @@
  * @module CharacterSelectSceneController
  */
 
-import { Knight, Archer } from '../../gameplay/definitions/heroesRegistry.js';
 import { Knight, Archer, Mage } from '../../gameplay/definitions/heroesRegistry.js';
 import { audioManager } from '../utils/AudioManager.js';
 
@@ -63,7 +62,7 @@ export class CharacterSelectSceneController {
      */
     constructor(onCharacterSelected) {
         /**
-         * Callback invoked when player confirms character selection and starts game
+         * Callback invoked when player confirms character selection and starts game progression.
          * @type {OnCharacterSelectedCallback}
          */
         this.onCharacterSelected = onCharacterSelected;
@@ -86,33 +85,13 @@ export class CharacterSelectSceneController {
                 description:
                     'A swift and precise marksman from the elven forests. The Archer relies on high speed and luck to outmaneuver foes, dealing critical strikes from a distance while avoiding counterattacks.',
             },
+            {
+                id: 'mage',
+                Class: Mage,
+                description:
+                    'A master of the arcane arts, wielding destructive spells and elemental power. The Mage sacrifices physical defense for overwhelming magical offense, bending the battlefield with fire, frost, and pure force.'
+            }
         ];
-  /**
-   * @param {Function} onCharacterSelected - Callback function called when a character is selected and confirmed.
-   *                                         Receives the character data object.
-   */
-  constructor(onCharacterSelected) {
-    this.onCharacterSelected = onCharacterSelected;
-    this.characters = [
-      {
-        id: 'knight',
-        Class: Knight,
-        description:
-          'A stalwart defender of the realm, clad in heavy armor. The Knight excels in defense and possesses balanced offensive capabilities, making them a reliable choice for any encounter.',
-      },
-      {
-        id: 'archer',
-        Class: Archer,
-        description:
-          'A swift and precise marksman from the elven forests. The Archer relies on high speed and luck to outmaneuver foes, dealing critical strikes from a distance while avoiding counterattacks.',
-      },
-      {
-        id: 'mage',
-        Class: Mage,
-        description:
-          'A master of the arcane arts, wielding destructive spells and elemental power. The Mage sacrifices physical defense for overwhelming magical offense, bending the battlefield with fire, frost, and pure force.'
-      }
-    ];
 
         /**
          * Currently selected character data, or null if none selected
@@ -121,7 +100,7 @@ export class CharacterSelectSceneController {
         this.selectedCharacter = null;
 
         this.init();
-    }
+    };
 
     /**
      * Initialize the character selection scene.
@@ -142,7 +121,7 @@ export class CharacterSelectSceneController {
                 this.handleStartGame();
             });
         }
-    }
+    };
 
     /**
      * Render the character selection cards in the character list container.
@@ -197,7 +176,7 @@ export class CharacterSelectSceneController {
 
             container.appendChild(card);
         });
-    }
+    };
 
     /**
      * Handle character selection by index.
@@ -239,7 +218,7 @@ export class CharacterSelectSceneController {
                 </div>
             `;
         }
-    }
+    };
 
     /**
      * Handle the start game button click.
@@ -256,5 +235,5 @@ export class CharacterSelectSceneController {
         if (this.onCharacterSelected) {
             this.onCharacterSelected(this.selectedCharacter);
         }
-    }
-}
+    };
+};
