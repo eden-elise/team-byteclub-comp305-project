@@ -11,13 +11,11 @@ import { getRoomById } from '../gameplay/exploration/roomRegistry.js';
 import { audioManager } from './utils/AudioManager.js';
 
 // Floor progression order - maps floor to starting room
-// Only floor-1 has content currently; others will be added as they're implemented
 const FLOOR_ROOMS = {
   'floor-1': 'F1_INTRO_WAKE',
   'floor-2': 'F2_INTRO',
   'floor-3': 'F3_INTRO',
-  'floor-4': 'F4_TOWER_INTRO',
-  // 'floor-5': 'F5_FLOOR_INTRO'
+  'floor-4': 'F4_TOWER_INTRO'
 };
 
 async function initApp() {
@@ -133,11 +131,6 @@ async function startFloorExploration(floorId = 'floor-1') {
   try {
     let player = gameState.characterEntity;
 
-    if (!player) {
-      // Fallback: create a temporary player for testing
-      player = new Knight(true);
-    }
-
     // Check if we're resuming from a battle or other pause
     let roomId = gameState.currentSaveData?.world?.currentRoom;
     let startEventIndex = gameState.currentSaveData?.world?.currentEventIndex || 0;
@@ -204,25 +197,19 @@ async function startFloorExploration(floorId = 'floor-1') {
 
 /**
  * Start a battle (called from exploration scene)
- * @param {Entity} enemyEntity - The enemy to battle
+ * @param {params} params - enemy entity, background image
  * @param {Function} onWinCallback - Callback when player wins
  */
-async function startBattle(enemyEntity, onWinCallback) {
-  console.log('Starting battle...');
+async function startBattle(params, onWinCallback) {
   let player = gameState.characterEntity;
 
-  if (!player) {
-    // Create a temporary player for testing
-    player = new Knight(true);
-  }
-
-  // Use provided enemy or default for testing
-  const enemy = enemyEntity || new (player.name === 'Knight' ? Archer : Knight)(false);
+  const enemy = params.enemy;
 
   await loadScene('battleScene');
   const battleController = new BattleSceneController(
     player,
     enemy,
+    params.background,
     player.items,
     async (winner) => {
       if (winner === player) {
@@ -234,9 +221,8 @@ async function startBattle(enemyEntity, onWinCallback) {
           await startFloorExploration(floorId);
         }
       } else {
-        // Player lost - offer retry
-        console.log('Player lost. Restarting battle...');
-        await startBattle(enemy, onWinCallback);
+        // handle loss
+        await handleLoss();
       }
     }
   );
@@ -244,12 +230,63 @@ async function startBattle(enemyEntity, onWinCallback) {
   window.battleController = battleController;
 }
 
+/**
+ * Handle player loss
+ * player will have to go back to last save
+ */
+async function handleLoss() {
+  // Create blackout overlay
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.background = 'black';
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 1.5s ease';
+  overlay.style.zIndex = '9999';
+  document.body.appendChild(overlay);
+
+  // Let it fade in
+  await new Promise(res => setTimeout(res, 50));
+  overlay.style.opacity = '1';
+
+  // Create YOU DIED text
+  const text = document.createElement('div');
+  text.innerText = 'YOU DIED';
+  text.style.position = 'fixed';
+  text.style.top = '50%';
+  text.style.left = '50%';
+  text.style.transform = 'translate(-50%, -50%)';
+  text.style.fontSize = '8rem';
+  text.style.fontWeight = '900';
+  text.style.color = 'red';
+  text.style.opacity = '0';
+  text.style.letterSpacing = '0.1em';
+  text.style.textShadow = '0 0 20px rgba(255,0,0,0.8)';
+  text.style.transition = 'opacity 2s ease';
+  text.style.zIndex = '10000';
+  document.body.appendChild(text);
+
+  // Fade text in slightly after the blackout
+  await new Promise(res => setTimeout(res, 800));
+  text.style.opacity = '1';
+
+  // Stay on screen for a few seconds
+  await new Promise(res => setTimeout(res, 3000));
+
+  // Restart the whole window
+  window.location.reload();
+}
+
+
 // Debug keyboard shortcuts
 document.addEventListener('keydown', async (e) => {
   if (e.key === 'r' || e.key === 'R') {
     // Restart current floor
-    const floorId = gameState.currentSaveData?.world?.currentFloor || 'floor-1';
-    console.log(`Restarting floor: ${floorId}`);
+    const floorId = 'F4_PLAYER_CHOICE';
+    console.log(floorId);
     await startFloorExploration(floorId);
   } else if (e.key === 'e' || e.key === 'E') {
     // Start a test battle

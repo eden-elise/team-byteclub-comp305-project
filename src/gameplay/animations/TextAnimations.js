@@ -34,7 +34,7 @@ export async function createFloatingDamageNumber(amount, isPlayer) {
   element.style.color = color;
   element.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
   element.style.transform = 'translate(-50%, -50%)';
-  element.style.fontFamily = 'Arial, sans-serif';
+  element.style.fontFamily = 'var(--font-primary)';
   element.style.whiteSpace = 'nowrap';
   element.textContent = `${sign}${displayAmount}`;
 

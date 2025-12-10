@@ -54,7 +54,6 @@ export class LordDravik extends Entity {
 
 /**
  * Factory function to create a fresh Dravik instance
- * Use this in floor-5.js room data
  */
 export const createLordDravik = () => {
   return new LordDravik();

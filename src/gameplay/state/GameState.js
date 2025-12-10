@@ -1,9 +1,10 @@
-import { Knight, Archer } from '../definitions/heroesRegistry.js';
+import { Knight, Archer, Mage } from '../definitions/heroesRegistry.js';
 import { createNewSave } from './SaveSchema.js';
 
 const CHARACTER_CLASSES = {
   knight: Knight,
   archer: Archer,
+  mage: Mage
 };
 
 export class GameState {

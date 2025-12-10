@@ -199,7 +199,7 @@ export const F2_STUDY = {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.NARRATOR,
-        text: 'You take the [color:#99e6ff]Memory Anchor Phial[/color].',
+        text: 'You take the [color: #99e6ff]Memory Anchor Phial[/].',
       },
     },
   ],
@@ -305,7 +305,7 @@ export const F2_CURSED_SCHOLAR_FIGHT = {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.NARRATOR,
-        text: '[effect: shaking]Ink explodes outward. Sigils burn mid-air. The Cursed Scholar rises, screaming equations.',
+        text: '[effect: shaking]Ink explodes outward.[/] Sigils burn mid-air. The Cursed Scholar rises, screaming equations.',
       },
     },
     {
@@ -318,7 +318,7 @@ export const F2_CURSED_SCHOLAR_FIGHT = {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.SCHOLAR,
-        text: '[effect: glitching] It will break... it must break... I... I forgot why...',
+        text: '[effect: shaking] It will break... it must break... I... I forgot why...[/]',
       },
     },
     {
@@ -361,7 +361,7 @@ export const F2_STAIRS_UP = {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.PLAYER,
-        text: '[style: whispering]...We made the ritual. Me and the Scholar.',
+        text: '[style: whispering]...We made the ritual. Me and the Scholar.[/]',
       },
     },
     {
@@ -375,7 +375,7 @@ export const F2_STAIRS_UP = {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.NARRATOR,
-        text: '[effect: glowing]Shard 3 unlocked: [color:#ffd700]“Co-Author of Oblivion.”[/color]',
+        text: '[effect: glowing]Shard 3 unlocked: “Co-Author of Oblivion.”[/]',
       },
     },
     {

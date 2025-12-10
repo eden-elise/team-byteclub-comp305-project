@@ -1,4 +1,4 @@
-import { Knight, Archer } from '../../gameplay/definitions/heroesRegistry.js';
+import { Knight, Archer, Mage } from '../../gameplay/definitions/heroesRegistry.js';
 import { audioManager } from '../utils/AudioManager.js';
 
 export class CharacterSelectSceneController {
@@ -21,6 +21,12 @@ export class CharacterSelectSceneController {
         description:
           'A swift and precise marksman from the elven forests. The Archer relies on high speed and luck to outmaneuver foes, dealing critical strikes from a distance while avoiding counterattacks.',
       },
+      {
+        id: 'mage',
+        Class: Mage,
+        description:
+          'A master of the arcane arts, wielding destructive spells and elemental power. The Mage sacrifices physical defense for overwhelming magical offense, bending the battlefield with fire, frost, and pure force.'
+      }
     ];
 
     this.selectedCharacter = null;

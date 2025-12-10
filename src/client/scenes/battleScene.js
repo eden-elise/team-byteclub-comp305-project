@@ -261,11 +261,17 @@ function buildInventoryHTML(inventory) {
  * This class is now self-contained and doesn't require external engine classes
  */
 export class BattleSceneController {
-  constructor(player, enemy, inventory = [], onBattleEnd) {
+  constructor(player, enemy, background, inventory = [], onBattleEnd) {
     this.onBattleEnd = onBattleEnd;
 
     this.player = player;
     this.enemy = enemy;
+
+    document.documentElement.style.setProperty(
+      '--battle-header-bg',
+      `url('${background}')`
+    );
+
     audioManager.play('battle-background', true); // Start battle music looping
 
     this.inventory = inventory; // Separate inventory array
