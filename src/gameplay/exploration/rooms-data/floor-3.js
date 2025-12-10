@@ -6,13 +6,13 @@ import {
 } from '../../animations/ExplorationAnimations.js';
 
 const BACKGROUNDS = {
-  BAD_BEDROOM: '../../src/assets/art/backgrounds/floor-4/Bad Bedroom.png',
-  BEDROOM: '../../src/assets/art/backgrounds/floor-4/Bedroom.png',
-  CHAPEL: '../../src/assets/art/backgrounds/floor-4/Chapel.png',
-  GRAND_CORRIDOR: '../../src/assets/art/backgrounds/floor-4/Grand Corridor.png',
-  MEMORY_WRAITH_BG: '../../src/assets/art/backgrounds/floor-4/Memory Wraith Corridor.png',
-  MWC: '../../src/assets/art/backgrounds/floor-4/MWC with Shard.png',
+    BEDROOM: '../../src/assets/art/backgrounds/floor4/bg_f4_02_bedroom.png',
+    CHAPEL: '../../src/assets/art/backgrounds/floor4/bg_f4_03_chapel.png',
+    GRAND_CORRIDOR: '../../src/assets/art/backgrounds/floor4/bg_f4_01_grand_corridor.png',
+    MEMORY_WRAITH_BG: '../../src/assets/art/backgrounds/floor4/bg_f4_04_memory_wraith_corridor.png',
+    MWC: '../../src/assets/art/backgrounds/floor4/bg_f4_05_memory_wraith_corridor_with_shard.png'
 };
+
 
 const MEMORY_WRAITH = {
   name: 'Memory-Wraith',
@@ -63,7 +63,7 @@ export const F3_INTRO = {
   events: [
     {
       type: 'background-change',
-      params: { background: BACKGROUNDS.BAD_BEDROOM },
+      params: { background: BACKGROUNDS.BEDROOM },
     },
     {
       type: 'dialogue',

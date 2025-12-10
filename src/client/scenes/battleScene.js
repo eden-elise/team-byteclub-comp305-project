@@ -128,11 +128,8 @@ const MESSAGE_STYLES = {
  * @constant
  */
 const STATUS_EFFECT_STYLES = {
-    /** Purple fading text for poison effects */
     poison: { color: '#9c27b0', effect: 'fade' },
-    /** Orange waving text for burn effects */
     burn: { color: '#ff5722', effect: 'waving' },
-    /** Green glowing text for heal effects */
     heal: { color: '#4caf50', effect: 'glowing' },
 };
 
@@ -679,44 +676,28 @@ export class BattleSceneController {
         }
     }
 
-    /**
-     * Process the enemy's turn using simple AI.
-     * Currently uses the first available attack targeting the player.
-     *
-     * @async
-     * @returns {Promise<void>}
-     */
-    async processEnemyTurn() {
-        // at some point we should make this a global variable then they can chooes to speed up or slow down enemy turns
-        await new Promise((r) => setTimeout(r, 500));
-        // Simple AI: Use first available action on player
-        const attackName = getAttackByName(this.enemy.moves[0]);
-        if (attackName && this.player.isAlive()) {
-            const attackInstance = new attackName();
-            await this.processTurn(this.enemy, attackInstance, this.player);
-
-            audioManager.play('enemy-hit');
-            this.updateEntityStats();
-
-            this.turnOrderQueue.push(this.currentTurnEntity);
-            this.isProcessingTurn = false;
-
-            this.checkBattleEnd();
-            setTimeout(() => this.processNextTurn(), 500);
-        } else {
-            this.isProcessingTurn = false;
-        }
+  async processEnemyTurn() {
+    await new Promise(r => setTimeout(r, 500));
+    const moves = this.enemy.moves || [];
+    const choice = moves[Math.floor(Math.random() * moves.length)] || moves[0];
+    const AttackClass = getAttackByName(choice);
+    if (AttackClass && this.player.isAlive()) {
+        const attackInstance = new AttackClass();
+        await this.processTurn(this.enemy, attackInstance, this.player);
+        audioManager.play("enemy-hit");
+        this.updateEntityStats();
+        this.turnOrderQueue.push(this.currentTurnEntity);
+        this.isProcessingTurn = false;
+        this.checkBattleEnd();
+        setTimeout(() => this.processNextTurn(), 500);
+    } else {
+        this.isProcessingTurn = false;
+    }
     }
 
-    /**
-     * Display the action buttons panel for the current turn.
-     * Shows attack buttons and inventory button for player turn,
-     * or a waiting message during enemy turn.
-     *
-     * @returns {void}
-     */
-    showActionButtons() {
-        const container = document.getElementById('action-container');
+
+  showActionButtons() {
+    const container = document.getElementById('action-container');
 
         this.uiState = 'actions';
         this.selectedItem = null;
