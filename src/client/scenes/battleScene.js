@@ -452,29 +452,25 @@ export class BattleSceneController {
      * @param {InventorySlot[]} [inventory=[]] - Player's inventory items
      * @param {Function} onBattleEnd - Callback when battle ends, receives winner entity
      */
-    constructor(player, enemy, inventory = [], onBattleEnd) {
-        /**
-         * Callback function invoked when the battle ends
-         * @type {Function}
-         */
-        this.onBattleEnd = onBattleEnd;
+        
   constructor(player, enemy, background, inventory = [], onBattleEnd) {
+    /**
+     * Callback function invoked when the battle ends
+     * @type {Function}
+     */
     this.onBattleEnd = onBattleEnd;
-
-        /**
-         * The player entity
-         * @type {Entity}
-         */
-        this.player = player;
-
-        /**
-         * The enemy entity
-         * @type {Entity}
-         */
-        this.enemy = enemy;
-        audioManager.play('battle-background', true); // Start battle music looping
+    /**
+     * The player entity
+     * @type {Entity}
+     */
     this.player = player;
+
+    /**
+     * The enemy entity
+     * @type {Entity}
+     */
     this.enemy = enemy;
+    audioManager.play('battle-background', true); // Start battle music looping
 
     document.documentElement.style.setProperty(
       '--battle-header-bg',

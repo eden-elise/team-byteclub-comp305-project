@@ -106,8 +106,6 @@ export class ExplorationSceneController {
         skipBtn.addEventListener('click', () => this.skipCutscene());
     }
   }
-        document.getElementById('choice-container').innerHTML = '';
-    }
 
   async startRoom() {
     // Ensure skip button is visible
@@ -202,11 +200,7 @@ export class ExplorationSceneController {
                 await this.processNextEvent();
         }
     }
-
-  async handleBattle(params) {
-    // Hide skip button during battle
-    const btn = document.getElementById('skip-cutscene-btn');
-    if (btn) btn.style.display = 'none';
+    
     /**
      * Handles battle events by saving the game state and initiating combat.
      * @async
@@ -215,55 +209,35 @@ export class ExplorationSceneController {
      * @returns {Promise<void>}
      */
     async handleBattle(params) {
-        const { enemy } = params;
-
-    // Save current state: room, event index to resume after battle
-    const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
-    const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
-    if (gameState.currentSaveData && gameState.currentSaveData.world) {
-      gameState.currentSaveData.world.currentRoom = this.room.id;
-      gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
-      gameState.saveGame();
-    }
-    // Since we already built out the floors without spcifying background, I'm making it so by default
-    // it will just call the battle scene with the current background
-    console.log(this.room.background);
-    params.background = this.room.background;
-    console.log(params.background);
-    // Start battle
-    if (window.gameApp && window.gameApp.startBattle) {
-      await window.gameApp.startBattle(params, async () => {
-        // On win, return to exploration at the same room, next event
-        console.log(
-          `Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`
-        );
-        await window.gameApp.startFloorExploration(currentFloor);
-      });
-    } else {
-      console.error('GameApp not initialized');
-    }
-  }
-        // Save current state: room, event index to resume after battle
-        const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
-        const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
-        if (gameState.currentSaveData && gameState.currentSaveData.world) {
-            gameState.currentSaveData.world.currentRoom = this.room.id;
-            gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
-            gameState.saveGame();
-        }
-
-        // Start battle
-        if (window.gameApp && window.gameApp.startBattle) {
-            await window.gameApp.startBattle(enemy, async () => {
-                // On win, return to exploration at the same room, next event
-                console.log(
-                    `Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`
-                );
-                await window.gameApp.startFloorExploration(currentFloor);
-            });
-        } else {
-            console.error('GameApp not initialized');
-        }
+      // Hide skip button during battle
+      const btn = document.getElementById('skip-cutscene-btn');
+      if (btn) btn.style.display = 'none';
+      
+      // Save current state: room, event index to resume after battle
+      const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
+      const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
+      if (gameState.currentSaveData && gameState.currentSaveData.world) {
+        gameState.currentSaveData.world.currentRoom = this.room.id;
+        gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
+        gameState.saveGame();
+      }
+      // Since we already built out the floors without spcifying background, I'm making it so by default
+      // it will just call the battle scene with the current background
+      console.log(this.room.background);
+      params.background = this.room.background;
+      console.log(params.background);
+      // Start battle
+      if (window.gameApp && window.gameApp.startBattle) {
+        await window.gameApp.startBattle(params, async () => {
+          // On win, return to exploration at the same room, next event
+          console.log(
+            `Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`
+          );
+          await window.gameApp.startFloorExploration(currentFloor);
+        });
+      } else {
+        console.error('GameApp not initialized');
+      }
     }
 
     /**
@@ -474,7 +448,11 @@ export class ExplorationSceneController {
 }
 
 
-
+/**
+     * Handles the completion of all events in a room.
+     * Displays navigation buttons for connected rooms.
+     * @returns {void}
+     */
   handleRoomComplete() {
     // Hide skip button when room is complete
     const btn = document.getElementById('skip-cutscene-btn');
@@ -483,17 +461,7 @@ export class ExplorationSceneController {
     const choiceContainer = document.getElementById('choice-container');
     choiceContainer.innerHTML = '';
 
-
-    /**
-     * Handles the completion of all events in a room.
-     * Displays navigation buttons for connected rooms.
-     * @returns {void}
-     */
-    handleRoomComplete() {
-        const choiceContainer = document.getElementById('choice-container');
-        choiceContainer.innerHTML = '';
-
-        this.room.connections.forEach((connectionId) => {
+    this.room.connections.forEach((connectionId) => {
             const button = document.createElement('button');
             button.className = 'choice-btn choice-btn--continue';
             button.textContent = `Go to ${connectionId.replace(/_/g, ' ')}`;
