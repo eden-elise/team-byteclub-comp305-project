@@ -6,10 +6,10 @@ import {
 } from '../../animations/ExplorationAnimations.js';
 
 const BACKGROUNDS = {
-  CELL: '../../src/assets/art/backgrounds/floor-1/Starting Cell.png',
-  CORRIDOR: '../../src/assets/art/backgrounds/floor-1/CoC.png',
-  RITUAL: '../../src/assets/art/backgrounds/floor-1/Small Ritual Chamber.png',
-  WARDEN_CELL: '../../src/assets/art/backgrounds/floor-1/wardens_cell.png',
+  CELL: '../../src/assets/art/backgrounds/floor1/bg_f1_01_starting_cell.png',
+  CORRIDOR: '../../src/assets/art/backgrounds/floor1/bg_f1_02_corridor_of_cages.png',
+  WARDEN_CELL: '../../src/assets/art/backgrounds/floor1/bg_f1_03_wardens_cell.png',
+  RITUAL: '../../src/assets/art/backgrounds/floor1/bg_f1_04_small_ritual_chamber.png',
 };
 
 const WARDEN_ENTITY = {

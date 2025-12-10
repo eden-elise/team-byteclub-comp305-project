@@ -10,10 +10,10 @@ import { createCursedScholar } from '../../definitions/enemiesRegistry.js';
 
 // Backgrounds used in Floor 2
 const BACKGROUNDS = {
-  AISLE: '../../src/assets/art/backgrounds/floor-3/WMLaboratory Aisle.png',
-  WORKBENCH: '../../src/assets/art/backgrounds/floor-3/Research Table.png',
-  READING_ROOM: '../../src/assets/art/backgrounds/floor-3/Circular Reading Room.png',
-  ARCHIVE: '../../src/assets/art/backgrounds/floor-3/CRR with Shard.png',
+    AISLE: '../../src/assets/art/backgrounds/floor3/bg_f3_01_laboratory_aisle.png',
+    WORKBENCH: '../../src/assets/art/backgrounds/floor3/bg_f3_02_research_table.png',
+    READING_ROOM: '../../src/assets/art/backgrounds/floor3/bg_f3_03_circular_reading_room.png',
+    ARCHIVE: '../../src/assets/art/backgrounds/floor3/bg_f3_04_circular_reading_room_with_shard.png'
 };
 
 // Enemy visual entity
