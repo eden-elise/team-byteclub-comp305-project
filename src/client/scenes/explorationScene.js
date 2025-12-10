@@ -283,15 +283,17 @@ export class ExplorationSceneController {
     header.style.transition = 'opacity 0.3s ease-in-out';
     header.style.opacity = '0';
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     // Change background
     header.style.backgroundImage = `url(${backgroundImage})`;
     // Fade in
     header.style.opacity = '1';
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
-  }
+    await new Promise(resolve => setTimeout(resolve, 300));
+}
+
+
 
   handleRoomComplete() {
     const choiceContainer = document.getElementById('choice-container');

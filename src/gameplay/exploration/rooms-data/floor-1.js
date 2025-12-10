@@ -6,10 +6,10 @@ import {
 } from '../../animations/ExplorationAnimations.js';
 
 const BACKGROUNDS = {
-  CELL: '../../src/assets/art/backgrounds/floor-1/Starting Cell.png',
-  CORRIDOR: '../../src/assets/art/backgrounds/floor-1/CoC.png',
-  RITUAL: '../../src/assets/art/backgrounds/floor-1/Small Ritual Chamber.png',
-  WARDEN_CELL: '../../src/assets/art/backgrounds/floor-1/wardens_cell.png',
+  CELL: '../../src/assets/art/backgrounds/floor1/bg_f1_01_starting_cell.png',
+  CORRIDOR: '../../src/assets/art/backgrounds/floor1/bg_f1_02_corridor_of_cages.png',
+  WARDEN_CELL: '../../src/assets/art/backgrounds/floor1/bg_f1_03_wardens_cell.png',
+  RITUAL: '../../src/assets/art/backgrounds/floor1/bg_f1_04_small_ritual_chamber.png',
 };
 
 const WARDEN_ENTITY = {
@@ -50,7 +50,7 @@ const SPEAKERS = {
 const createWardenEnemy = () => {
   const warden = new Knight(false);
   warden.name = 'Warden';
-  warden.image = '../../src/assets/art/backgrounds/floor-1/Warden.png';
+  warden.image = '../../src/assets/art/characters/Warden.png';
   // Optionally buff stats
   warden.maxHP = 50;
   warden.currentHP = 50;
@@ -381,6 +381,10 @@ export const F1_FIGHT = {
 export const F1_EXIT_TO_F2 = {
   id: 'F1_EXIT_TO_F2',
   events: [
+    {
+      type: 'background-change',
+      params: { background: BACKGROUNDS.WARDEN_CELL },
+    },
     {
       type: 'dialogue',
       params: {

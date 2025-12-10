@@ -398,26 +398,24 @@ export class BattleSceneController {
   }
 
   async processEnemyTurn() {
-    // at some point we should make this a global variable then they can chooes to speed up or slow down enemy turns
-    await new Promise((r) => setTimeout(r, 500));
-    // Simple AI: Use first available action on player
-    const attackName = getAttackByName(this.enemy.moves[0]);
-    if (attackName && this.player.isAlive()) {
-      const attackInstance = new attackName();
-      await this.processTurn(this.enemy, attackInstance, this.player);
-
-      audioManager.play('enemy-hit');
-      this.updateEntityStats();
-
-      this.turnOrderQueue.push(this.currentTurnEntity);
-      this.isProcessingTurn = false;
-
-      this.checkBattleEnd();
-      setTimeout(() => this.processNextTurn(), 500);
+    await new Promise(r => setTimeout(r, 500));
+    const moves = this.enemy.moves || [];
+    const choice = moves[Math.floor(Math.random() * moves.length)] || moves[0];
+    const AttackClass = getAttackByName(choice);
+    if (AttackClass && this.player.isAlive()) {
+        const attackInstance = new AttackClass();
+        await this.processTurn(this.enemy, attackInstance, this.player);
+        audioManager.play("enemy-hit");
+        this.updateEntityStats();
+        this.turnOrderQueue.push(this.currentTurnEntity);
+        this.isProcessingTurn = false;
+        this.checkBattleEnd();
+        setTimeout(() => this.processNextTurn(), 500);
     } else {
-      this.isProcessingTurn = false;
+        this.isProcessingTurn = false;
     }
-  }
+    }
+
 
   showActionButtons() {
     const container = document.getElementById('action-container');
