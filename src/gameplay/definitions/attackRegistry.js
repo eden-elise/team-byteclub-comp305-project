@@ -1,9 +1,9 @@
 import { Attack } from '../core/Attack.js';
 import { createBaseAttackAnimationCallback } from '../animations/AttackAnimations.js';
 import {
-  MemoryDrainStatusEffect,
-  DarkResonanceStatusEffect,
-  FreezeStatusEffect,
+    MemoryDrainStatusEffect,
+    DarkResonanceStatusEffect,
+    FreezeStatusEffect, PoisonStatusEffect,
 } from './statusEffectRegistry.js';
 
 export class BasicStrike extends Attack {
@@ -30,6 +30,48 @@ export class HeavySwing extends Attack {
   constructor() {
     super('Heavy Swing', HeavySwing.data, HeavySwing.animationCallback);
   }
+}
+
+/**
+ * Piercing Shot - Archer's basic attack
+ * High damage arrow
+ */
+export class PiercingShot extends Attack {
+    static data = {
+        basePower: 1.8,
+        description: 'A powerful arrow that pierces through armor.',
+    };
+
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 30,
+        duration: 350,
+    });
+
+    constructor() {
+        super('Piercing Shot', PiercingShot.data, PiercingShot.animationCallback);
+    }
+}
+
+/**
+ * Poison arrow - Archer's specialty attack
+ * med damage arrow that inflicts possible poison
+ */
+export class PoisonArrow extends Attack {
+    static data = {
+        basePower: 1.2,
+        statusEffect: new PoisonStatusEffect(),
+        statusEffectChance: 0.5,
+        description: 'A venomous arrow that may poison the target.',
+    };
+
+    static animationCallback = createBaseAttackAnimationCallback({
+        lungeDistance: 30,
+        duration: 300,
+    });
+
+    constructor() {
+        super('Poison Arrow', PoisonArrow.data, PoisonArrow.animationCallback);
+    }
 }
 
 /**
@@ -151,6 +193,8 @@ export const AttackMap = {
   'Alchemist Strike': AlchemistStrike,
   'Mind Leech': MindLeech,
   'Runic Snare': RunicSnare,
+  'Piercing Shot': PiercingShot,
+  'Poison Arrow': PoisonArrow,
 };
 
 export function getAttackByName(name) {
