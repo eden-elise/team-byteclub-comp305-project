@@ -7,8 +7,8 @@ export class Knight extends Entity {
   constructor(isPlayer) {
     const stats = {
       ATTACK: 18,
-      DEFEND: 25,
-      SPEED: 8,
+      DEFEND: 31,
+      SPEED: 9,
       LUCK: 10,
     };
     const moves = ['Basic Strike', 'Heavy Swing'];
@@ -58,6 +58,38 @@ export class Archer extends Entity {
       moves,
       items,
       '../../src/assets/art/characters/hero-2.png',
+      () => BaseDeathAnimation(isPlayer),
+      isPlayer,
+      () => BaseDamageAnimation(isPlayer)
+    );
+  }
+}
+
+
+export class Mage extends Entity {
+  constructor(isPlayer) {
+    const stats = {
+      ATTACK: 19,
+      DEFEND: 13,
+      SPEED: 23,
+      LUCK: 25,
+    };
+    const moves = ['Basic Strike', 'Heavy Swing'];
+
+    const items = [
+      { name: 'Health Potion', quantity: 5 },
+      { name: 'Poison Potion', quantity: 2 },
+      { name: 'Fire Potion', quantity: 3 },
+      { name: 'Mystery Potion', quantity: 1 },
+    ];
+
+    super(
+      'Mage',
+      90,
+      stats,
+      moves,
+      items,
+      '../../src/assets/art/characters/hero-3.png',
       () => BaseDeathAnimation(isPlayer),
       isPlayer,
       () => BaseDamageAnimation(isPlayer)
