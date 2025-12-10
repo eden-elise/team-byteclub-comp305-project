@@ -146,10 +146,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Flip enemy sprite horizontally to face the player */
-.combatant--enemy .combatant__sprite {
-  transform: scaleX(-1);
-}
 
 .combatant--enemy .combatant__sprite:hover {
   transform: scaleX(-1) scale(1.05);
