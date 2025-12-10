@@ -141,3 +141,6 @@ vite.config.ts.timestamp-*
 #.Idea
 .idea/
 
+#DS store
+.DS_Store
+**/.DS_Store

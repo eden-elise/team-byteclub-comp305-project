@@ -42,7 +42,7 @@ export class Archer extends Entity {
       SPEED: 14,
       LUCK: 15,
     };
-    const moves = ['Basic Strike', 'Heavy Swing'];
+    const moves = ['Piercing Shot', 'Poison Arrow'];
 
     const items = [
       { name: 'Health Potion', quantity: 5 },
@@ -74,7 +74,7 @@ export class Mage extends Entity {
       SPEED: 23,
       LUCK: 25,
     };
-    const moves = ['Basic Strike', 'Heavy Swing'];
+    const moves = ['Fireball', 'Arcane Blast'];
 
     const items = [
       { name: 'Health Potion', quantity: 5 },
