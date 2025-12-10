@@ -600,7 +600,7 @@
 }
 
 .episode-title h1 {
-  font-family: var(--font-heading, 'Cinzel', serif);
+  font-family: var(--font-heading);
   font-size: 2.8rem;
   letter-spacing: 0.4rem;
   margin-bottom: 0.8rem;
@@ -611,7 +611,7 @@
 }
 
 .subtitle {
-  font-family: var(--font-primary, 'Crimson Text', serif);
+  font-family: var(--font-primary);
   font-size: 1.3rem;
   font-style: italic;
   color: #4a3020;
@@ -655,7 +655,7 @@
 
 /* Content paragraphs - ink on parchment */
 .scroll-content {
-  font-family: var(--font-primary, 'Crimson Text', serif);
+  font-family: var(--font-primary);
   font-size: 1.4rem;
   line-height: 2;
   color: #1a0f0a;
@@ -733,7 +733,7 @@
 
 /* Drop cap for first letter (gothic style) */
 .scroll-content.first-paragraph::first-letter {
-  font-family: var(--font-heading, 'Cinzel', serif);
+  font-family: var(--font-heading);
   font-size: 4rem;
   float: left;
   line-height: 0.8;
@@ -753,7 +753,7 @@
   left: 50%;
   transform: translateX(-50%);
   color: rgba(200, 180, 150, 0.7);
-  font-family: var(--font-primary, 'Crimson Text', serif);
+  font-family: var(--font-primary);
   font-size: 0.95rem;
   letter-spacing: 0.1rem;
   animation: pulse 2.5s ease-in-out infinite;

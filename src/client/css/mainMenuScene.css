@@ -112,7 +112,7 @@
     4px 4px 8px rgba(0, 0, 0, 0.9);
   letter-spacing: 0.1em;
   margin: 0;
-  font-family: 'Cinzel', 'Georgia', serif;
+  font-family: var(--font-heading);
 }
 
 @keyframes fadeInTitle {
@@ -193,7 +193,7 @@
   border-radius: 8px;
   font-size: clamp(0.9rem, 1.2vw, 1.1rem);
   cursor: pointer;
-  font-family: 'Cinzel', 'Georgia', serif;
+  font-family: var(--font-heading);
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.1em;

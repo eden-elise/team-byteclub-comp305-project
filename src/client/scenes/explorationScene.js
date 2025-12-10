@@ -98,9 +98,23 @@ export class ExplorationSceneController {
             oldDialogueText.replaceWith(this.typewriterController);
         }
 
-        document.getElementById('choice-container').innerHTML = '';
-    }
+    document.getElementById('choice-container').innerHTML = '';
 
+    // Setup Skip Button
+    const skipBtn = document.getElementById('skip-cutscene-btn');
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => this.skipCutscene());
+    }
+  }
+
+  async startRoom() {
+    // Ensure skip button is visible
+    const btn = document.getElementById('skip-cutscene-btn');
+    if (btn) btn.style.display = 'block';
+
+    // Process the first event
+    await this.processNextEvent();
+  }
     /**
      * Starts processing events in the current room.
      * @async
@@ -186,7 +200,7 @@ export class ExplorationSceneController {
                 await this.processNextEvent();
         }
     }
-
+    
     /**
      * Handles battle events by saving the game state and initiating combat.
      * @async
@@ -195,29 +209,35 @@ export class ExplorationSceneController {
      * @returns {Promise<void>}
      */
     async handleBattle(params) {
-        const { enemy } = params;
-
-        // Save current state: room, event index to resume after battle
-        const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
-        const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
-        if (gameState.currentSaveData && gameState.currentSaveData.world) {
-            gameState.currentSaveData.world.currentRoom = this.room.id;
-            gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
-            gameState.saveGame();
-        }
-
-        // Start battle
-        if (window.gameApp && window.gameApp.startBattle) {
-            await window.gameApp.startBattle(enemy, async () => {
-                // On win, return to exploration at the same room, next event
-                console.log(
-                    `Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`
-                );
-                await window.gameApp.startFloorExploration(currentFloor);
-            });
-        } else {
-            console.error('GameApp not initialized');
-        }
+      // Hide skip button during battle
+      const btn = document.getElementById('skip-cutscene-btn');
+      if (btn) btn.style.display = 'none';
+      
+      // Save current state: room, event index to resume after battle
+      const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
+      const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
+      if (gameState.currentSaveData && gameState.currentSaveData.world) {
+        gameState.currentSaveData.world.currentRoom = this.room.id;
+        gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
+        gameState.saveGame();
+      }
+      // Since we already built out the floors without spcifying background, I'm making it so by default
+      // it will just call the battle scene with the current background
+      console.log(this.room.background);
+      params.background = this.room.background;
+      console.log(params.background);
+      // Start battle
+      if (window.gameApp && window.gameApp.startBattle) {
+        await window.gameApp.startBattle(params, async () => {
+          // On win, return to exploration at the same room, next event
+          console.log(
+            `Battle won! Resuming room ${this.room.id} at event ${this.currentEventIndex + 1}`
+          );
+          await window.gameApp.startFloorExploration(currentFloor);
+        });
+      } else {
+        console.error('GameApp not initialized');
+      }
     }
 
     /**
@@ -428,19 +448,20 @@ export class ExplorationSceneController {
 }
 
 
-
-
-
-    /**
+/**
      * Handles the completion of all events in a room.
      * Displays navigation buttons for connected rooms.
      * @returns {void}
      */
-    handleRoomComplete() {
-        const choiceContainer = document.getElementById('choice-container');
-        choiceContainer.innerHTML = '';
+  handleRoomComplete() {
+    // Hide skip button when room is complete
+    const btn = document.getElementById('skip-cutscene-btn');
+    if (btn) btn.style.display = 'none';
 
-        this.room.connections.forEach((connectionId) => {
+    const choiceContainer = document.getElementById('choice-container');
+    choiceContainer.innerHTML = '';
+
+    this.room.connections.forEach((connectionId) => {
             const button = document.createElement('button');
             button.className = 'choice-btn choice-btn--continue';
             button.textContent = `Go to ${connectionId.replace(/_/g, ' ')}`;
@@ -532,6 +553,55 @@ export class ExplorationSceneController {
         }
     }
 
+
+
+  /**
+   * Skips events until the next battle or the end of the event list
+   */
+  skipCutscene() {
+    // Always clear current dialogue instantly
+    if (this.typewriterController) {
+      this.typewriterController.clear();
+      console.log('clearing dialogue');
+    }
+
+    // Prevent double-triggering during processing
+    if (this.isProcessingEvent) {
+      console.log('preventing double-triggering');
+    }
+
+    const events = this.room.events;
+    let nextIndex = this.currentEventIndex;
+
+    // Find the next battle event
+    for (let i = this.currentEventIndex; i < events.length; i++) {
+      const e = events[i];
+      if (e.type === 'battle') {
+        nextIndex = i;
+        break;
+      }
+      nextIndex = i; // If no battles at all, end up on the last event
+      console.log('next index: ' + nextIndex);
+    }
+
+    // Move index to that point
+    this.currentEventIndex = nextIndex;
+    console.log('current index: ' + this.currentEventIndex);
+
+    // Clear choices immediately, since skipping invalidates them
+    const choiceContainer = document.getElementById('choice-container');
+    if (choiceContainer) choiceContainer.innerHTML = '';
+
+    // Process the event at the new position
+    this.processNextEvent();
+  }
+
+  /**
+   * Clear the choice buttons
+   */
+  clearChoices() {
+    document.getElementById('choice-container').innerHTML = '';
+  }
     /**
      * Clear the choice buttons.
      * Removes all choice buttons from the choice container.

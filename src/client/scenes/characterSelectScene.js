@@ -6,6 +6,7 @@
  */
 
 import { Knight, Archer } from '../../gameplay/definitions/heroesRegistry.js';
+import { Knight, Archer, Mage } from '../../gameplay/definitions/heroesRegistry.js';
 import { audioManager } from '../utils/AudioManager.js';
 
 /**
@@ -86,6 +87,32 @@ export class CharacterSelectSceneController {
                     'A swift and precise marksman from the elven forests. The Archer relies on high speed and luck to outmaneuver foes, dealing critical strikes from a distance while avoiding counterattacks.',
             },
         ];
+  /**
+   * @param {Function} onCharacterSelected - Callback function called when a character is selected and confirmed.
+   *                                         Receives the character data object.
+   */
+  constructor(onCharacterSelected) {
+    this.onCharacterSelected = onCharacterSelected;
+    this.characters = [
+      {
+        id: 'knight',
+        Class: Knight,
+        description:
+          'A stalwart defender of the realm, clad in heavy armor. The Knight excels in defense and possesses balanced offensive capabilities, making them a reliable choice for any encounter.',
+      },
+      {
+        id: 'archer',
+        Class: Archer,
+        description:
+          'A swift and precise marksman from the elven forests. The Archer relies on high speed and luck to outmaneuver foes, dealing critical strikes from a distance while avoiding counterattacks.',
+      },
+      {
+        id: 'mage',
+        Class: Mage,
+        description:
+          'A master of the arcane arts, wielding destructive spells and elemental power. The Mage sacrifices physical defense for overwhelming magical offense, bending the battlefield with fire, frost, and pure force.'
+      }
+    ];
 
         /**
          * Currently selected character data, or null if none selected

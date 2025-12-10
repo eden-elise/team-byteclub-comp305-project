@@ -3,7 +3,6 @@ import * as Floor1Rooms from './rooms-data/floor-1.js';
 import * as Floor2Rooms from './rooms-data/floor-2.js';
 import * as Floor3Rooms from './rooms-data/floor-3.js';
 import * as Floor4Rooms from './rooms-data/floor-4.js';
-import * as Floor5Rooms from './rooms-data/floor-5.js';
 import * as TestRooms from './rooms-data/test-room.js';
 
 /**
@@ -14,7 +13,7 @@ import * as TestRooms from './rooms-data/test-room.js';
 const rooms = {};
 
 // Combine all room modules
-const roomModules = [Floor1Rooms, Floor2Rooms, Floor3Rooms, Floor4Rooms, Floor5Rooms, TestRooms];
+const roomModules = [Floor1Rooms, Floor2Rooms, Floor3Rooms, Floor4Rooms, TestRooms];
 
 // Register all rooms
 for (const module of roomModules) {
