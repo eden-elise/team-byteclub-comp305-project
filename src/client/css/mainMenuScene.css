@@ -1,4 +1,12 @@
 /* Main Menu Styles */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+
 .main-menu-scene {
   position: relative;
   width: 100%;
@@ -17,20 +25,50 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../../../assets/art/title-screen/title-background.png');
-  background-size: cover;
+  background-image: 
+    radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 80%),
+    url('../../assets/art/title-screen/title-background.png');
+  background-size: auto 100vh;
   background-position: center;
+  background-repeat: no-repeat;
   opacity: 0;
-  animation: fadeInBackground 2s ease-in forwards;
+  animation: fadeInBackground 5s ease-in forwards;
   z-index: 1;
+  image-rendering: pixelated;
+}
+
+.ui-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  padding: 4vh 4vw;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1px);
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  z-index: 10;
+  opacity: 0;
+  animation: fadeInUI 2s ease-out 5s forwards;
+  max-width: 90vw;
+}
+
+@keyframes fadeInUI {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInBackground {
   0% {
-    opacity: 0;
+    opacity: 0.3;
+    scale: 2.2;
+  }
+  40% {
+    opacity: 1;
   }
   100% {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -48,15 +86,20 @@
   position: absolute;
   width: 60px;
   height: 60px;
+  image-rendering: pixelated;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  animation: fly-across 8s linear forwards;
+  will-change: transform;
+  animation: 
+    flyBird var(--duration) linear forwards, 
+    flap var(--flap-speed, 0.2s) steps(1) infinite,
+    bob 2s ease-in-out infinite;
 }
 
-@keyframes fly-across {
+@keyframes flyBird {
   0% {
-    left: -100px;
+    transform: translate(0, 0) rotate(0deg) scale(3.4);
     opacity: 0;
   }
   5% {
@@ -66,9 +109,22 @@
     opacity: 1;
   }
   100% {
-    left: 100vw;
+    transform: translate(var(--fly-distance-x), var(--fly-distance-y)) scale(0.2);
     opacity: 0;
   }
+}
+
+@keyframes flap {
+  0% { background-image: url('../../assets/art/title-screen/crow/crow-1.png'); }
+  25% { background-image: url('../../assets/art/title-screen/crow/crow-2.png'); }
+  50% { background-image: url('../../assets/art/title-screen/crow/crow-3.png'); }
+  75% { background-image: url('../../assets/art/title-screen/crow/crow-2.png'); }
+  100% { background-image: url('../../assets/art/title-screen/crow/crow-1.png'); }
+}
+
+@keyframes bob {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -20px; }
 }
 
 .lightning-flash {
@@ -101,16 +157,18 @@
   z-index: 4;
   text-align: center;
   opacity: 0;
-  animation: fadeInTitle 2s ease-out 1s forwards;
+  animation: 
+    fadeInTitle 4s ease-out 1s forwards, 
+    hoverTitle 20s ease-in-out 5s infinite alternate;
   font-size: clamp(3rem, 8vw, 6rem);
   font-weight: bold;
   color: #d4af37;
   text-shadow:
-    0 0 20px rgba(212, 175, 55, 0.8),
     0 0 40px rgba(212, 175, 55, 0.6),
     0 0 60px rgba(212, 175, 55, 0.4),
     4px 4px 8px rgba(0, 0, 0, 0.9);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.24em;
+  line-height: 1.1; 
   margin: 0;
   font-family: var(--font-heading);
 }
@@ -124,6 +182,20 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes hoverTitle {
+  0%   { transform: translate(0px, 0px); }
+  10%  { transform: translate(3px, -5px); }
+  20%  { transform: translate(-4px, 2px); }
+  30%  { transform: translate(6px, 1px); }
+  40%  { transform: translate(-2px, -3px); }
+  50%  { transform: translate(0px, 4px); }
+  60%  { transform: translate(5px, -2px); }
+  70%  { transform: translate(-3px, 3px); }
+  80%  { transform: translate(2px, -4px); }
+  90%  { transform: translate(-1px, 2px); }
+  100% { transform: translate(0px, 0px); }
 }
 
 .menu-buttons {
@@ -169,6 +241,7 @@
 
 .continue-container.visible {
   display: flex;
+  flex-direction: column;
 }
 
 .save-info {

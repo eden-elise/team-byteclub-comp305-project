@@ -49,6 +49,8 @@ export class MainMenuSceneController {
      * @returns {void}
      */
     init() {
+        audioManager.play('loading-screen', true);
+
         this.checkSaveFile();
         this.setupListeners();
         this.startAnimationSequence();
@@ -180,11 +182,6 @@ export class MainMenuSceneController {
                 this.userInterrupted = true;
                 this.skipToButtons();
             }
-
-            if (!this.musicStarted) {
-                this.musicStarted = true;
-                audioManager.play('loading-screen', true);
-            }
         };
         document.addEventListener('keydown', handleUserInput, { once: true });
         document.addEventListener('click', handleUserInput, { once: true });
@@ -211,44 +208,34 @@ export class MainMenuSceneController {
      */
     startBirdAnimations() {
         const birdsContainer = document.getElementById('birds-container');
-        const birdImages = [
-            '../../src/assets/art/title-screen/crow/crow-1.png',
-            '../../src/assets/art/title-screen/crow/crow-2.png',
-            '../../src/assets/art/title-screen/crow/crow-3.png',
-        ];
 
-        /**
-         * Creates a single bird element with randomized animation properties.
-         * @param {number} delay - Delay in milliseconds before creating the bird
-         * @private
-         */
         const createBird = (delay) => {
             setTimeout(() => {
                 const bird = document.createElement('div');
                 bird.className = 'bird';
-                const randomImage = birdImages[Math.floor(Math.random() * birdImages.length)];
-                bird.style.backgroundImage = `url('${randomImage}')`;
-                const startY = Math.random() * 40 + 10;
-                bird.style.top = `${startY}%`;
-                bird.style.left = '-50px';
-                const flyDistanceX = Math.random() * 600 + 800;
-                const flyDistanceY = (Math.random() - 0.5) * 200;
+                
+                // Animation parameters
+                const startY = Math.random() * 55 + 30;
+                const flyDistanceX = Math.random() * 300 + 600;
+                const flyDistanceY = (Math.random() - 0.5) * 150; 
                 const duration = Math.random() * 5 + 8;
+                const flapSpeed = Math.random() * 0.4 + 0.2; 
+
+                bird.style.top = `${startY}%`;
+                bird.style.left = '-60px';
                 bird.style.setProperty('--fly-distance-x', `${flyDistanceX}px`);
                 bird.style.setProperty('--fly-distance-y', `${flyDistanceY}px`);
-                bird.style.animation = `flyBird ${duration}s linear forwards`;
+                bird.style.setProperty('--duration', `${duration}s`);
+                bird.style.setProperty('--flap-speed', `${flapSpeed}s`);
+                
                 birdsContainer.appendChild(bird);
                 setTimeout(() => bird.remove(), duration * 1000);
             }, delay);
         };
 
-        for (let i = 0; i < 8; i++) createBird(i * 2000);
-
-        /**
-         * Interval ID for continuous bird spawning
-         * @type {number}
-         */
-        this.birdInterval = setInterval(() => createBird(0), 4000);
+        setTimeout(() => {
+            for (let i = 0; i < 32; i++) createBird(i * 600);
+        }, 4000);
     }
 
     /**
@@ -257,7 +244,7 @@ export class MainMenuSceneController {
      */
     triggerLightning() {
         const lightningFlash = document.getElementById('lightning-flash');
-        lightningFlash.style.animation = 'lightningStrike 0.8s ease-out forwards';
+        lightningFlash.style.animation = 'lightningFlash 0.8s ease-out forwards';
         setTimeout(() => {
             lightningFlash.style.animation = '';
         }, 800);
@@ -283,11 +270,20 @@ export class MainMenuSceneController {
         const background = document.getElementById('background');
         const titleText = document.getElementById('title-text');
         const menuButtons = document.getElementById('menu-buttons');
+        const uiContainer = document.querySelector('.ui-container');
 
         background.style.animation = 'none';
         background.style.opacity = '1';
+        background.style.scale = '1';
 
-        titleText.style.animation = 'none';
+        console.log("skipping intro animation");
+        
+        uiContainer.style.animation = 'none';
+        uiContainer.style.opacity = '1';
+
+        // Title should be visible and start hovering immediately (or after short delay if preferred, but user said "appear at same time")
+        // preventing the flight-in animation
+        titleText.style.animation = 'hoverTitle 20s ease-in-out infinite alternate';
         titleText.style.opacity = '1';
         titleText.style.transform = 'scale(1)';
 
@@ -408,12 +404,4 @@ export class MainMenuSceneController {
         }, 500);
     }
 
-    /**
-     * Cleans up resources used by the main menu scene.
-     * Clears the bird animation interval to prevent memory leaks.
-     * @returns {void}
-     */
-    cleanup() {
-        if (this.birdInterval) clearInterval(this.birdInterval);
-    }
 }
