@@ -362,7 +362,7 @@ function createStatusIcon(effect, prefix) {
 function buildInventoryItemHTML(inventorySlot, index) {
     const itemClass = getItemByName(inventorySlot.name);
     return `
-    <li class="inventory-item" data-item-index="${index}">
+    <li class="inventory-item interactive" data-item-index="${index}">
       <img src="${itemClass.data.spritePath}" alt="${inventorySlot.name}" class="inventory-item__icon">
       <div class="inventory-item__info">
         <div class="inventory-item__name">

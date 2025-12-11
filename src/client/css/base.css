@@ -45,3 +45,17 @@
   box-sizing: border-box;
   user-select: none;
 }
+
+body {
+  cursor: url("../../assets/icons/cursor-icons/select.png") 0 0, auto !important;
+}
+
+a,
+button,
+.interactive {
+  cursor: url("../../assets/icons/cursor-icons/link-select.png") 0 0, pointer !important;
+}
+
+body.grabbed {
+  cursor: url("../../assets/icons/cursor-icons/link-select-grab.png") 0 0, grabbing !important;
+}

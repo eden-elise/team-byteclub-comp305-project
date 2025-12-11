@@ -8,6 +8,7 @@ import { OptionsModalController } from './components/optionsModal.js';
 import { IntroScrollSceneController } from './scenes/introScrollScene.js';
 import { getRoomById } from '../gameplay/exploration/roomRegistry.js';
 import { audioManager } from './utils/AudioManager.js';
+import { DeathScreenSceneController } from './scenes/deathScreenScene.js';
 
 // Floor progression order - maps floor to starting room
 const FLOOR_ROOMS = {
@@ -17,8 +18,32 @@ const FLOOR_ROOMS = {
   'floor-4': 'F4_TOWER_INTRO'
 };
 
+// Track the current scene controller to handle cleanup
+let currentSceneController = null;
+
+/**
+ * Sets the current active scene controller and cleans up the previous one.
+ * @param {Object} controller - The new scene controller instance
+ */
+function setCurrentController(controller) {
+  if (currentSceneController && typeof currentSceneController.cleanup === 'function') {
+    console.log('Cleaning up previous scene controller');
+    currentSceneController.cleanup();
+  }
+  currentSceneController = controller;
+}
+
 async function initApp() {
   try {
+    // init global cursor
+    document.addEventListener("mousedown", () => {
+      document.body.classList.add("grabbed");
+    });
+
+    document.addEventListener("mouseup", () => {
+      document.body.classList.remove("grabbed");
+    });
+
     // Initialize global options
     new OptionsModalController();
     console.log('OptionsModalController initialized');
@@ -42,10 +67,10 @@ async function initApp() {
 
     // Initialize main menu with callbacks
     console.log('Initializing MainMenuSceneController...');
-    new MainMenuSceneController({
+    setCurrentController(new MainMenuSceneController({
       onNewGame: startNewGame,
       onContinue: continueGame,
-    });
+    }));
     console.log('MainMenuSceneController initialized');
   } catch (error) {
     console.error('Error in initApp:', error);
@@ -60,7 +85,7 @@ async function startNewGame() {
   await loadScene('characterSelectScene');
 
   // Initialize character select controller with callback
-  new CharacterSelectSceneController(async (characterData) => {
+  setCurrentController(new CharacterSelectSceneController(async (characterData) => {
     // Create the character using the Class from character data
     const character = new characterData.Class(true);
     gameState.characterEntity = character;
@@ -91,13 +116,13 @@ async function startNewGame() {
 
     // Move to intro scroll scene
     await loadScene('introScrollScene');
-    new IntroScrollSceneController({
+    setCurrentController(new IntroScrollSceneController({
       onComplete: async () => {
         // After intro, start exploring floor 1
         await startFloorExploration('floor-1');
       },
-    });
-  });
+    }));
+  }));
 }
 
 /**
@@ -180,13 +205,14 @@ async function startFloorExploration(floorId = 'floor-1') {
           // All floors completed - show completion screen or main menu
           console.log('Game completed!');
           await loadScene('mainMenuScene');
-          new MainMenuSceneController({
+          setCurrentController(new MainMenuSceneController({
             onNewGame: startNewGame,
             onContinue: continueGame,
-          });
+          }));
         }
       }
     );
+    setCurrentController(explorationController);
 
     window.explorationController = explorationController;
   } catch (error) {
@@ -225,6 +251,7 @@ async function startBattle(params, onWinCallback) {
       }
     }
   );
+  setCurrentController(battleController);
 
   window.battleController = battleController;
 }
@@ -234,49 +261,31 @@ async function startBattle(params, onWinCallback) {
  * player will have to go back to last save
  */
 async function handleLoss() {
-  // Create blackout overlay
-  const overlay = document.createElement('div');
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100vw';
-  overlay.style.height = '100vh';
-  overlay.style.background = 'black';
-  overlay.style.opacity = '0';
-  overlay.style.transition = 'opacity 1.5s ease';
-  overlay.style.zIndex = '9999';
-  document.body.appendChild(overlay);
+  console.log('Player defeated. Loading death screen scene...');
+  // Clear temporary save data for the current exploration/battle state
+  // but keep character entity for display on the death screen if needed
 
-  // Let it fade in
-  await new Promise(res => setTimeout(res, 50));
-  overlay.style.opacity = '1';
+  // Stop battle music
+  audioManager.stop('battle-background');
+  audioManager.play('death');
 
-  // Create YOU DIED text
-  const text = document.createElement('div');
-  text.innerText = 'YOU DIED';
-  text.style.position = 'fixed';
-  text.style.top = '50%';
-  text.style.left = '50%';
-  text.style.transform = 'translate(-50%, -50%)';
-  text.style.fontSize = '8rem';
-  text.style.fontWeight = '900';
-  text.style.color = 'red';
-  text.style.opacity = '0';
-  text.style.letterSpacing = '0.1em';
-  text.style.textShadow = '0 0 20px rgba(255,0,0,0.8)';
-  text.style.transition = 'opacity 2s ease';
-  text.style.zIndex = '10000';
-  document.body.appendChild(text);
+  // Load the Death Screen Scene
+  await loadScene('deathScreenScene');
 
-  // Fade text in slightly after the blackout
-  await new Promise(res => setTimeout(res, 800));
-  text.style.opacity = '1';
-
-  // Stay on screen for a few seconds
-  await new Promise(res => setTimeout(res, 3000));
-
-  // Restart the whole window
-  window.location.reload();
+  // Initialize the Death Screen Controller
+  // The callback will be executed when the player clicks "Wake Up"
+  new DeathScreenSceneController({
+    onWakeUp: async () => {
+      console.log('Returning to main menu...');
+      // Reload the main menu scene for a fresh restart/continue prompt
+      audioManager.stop('death');
+      await loadScene('mainMenuScene');
+      new MainMenuSceneController({
+        onNewGame: startNewGame,
+        onContinue: continueGame,
+      });
+    }
+  });
 }
 
 
@@ -299,10 +308,10 @@ document.addEventListener('keydown', async (e) => {
   } else if (e.key === 'm' || e.key === 'M') {
     // Return to main menu
     await loadScene('mainMenuScene');
-    new MainMenuSceneController({
+    setCurrentController(new MainMenuSceneController({
       onNewGame: startNewGame,
       onContinue: continueGame,
-    });
+    }));
   }
 });
 

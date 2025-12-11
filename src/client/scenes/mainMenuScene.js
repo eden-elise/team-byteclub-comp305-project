@@ -39,7 +39,12 @@ export class MainMenuSceneController {
          * @type {boolean}
          */
         this.userInterrupted = false;
-
+        
+        // Track resources for cleanup
+        this.timeouts = [];
+        this.intervals = [];
+        this.boundHandleUserInput = null;
+        
         this.init();
     }
 
@@ -76,6 +81,24 @@ export class MainMenuSceneController {
         } else {
             continueContainer.style.display = 'none';
         }
+    }
+
+    /**
+     * Helper to safely add timeout
+     */
+    addTimeout(callback, delay) {
+        const id = setTimeout(callback, delay);
+        this.timeouts.push(id);
+        return id;
+    }
+
+    /**
+     * Helper to safely add interval
+     */
+    addInterval(callback, delay) {
+        const id = setInterval(callback, delay);
+        this.intervals.push(id);
+        return id;
     }
 
     /**
@@ -177,15 +200,16 @@ export class MainMenuSceneController {
          * Handles user input for skipping animation and starting music.
          * @private
          */
-        const handleUserInput = () => {
+        this.boundHandleUserInput = () => {
             if (!this.animationComplete && !this.userInterrupted) {
                 this.userInterrupted = true;
                 this.skipToButtons();
             }
         };
-        document.addEventListener('keydown', handleUserInput, { once: true });
-        document.addEventListener('click', handleUserInput, { once: true });
-        document.addEventListener('touchstart', handleUserInput, { once: true });
+        
+        document.addEventListener('keydown', this.boundHandleUserInput, { once: true });
+        document.addEventListener('click', this.boundHandleUserInput, { once: true });
+        document.addEventListener('touchstart', this.boundHandleUserInput, { once: true });
     }
 
     /**
@@ -194,9 +218,9 @@ export class MainMenuSceneController {
      * @returns {void}
      */
     startAnimationSequence() {
-        setTimeout(() => this.startBirdAnimations(), 3000);
-        setTimeout(() => this.triggerLightning(), 4500);
-        setTimeout(() => {
+        this.addTimeout(() => this.startBirdAnimations(), 3000);
+        this.addTimeout(() => this.triggerLightning(), 4500);
+        this.addTimeout(() => {
             if (!this.userInterrupted) this.showButtons();
         }, 6000);
     }
@@ -207,10 +231,14 @@ export class MainMenuSceneController {
      * @returns {void}
      */
     startBirdAnimations() {
-      const birdsContainer = document.getElementById('birds-container');
+        const birdsContainer = document.getElementById('birds-container');
+        if (!birdsContainer) return; // Guard against scene change
 
         const createBird = (delay) => {
-            setTimeout(() => {
+            this.addTimeout(() => {
+                // Double check if container still exists (user might have navigated away)
+                if (!document.getElementById('birds-container')) return;
+                
                 const bird = document.createElement('div');
                 bird.className = 'bird';
                 
@@ -229,11 +257,11 @@ export class MainMenuSceneController {
                 bird.style.setProperty('--flap-speed', `${flapSpeed}s`);
                 
                 birdsContainer.appendChild(bird);
-                setTimeout(() => bird.remove(), duration * 1000);
+                this.addTimeout(() => bird.remove(), duration * 1000);
             }, delay);
         };
 
-        setTimeout(() => {
+        this.addTimeout(() => {
             for (let i = 0; i < 32; i++) createBird(i * 600);
         }, 4000);
     }
@@ -244,10 +272,14 @@ export class MainMenuSceneController {
      */
     triggerLightning() {
         const lightningFlash = document.getElementById('lightning-flash');
+        if (!lightningFlash) return;
+        
         lightningFlash.style.animation = 'lightningFlash 0.8s ease-out forwards';
       audioManager.play('lightning');
       setTimeout(() => {
             lightningFlash.style.animation = '';
+        this.addTimeout(() => {
+            if (lightningFlash) lightningFlash.style.animation = '';
         }, 800);
     }
 
@@ -276,8 +308,6 @@ export class MainMenuSceneController {
         background.style.animation = 'none';
         background.style.opacity = '1';
         background.style.scale = '1';
-
-        console.log("skipping intro animation");
         
         uiContainer.style.animation = 'none';
         uiContainer.style.opacity = '1';
@@ -308,7 +338,7 @@ export class MainMenuSceneController {
         titleText.style.opacity = 0;
         initialButtons.style.opacity = 0;
 
-        setTimeout(() => {
+        this.addTimeout(() => {
             titleText.style.display = 'none';
             initialButtons.style.display = 'none';
 
@@ -330,7 +360,7 @@ export class MainMenuSceneController {
         secondary.style.opacity = 0;
         secondary.style.transition = 'opacity 0.5s ease';
 
-        setTimeout(() => {
+        this.addTimeout(() => {
             secondary.style.display = 'none';
             const titleText = document.getElementById('title-text');
             const initialButtons = document.getElementById('initial-buttons');
@@ -363,7 +393,7 @@ export class MainMenuSceneController {
         title.style.opacity = 0;
         initialButtons.style.opacity = 0;
 
-        setTimeout(() => {
+        this.addTimeout(() => {
             title.style.display = 'none';
             initialButtons.style.display = 'none';
 
@@ -385,7 +415,7 @@ export class MainMenuSceneController {
         panel.style.opacity = 0;
         panel.style.transition = 'opacity 0.5s ease';
 
-        setTimeout(() => {
+        this.addTimeout(() => {
             panel.style.display = 'none';
 
             const title = document.getElementById('title-text');
@@ -405,4 +435,26 @@ export class MainMenuSceneController {
         }, 500);
     }
 
+    /**
+     * Cleans up resources used by the main menu scene.
+     * Clears the bird animation interval to prevent memory leaks.
+     * @returns {void}
+     */
+    cleanup() {
+        // Clear all timeouts
+        this.timeouts.forEach(clearTimeout);
+        this.timeouts = [];
+
+        // Clear all intervals
+        this.intervals.forEach(clearInterval);
+        this.intervals = [];
+
+        // Remove document level listeners
+        if (this.boundHandleUserInput) {
+            document.removeEventListener('keydown', this.boundHandleUserInput);
+            document.removeEventListener('click', this.boundHandleUserInput);
+            document.removeEventListener('touchstart', this.boundHandleUserInput);
+            this.boundHandleUserInput = null;
+        }
+    }
 }

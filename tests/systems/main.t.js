@@ -174,6 +174,7 @@ test('initApp constructs OptionsModalController, exposes gameApp and loads mainM
 
   const mainMenuLoaded = registry.loadSceneCalls.find((c) => c.name === 'mainMenuScene');
   expect(mainMenuLoaded).toBeTruthy();
+});
 
 test('initApp constructs OptionsModalController, exposes gameApp and loads mainMenuScene', async () => {
   await initApp();

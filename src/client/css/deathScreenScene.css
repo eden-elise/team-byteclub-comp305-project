@@ -1,0 +1,109 @@
+/* * --------------------------------
+ * Death Screen Scene Styles
+ * --------------------------------
+ * This file uses variables defined in base.css but contains all scene-specific 
+ * structural and stylistic rules, including necessary button definitions.
+ */
+
+/* 1. Scene Container */
+.death-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-primary);
+    opacity: 0; 
+    transition: opacity 2s ease-in-out;
+    z-index: 9000;
+    font-family: var(--font-primary);
+}
+
+/* Activated by the DeathScreenSceneController */
+.scene.death-scene.active {
+    opacity: 1;
+}
+
+/* 2. Message Box Container */
+.death-message-container {
+    text-align: center;
+    padding: 3rem;
+    /* Using radial gradient for a dramatic, centered look */
+    background: radial-gradient(circle at center, var(--color-bg-radial-light) 0%, var(--color-bg-radial-dark) 80%);
+    border: 2px solid var(--color-stone);
+    border-radius: var(--size-border-radius);
+    box-shadow: var(--shadow-box);
+    max-width: 600px;
+    width: 90%;
+    animation: fadeIn 3s forwards;
+}
+
+.death-title {
+    font-size: 4rem;
+    color: var(--color-text-gold);
+    text-shadow: var(--shadow-glow-gold);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.15em;
+    animation: pulseGold 2s infinite alternate;
+}
+
+.death-subtitle {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+}
+
+/* 3. Replicating the Base Button Styles (since we aren't editing base.css) */
+.action-btn {
+    font-family: var(--font-primary);
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+    background-color: var(--color-btn-bg);
+    border: 2px solid var(--color-btn-border);
+    border-radius: var(--size-border-radius);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-medium);
+    box-shadow: var(--shadow-box);
+    letter-spacing: 0.1em;
+    min-width: 200px;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background-color: var(--color-btn-hover);
+    border-color: var(--color-btn-border-hover);
+    color: var(--color-text-gold);
+}
+
+.action-btn:active {
+    background-color: var(--color-btn-active);
+    transform: translateY(2px);
+}
+
+/* 4. Custom Style for the 'Wake Up' button */
+.death-btn {
+    font-size: 2rem;
+    padding: 1rem 2rem;
+    min-width: 300px;
+    color: var(--color-text-primary);
+    background-color: var(--color-hp); /* Red color for intensity */
+    border-color: var(--color-hp);
+    box-shadow: 0 0 10px var(--color-hp-glow), var(--shadow-box);
+}
+
+.death-btn:hover {
+    background-color: #d14a42;
+    border-color: #d14a42;
+    box-shadow: 0 0 25px var(--color-hp-glow), var(--shadow-box);
+    color: var(--color-text-primary);
+}
+
+/* 5. Animation */
+@keyframes pulseGold {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.03); opacity: 0.95; }
+}

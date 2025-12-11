@@ -12,7 +12,6 @@ export async function loadScene(sceneName, cssName = sceneName) {
     }
 
     container.innerHTML = html;
-    console.log(`Scene HTML loaded: ${sceneName}`);
 
     // Ensure base CSS is loaded
     if (!document.getElementById('base-style')) {
@@ -21,7 +20,6 @@ export async function loadScene(sceneName, cssName = sceneName) {
       baseLink.rel = 'stylesheet';
       baseLink.href = './css/base.css';
       document.head.appendChild(baseLink);
-      console.log('Base CSS loaded');
     }
 
     // Load scene CSS
@@ -34,7 +32,6 @@ export async function loadScene(sceneName, cssName = sceneName) {
     link.href = `./css/${cssName}.css`;
 
     document.head.appendChild(link);
-    console.log(`Scene CSS loaded: ${cssName}.css`);
 
     // Save current scene to state
     gameState.setCurrentScene(sceneName);
