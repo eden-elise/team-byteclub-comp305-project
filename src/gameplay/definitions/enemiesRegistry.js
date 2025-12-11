@@ -116,3 +116,32 @@ export class MemoryWraith extends Entity {
 export const createMemoryWraith = () => {
   return new MemoryWraith();
 };
+
+export class Warden extends Entity {
+  constructor() {
+    const stats = {
+      ATTACK: 18, // same as Knight clone
+      DEFEND: 31,
+      SPEED: 9,
+      LUCK: 10,
+    };
+    const moves = ['Shackles Rattle'];
+    const items = [];
+
+    super(
+      'Warden',
+      50, // keep the same HP you set in floor-1 helper
+      stats,
+      moves,
+      items,
+      '../../src/assets/art/characters/Warden.png',
+      () => BaseDeathAnimation(false),
+      false,
+      () => BaseDamageAnimation(false)
+    );
+  }
+}
+
+export const createWarden = () => {
+  return new Warden();
+};

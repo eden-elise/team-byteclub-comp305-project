@@ -99,3 +99,15 @@ export class FracturedGuardStatusEffect extends StatusEffect {
     );
   }
 }
+
+export class ShacklesRattleStatusEffect extends StatusEffect {
+  constructor() {
+    super(
+      'Shackles Rattle',
+      'Adrenaline surges, raising attack briefly',
+      2,
+      'adrenaline-icon.png',
+      { ATTACK: 2 } // +2 ATK for 2 turns; reapplying will refresh/stack per your StatusEffect rules
+    );
+  }
+}

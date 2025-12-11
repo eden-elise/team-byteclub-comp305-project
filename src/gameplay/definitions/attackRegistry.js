@@ -4,6 +4,7 @@ import {
     MemoryDrainStatusEffect,
     DarkResonanceStatusEffect,
     FracturedGuardStatusEffect,
+    ShacklesRattleStatusEffect,
     FreezeStatusEffect, PoisonStatusEffect, BurnStatusEffect,
 } from './statusEffectRegistry.js';
 
@@ -216,7 +217,7 @@ export class MindLeech extends Attack {
 
 export class RunicSnare extends Attack {
   static data = {
-    basePower: 1.0,
+    basePower: 1.4,
     statusEffect: new FreezeStatusEffect(),
     statusEffectChance: 1,
     description: 'A binding rune that locks the target for one turn',
@@ -260,6 +261,40 @@ export class HauntingPulse extends Attack {
   }
 }
 
+export class ShacklesRattle extends Attack {
+  static data = {
+    basePower: 1.3, // same as Basic Strike damage profile
+    description: 'A heavy slam that hypes the Warden up.',
+  };
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 35,
+    duration: 320,
+  });
+
+  constructor() {
+    super('Shackles Rattle', ShacklesRattle.data, ShacklesRattle.animationCallback);
+  }
+
+  async execute(source, target, battle) {
+    if (!target.isAlive()) return Promise.resolve();
+    battle.logEvent(`${source.name} uses ${this.name}!`);
+
+    // standard light hit (mirrors Basic Strike math)
+    const baseDamage = source.stats.ATTACK * this.basePower;
+    const defenseReduction = target.stats.DEFEND / 2;
+    const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
+
+    await this.playAnimation(source, target, battle);
+    await target.takeDamage(damage);
+    battle.logEvent(`${target.name} takes ${damage} damage!`);
+    if (!target.isAlive()) battle.logEvent(`${target.name} is defeated!`);
+
+    // self-buff
+    source.addStatusEffect(new ShacklesRattleStatusEffect(), battle.textbox);
+    battle.logEvent(`${source.name}'s attack rises!`);
+  }
+}
+
 
 export const AttackMap = {
   'Basic Strike': BasicStrike,
@@ -275,6 +310,7 @@ export const AttackMap = {
   'Arcane Blast': ArcaneBlast,
   'Echo Rend': EchoRend,
   'Haunting Pulse': HauntingPulse,
+  'Shackles Rattle': ShacklesRattle,
 };
 
 export function getAttackByName(name) {
