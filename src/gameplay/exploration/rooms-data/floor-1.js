@@ -1,3 +1,5 @@
+import { createWarden } from '../../definitions/enemiesRegistry.js';
+
 import { Knight } from '../../definitions/heroesRegistry.js';
 import {
   FadeInAnimation,
@@ -357,7 +359,8 @@ export const F1_FIGHT = {
     {
       type: 'battle',
       params: {
-        enemy: createWardenEnemy(),
+        enemy: createWarden(),
+        background: BACKGROUNDS.WARDEN_CELL
       },
     },
     {

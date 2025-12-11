@@ -142,10 +142,7 @@ body {
   transition: transform var(--transition-medium);
 }
 
-/* Flip NPC sprite horizontally to face the player */
-.character--npc .character__sprite {
-  transform: scaleX(-1);
-}
+
 
 .exploration-divider {
   width: 2px;
