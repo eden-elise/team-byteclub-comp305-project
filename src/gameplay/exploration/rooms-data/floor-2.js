@@ -43,7 +43,7 @@ const SPEAKERS = {
   },
 };
 
-// Enemy logic factory (placeholder stats)
+// Enemy logic factory (placeholder statistics)
 const createCursedScholarEnemy = () => {
   const scholar = new Knight(false);
   scholar.name = 'Cursed Scholar';
@@ -111,6 +111,10 @@ export const F2_INTRO = {
 export const F2_MAIN_HALL = {
   id: 'F2_MAIN_HALL',
   events: [
+    {
+      type: 'background-change',
+      params: { background: BACKGROUNDS.AISLE },
+    },
     {
       type: 'dialogue',
       params: {
