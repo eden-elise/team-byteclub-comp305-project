@@ -43,7 +43,7 @@ const SPEAKERS = {
   },
 };
 
-// Enemy logic factory (placeholder stats)
+// Enemy logic factory (placeholder statistics)
 const createCursedScholarEnemy = () => {
   const scholar = new Knight(false);
   scholar.name = 'Cursed Scholar';

@@ -258,7 +258,7 @@ async function startBattle(params, onWinCallback) {
 
 /**
  * Handle player loss
- * player will have to go back to last save
+ * player will have to go back to previous save
  */
 async function handleLoss() {
   console.log('Player defeated. Loading death screen scene...');
