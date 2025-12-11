@@ -1,3 +1,41 @@
+// Mobile device detection
+function isMobileDevice() {
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.innerWidth <= 768
+  );
+}
+
+function showMobileWarning() {
+  document.body.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #1a1a2e;
+      color: #eee;
+      font-family: serif;
+      text-align: center;
+      padding: 20px;
+    ">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">⚔️ BYTECLUB ⚔️</h1>
+      <p style="font-size: 1.2rem; max-width: 400px;">
+        This game is designed for <strong>desktop and laptop</strong> computers only.
+      </p>
+      <p style="font-size: 1rem; margin-top: 1rem; color: #888;">
+        Please visit us on a larger screen to play!
+      </p>
+    </div>
+  `;
+}
+
+// Check on load
+if (isMobileDevice()) {
+  showMobileWarning();
+  throw new Error('Mobile device detected - stopping game initialization');
+}
 import { loadScene } from './sceneLoader.js';
 import { CharacterSelectSceneController } from './scenes/characterSelectScene.js';
 import { MainMenuSceneController } from './scenes/mainMenuScene.js';
@@ -15,7 +53,7 @@ const FLOOR_ROOMS = {
   'floor-1': 'F1_INTRO_WAKE',
   'floor-2': 'F2_INTRO',
   'floor-3': 'F3_INTRO',
-  'floor-4': 'F4_TOWER_INTRO'
+  'floor-4': 'F4_TOWER_INTRO',
 };
 
 // Track the current scene controller to handle cleanup
@@ -36,12 +74,12 @@ function setCurrentController(controller) {
 async function initApp() {
   try {
     // init global cursor
-    document.addEventListener("mousedown", () => {
-      document.body.classList.add("grabbed");
+    document.addEventListener('mousedown', () => {
+      document.body.classList.add('grabbed');
     });
 
-    document.addEventListener("mouseup", () => {
-      document.body.classList.remove("grabbed");
+    document.addEventListener('mouseup', () => {
+      document.body.classList.remove('grabbed');
     });
 
     // Initialize global options
@@ -67,10 +105,12 @@ async function initApp() {
 
     // Initialize main menu with callbacks
     console.log('Initializing MainMenuSceneController...');
-    setCurrentController(new MainMenuSceneController({
-      onNewGame: startNewGame,
-      onContinue: continueGame,
-    }));
+    setCurrentController(
+      new MainMenuSceneController({
+        onNewGame: startNewGame,
+        onContinue: continueGame,
+      })
+    );
     console.log('MainMenuSceneController initialized');
   } catch (error) {
     console.error('Error in initApp:', error);
@@ -85,44 +125,48 @@ async function startNewGame() {
   await loadScene('characterSelectScene');
 
   // Initialize character select controller with callback
-  setCurrentController(new CharacterSelectSceneController(async (characterData) => {
-    // Create the character using the Class from character data
-    const character = new characterData.Class(true);
-    gameState.characterEntity = character;
+  setCurrentController(
+    new CharacterSelectSceneController(async (characterData) => {
+      // Create the character using the Class from character data
+      const character = new characterData.Class(true);
+      gameState.characterEntity = character;
 
-    // Create a save using GameState.startNewGame if we stored the classId
-    // For now, directly create the entity
-    gameState.currentSaveData = {
-      hero: {
-        name: character.name,
-        classId: characterData.id,
-        currentHP: character.currentHP,
-        maxHP: character.maxHP,
-        stats: character.stats,
-        items: character.items,
-        level: 1,
-      },
-      world: {
-        currentScene: 'introScrollScene',
-        currentFloor: 'floor-1',
-        currentRoom: null,
-        currentEventIndex: 0,
-      },
-      metadata: {
-        timestamp: Date.now(),
-      },
-    };
-    gameState.saveGame();
+      // Create a save using GameState.startNewGame if we stored the classId
+      // For now, directly create the entity
+      gameState.currentSaveData = {
+        hero: {
+          name: character.name,
+          classId: characterData.id,
+          currentHP: character.currentHP,
+          maxHP: character.maxHP,
+          stats: character.stats,
+          items: character.items,
+          level: 1,
+        },
+        world: {
+          currentScene: 'introScrollScene',
+          currentFloor: 'floor-1',
+          currentRoom: null,
+          currentEventIndex: 0,
+        },
+        metadata: {
+          timestamp: Date.now(),
+        },
+      };
+      gameState.saveGame();
 
-    // Move to intro scroll scene
-    await loadScene('introScrollScene');
-    setCurrentController(new IntroScrollSceneController({
-      onComplete: async () => {
-        // After intro, start exploring floor 1
-        await startFloorExploration('floor-1');
-      },
-    }));
-  }));
+      // Move to intro scroll scene
+      await loadScene('introScrollScene');
+      setCurrentController(
+        new IntroScrollSceneController({
+          onComplete: async () => {
+            // After intro, start exploring floor 1
+            await startFloorExploration('floor-1');
+          },
+        })
+      );
+    })
+  );
 }
 
 /**
@@ -205,10 +249,12 @@ async function startFloorExploration(floorId = 'floor-1') {
           // All floors completed - show completion screen or main menu
           console.log('Game completed!');
           await loadScene('mainMenuScene');
-          setCurrentController(new MainMenuSceneController({
-            onNewGame: startNewGame,
-            onContinue: continueGame,
-          }));
+          setCurrentController(
+            new MainMenuSceneController({
+              onNewGame: startNewGame,
+              onContinue: continueGame,
+            })
+          );
         }
       }
     );
@@ -284,10 +330,9 @@ async function handleLoss() {
         onNewGame: startNewGame,
         onContinue: continueGame,
       });
-    }
+    },
   });
 }
-
 
 // Debug keyboard shortcuts
 document.addEventListener('keydown', async (e) => {
@@ -308,10 +353,12 @@ document.addEventListener('keydown', async (e) => {
   } else if (e.key === 'm' || e.key === 'M') {
     // Return to main menu
     await loadScene('mainMenuScene');
-    setCurrentController(new MainMenuSceneController({
-      onNewGame: startNewGame,
-      onContinue: continueGame,
-    }));
+    setCurrentController(
+      new MainMenuSceneController({
+        onNewGame: startNewGame,
+        onContinue: continueGame,
+      })
+    );
   }
 });
 
