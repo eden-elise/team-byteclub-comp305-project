@@ -3,7 +3,6 @@ import { CharacterSelectSceneController } from './scenes/characterSelectScene.js
 import { MainMenuSceneController } from './scenes/mainMenuScene.js';
 import { BattleSceneController } from './scenes/battleScene.js';
 import { ExplorationSceneController } from './scenes/explorationScene.js';
-import { Knight, Archer } from '../gameplay/definitions/heroesRegistry.js';
 import { gameState } from '../gameplay/state/GameState.js';
 import { OptionsModalController } from './components/optionsModal.js';
 import { IntroScrollSceneController } from './scenes/introScrollScene.js';
@@ -313,7 +312,7 @@ async function init() {
 }
 
 // Load audio assets
-const AUDIO_PATH = '/team-byteclub-comp305-project/src/assets/media/';
+const AUDIO_PATH = '../../src/assets/media/';
 
 audioManager.load('loading-screen', AUDIO_PATH + 'Loading-Screen.mp3');
 audioManager.load('button-click', AUDIO_PATH + 'Button-Click.mp3');
