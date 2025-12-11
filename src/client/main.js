@@ -34,6 +34,15 @@ function setCurrentController(controller) {
 
 async function initApp() {
   try {
+    // init global cursor
+    document.addEventListener("mousedown", () => {
+      document.body.classList.add("grabbed");
+    });
+
+    document.addEventListener("mouseup", () => {
+      document.body.classList.remove("grabbed");
+    });
+
     // Initialize global options
     new OptionsModalController();
     console.log('OptionsModalController initialized');
