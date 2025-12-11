@@ -36,6 +36,13 @@ if (isMobileDevice()) {
   showMobileWarning();
   throw new Error('Mobile device detected - stopping game initialization');
 }
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768) {
+    showMobileWarning();
+  }
+});
+
 import { loadScene } from './sceneLoader.js';
 import { CharacterSelectSceneController } from './scenes/characterSelectScene.js';
 import { MainMenuSceneController } from './scenes/mainMenuScene.js';
