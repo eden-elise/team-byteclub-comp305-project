@@ -75,7 +75,6 @@ describe('AudioManager (unit)', () => {
       manager.load('test-sound', 'sounds/test.mp3', 0.8);
 
       const { audio } = manager.sounds['test-sound'];
-      // 0.8 * 0.5 should be 0.4 (exact, but we can still be tolerant)
       assertApproxEqual(
         audio.volume,
         0.4,
@@ -147,15 +146,32 @@ describe('AudioManager (unit)', () => {
       );
     });
 
-    it('swallows play() rejections from the underlying Audio API', async () => {
+    it('swallows play() rejections from the underlying Audio API without noisy console output', async () => {
       const audio = manager.sounds['test-sound'].audio;
       audio.play = () => Promise.reject(new Error('blocked'));
 
-      // Should not throw even if the promise rejects
-      assert.doesNotThrow(
-        () => manager.play('test-sound'),
-        'play() should catch underlying Audio.play() rejections',
-      );
+      // NEW: silence only this test → prevents noise from logged Errors
+      const originalLog = console.log;
+      let loggedArgs = null;
+      console.log = (...args) => {
+        loggedArgs = args; // capture the log, but suppress printing
+      };
+
+      try {
+        assert.doesNotThrow(
+          () => manager.play('test-sound'),
+          'play() should catch underlying Audio.play() rejections',
+        );
+
+        await Promise.resolve(); // allow catch() to run
+
+        // Ensure logging still occurred (testing correctness)
+        assert.ok(loggedArgs, 'play() should log when Audio.play() rejects');
+        assert.strictEqual(loggedArgs[0], 'Audio blocked:', 'first console.log arg should match');
+        assert.ok(loggedArgs[1] instanceof Error, 'second console.log arg should be the Error');
+      } finally {
+        console.log = originalLog; // restore
+      }
     });
   });
 
@@ -208,7 +224,6 @@ describe('AudioManager (unit)', () => {
 
       manager.setMasterVolume(50); // 0.5
 
-      // These multiplications should be exact (0.5 and 0.8 * 0.5)
       assertApproxEqual(
         manager.sounds['sound-1'].audio.volume,
         0.25,
