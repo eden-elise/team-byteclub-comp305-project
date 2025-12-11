@@ -1,3 +1,14 @@
+/**
+ * @fileoverview Integration tests for the roomRegistry module. Verifies that
+ * registered rooms can be retrieved, that registry queries remain consistent
+ * under repeated calls, and that warning noise is avoided for valid operations.
+ * @module tests/systems/roomRegistry.int.test
+ */
+
+// ===========================================================================================
+// IMPORTS
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { describe, it } from 'node:test';
 
@@ -36,6 +47,9 @@ describe('roomRegistry (integration)', () => {
   });
 
   it('handles rapid successive calls without issues', () => {
+    // This test simulates repeated registry access patterns to ensure the
+    // module is resilient to quick, repeated lookups and does not mutate
+    // global registry state in surprising ways.
     const testIds = ['Test Room', 'NonexistentRoom', 'Test Room'];
 
     testIds.forEach((id) => {
