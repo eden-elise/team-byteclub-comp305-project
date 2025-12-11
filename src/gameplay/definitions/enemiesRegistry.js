@@ -67,7 +67,7 @@ export class CursedScholar extends Entity {
       SPEED: 12,
       LUCK: 14,
     };
-    const moves = ['Mind Leech', 'Runic Snare']; // make sure these are in AttackMap
+    const moves = ['Mind Leech', 'Runic Snare']; 
     const items = [];
 
     super(
@@ -86,4 +86,33 @@ export class CursedScholar extends Entity {
 
 export const createCursedScholar = () => {
   return new CursedScholar();
+};
+
+export class MemoryWraith extends Entity {
+  constructor() {
+    const stats = {
+      ATTACK: 20,
+      DEFEND: 22,
+      SPEED: 13,
+      LUCK: 20,
+    };
+    const moves = ['Echo Rend', 'Haunting Pulse'];
+    const items = [];
+
+    super(
+      'Memory Wraith',
+      170, // Floor 4 boss: tougher than Scholar, below Dravik
+      stats,
+      moves,
+      items,
+      '../../src/assets/art/characters/Memory Wraith.png',
+      () => BaseDeathAnimation(false),
+      false,
+      () => BaseDamageAnimation(false)
+    );
+  }
+}
+
+export const createMemoryWraith = () => {
+  return new MemoryWraith();
 };

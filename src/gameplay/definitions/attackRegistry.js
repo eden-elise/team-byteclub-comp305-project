@@ -229,6 +229,37 @@ export class RunicSnare extends Attack {
   }
 }
 
+export class EchoRend extends Attack {
+  static data = {
+    basePower: 1.4,
+    statusEffect: new FracturedGuardStatusEffect(),
+    statusEffectChance: 0.45,
+    description: 'A raking swipe that cracks armor with remembered pain.',
+  };
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 55,
+    duration: 380,
+  });
+  constructor() {
+    super('Echo Rend', EchoRend.data, EchoRend.animationCallback);
+  }
+}
+
+export class HauntingPulse extends Attack {
+  static data = {
+    basePower: 1.8,
+    description: 'A burst of condensed memory-force that slams into the target.',
+  };
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 40,
+    duration: 420,
+  });
+  constructor() {
+    super('Haunting Pulse', HauntingPulse.data, HauntingPulse.animationCallback);
+  }
+}
+
+
 export const AttackMap = {
   'Basic Strike': BasicStrike,
   'Heavy Swing': HeavySwing,
@@ -241,6 +272,8 @@ export const AttackMap = {
   'Poison Arrow': PoisonArrow,
   'Fireball': Fireball,
   'Arcane Blast': ArcaneBlast,
+  'Echo Rend': EchoRend,
+  'Haunting Pulse': HauntingPulse,
 };
 
 export function getAttackByName(name) {
