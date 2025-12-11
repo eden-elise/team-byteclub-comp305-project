@@ -6,6 +6,7 @@
 import '../components/TypewriterTextbox.js';
 import { getRoomById } from '../../gameplay/exploration/roomRegistry.js';
 import { gameState } from '../../gameplay/state/GameState.js';
+import { audioManager } from '../utils/AudioManager.js';
 
 /**
  * Controller class for managing exploration scenes in the game.
@@ -78,7 +79,9 @@ export class ExplorationSceneController {
      * @returns {void}
      */
     initializeUI() {
-        // Both sections start hidden - entities will be shown via entity-enter events
+      audioManager.stop('battle-background');
+      audioManager.play('explore-scene', true);
+      // Both sections start hidden - entities will be shown via entity-enter events
         const playerSection = document.getElementById('player-section');
         const npcSection = document.getElementById('npc-section');
         playerSection.style.visibility = 'hidden';
@@ -92,7 +95,7 @@ export class ExplorationSceneController {
         this.typewriterController.init({
             defaultSpeed: 30,
         });
-        this.typewriterController.style.height = '150px'; // Set default height
+      this.typewriterController.style.height = '150px'; // Set default height
 
         if (oldDialogueText) {
             oldDialogueText.replaceWith(this.typewriterController);
@@ -212,7 +215,7 @@ export class ExplorationSceneController {
       // Hide skip button during battle
       const btn = document.getElementById('skip-cutscene-btn');
       if (btn) btn.style.display = 'none';
-      
+
       // Save current state: room, event index to resume after battle
       const roomPrefix = this.room.id.split('_')[0]; // e.g., "F2"
       const currentFloor = roomPrefix ? `floor-${roomPrefix.slice(1)}` : 'floor-1';
@@ -467,7 +470,8 @@ export class ExplorationSceneController {
             button.textContent = `Go to ${connectionId.replace(/_/g, ' ')}`;
 
             button.addEventListener('click', () => {
-                this.transitionToRoom(connectionId);
+              audioManager.play('button-click');
+              this.transitionToRoom(connectionId);
             });
             choiceContainer.appendChild(button);
         });
