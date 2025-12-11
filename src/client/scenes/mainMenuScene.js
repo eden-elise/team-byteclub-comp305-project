@@ -54,11 +54,10 @@ export class MainMenuSceneController {
      * @returns {void}
      */
     init() {
-        audioManager.play('loading-screen', true);
-
         this.checkSaveFile();
         this.setupListeners();
         this.startAnimationSequence();
+        audioManager.play('loading-screen', true);
     }
 
     /**
@@ -113,6 +112,7 @@ export class MainMenuSceneController {
         btnPlay.addEventListener('click', () => {
             this.showSecondaryMenu();
             audioManager.play('button-click');
+            audioManager.play('loading-screen', true);
         });
 
         // Exit button → show exit confirmation
@@ -275,6 +275,9 @@ export class MainMenuSceneController {
         if (!lightningFlash) return;
         
         lightningFlash.style.animation = 'lightningFlash 0.8s ease-out forwards';
+      audioManager.play('lightning');
+      setTimeout(() => {
+            lightningFlash.style.animation = '';
         this.addTimeout(() => {
             if (lightningFlash) lightningFlash.style.animation = '';
         }, 800);
@@ -286,7 +289,7 @@ export class MainMenuSceneController {
      * @returns {void}
      */
     showButtons() {
-        this.animationComplete = true;
+      this.animationComplete = true;
         const menuButtons = document.getElementById('menu-buttons');
         menuButtons.classList.add('visible');
     }

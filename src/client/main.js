@@ -338,6 +338,8 @@ audioManager.load('victory', AUDIO_PATH + 'Victory.mp3');
 audioManager.load('death', AUDIO_PATH + 'Death.mp3');
 audioManager.load('character-choice', AUDIO_PATH + 'Character-Choice.mp3');
 audioManager.load('scroll-background', AUDIO_PATH + 'Scroll-Background.mp3');
+audioManager.load('lightning', AUDIO_PATH + 'Lightning.mp3');
+audioManager.load('explore-scene', AUDIO_PATH + 'Explore-Scene.mp3');
 
 // Start the application
 init();

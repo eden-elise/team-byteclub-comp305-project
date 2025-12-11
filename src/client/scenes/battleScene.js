@@ -488,8 +488,8 @@ export class BattleSceneController {
             `url('${finalBG.replace(/url\(|\)|"/g, "")}')`
         );
     }
-
-    audioManager.play('battle-background', true); // Start battle music looping
+    audioManager.stop('explore-scene');
+    audioManager.play('battle-background', true);
 
         /**
          * Player's inventory of usable items
