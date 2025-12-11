@@ -112,6 +112,10 @@ export const F2_MAIN_HALL = {
   id: 'F2_MAIN_HALL',
   events: [
     {
+      type: 'background-change',
+      params: { background: BACKGROUNDS.AISLE },
+    },
+    {
       type: 'dialogue',
       params: {
         speaker: SPEAKERS.NARRATOR,
