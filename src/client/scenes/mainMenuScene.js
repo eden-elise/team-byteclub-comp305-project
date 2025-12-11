@@ -89,7 +89,7 @@ export class MainMenuSceneController {
         btnPlay.addEventListener('click', () => {
             this.showSecondaryMenu();
             audioManager.play('button-click');
-            audioManager.play('loading-screen');
+            audioManager.play('loading-screen', true);
         });
 
         // Exit button → show exit confirmation
