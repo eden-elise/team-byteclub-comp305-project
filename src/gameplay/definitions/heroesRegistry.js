@@ -65,7 +65,6 @@ export class Archer extends Entity {
   }
 }
 
-
 export class Mage extends Entity {
   constructor(isPlayer) {
     const stats = {

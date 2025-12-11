@@ -82,7 +82,7 @@ export class AudioManager {
     if (sound && sound.audio) {
       sound.audio.currentTime = 0;
       sound.audio.loop = loop;
-      sound.audio.play().catch((e) => console.warn('Audio playback blocked:', e));
+      sound.audio.play().catch((e) => console.log('Audio blocked:', e));
     }
   }
 
@@ -128,4 +128,3 @@ export class AudioManager {
  * @type {AudioManager}
  */
 export const audioManager = new AudioManager();
-

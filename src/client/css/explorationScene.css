@@ -56,7 +56,8 @@ body {
 
   /* Background image with tint */
   background-image:
-    radial-gradient(circle at center,
+    radial-gradient(
+      circle at center,
       rgba(0, 0, 0, 0) 10%,
       rgba(0, 0, 0, 0.75) 45%,
       rgba(0, 0, 0, 0.5) 100%
@@ -101,7 +102,6 @@ body {
   background-color: rgba(0, 0, 0, 0.35);
   z-index: 0;
   pointer-events: none;
-
 }
 
 .character > * {
@@ -141,8 +141,6 @@ body {
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
   transition: transform var(--transition-medium);
 }
-
-
 
 .exploration-divider {
   width: 2px;

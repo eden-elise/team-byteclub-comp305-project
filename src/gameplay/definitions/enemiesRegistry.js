@@ -67,7 +67,7 @@ export class CursedScholar extends Entity {
       SPEED: 12,
       LUCK: 14,
     };
-    const moves = ['Mind Leech', 'Runic Snare']; 
+    const moves = ['Mind Leech', 'Runic Snare'];
     const items = [];
 
     super(

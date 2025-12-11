@@ -86,39 +86,39 @@ import { audioManager } from '../utils/AudioManager.js';
  * @constant
  */
 const MESSAGE_STYLES = {
-    /**
-     * Style for turn announcement messages
-     */
-    turn: {
-        pattern: /'s turn/,
-        style: 'important',
-        effect: null,
-        orientation: 'center',
-        color: '#ffaa00',
-        speed: 15,
-    },
-    /**
-     * Style for victory messages
-     */
-    victory: {
-        pattern: /wins!|victory|victorious/,
-        style: 'important',
-        effect: 'glowing',
-        orientation: 'center',
-        color: '#ffd700',
-        speed: 30,
-    },
-    /**
-     * Style for defeat messages
-     */
-    defeat: {
-        pattern: /defeated|loses/,
-        style: 'yelling',
-        effect: null,
-        orientation: 'center',
-        color: '#ff4444',
-        speed: 25,
-    },
+  /**
+   * Style for turn announcement messages
+   */
+  turn: {
+    pattern: /'s turn/,
+    style: 'important',
+    effect: null,
+    orientation: 'center',
+    color: '#ffaa00',
+    speed: 15,
+  },
+  /**
+   * Style for victory messages
+   */
+  victory: {
+    pattern: /wins!|victory|victorious/,
+    style: 'important',
+    effect: 'glowing',
+    orientation: 'center',
+    color: '#ffd700',
+    speed: 30,
+  },
+  /**
+   * Style for defeat messages
+   */
+  defeat: {
+    pattern: /defeated|loses/,
+    style: 'yelling',
+    effect: null,
+    orientation: 'center',
+    color: '#ff4444',
+    speed: 25,
+  },
 };
 
 /**
@@ -128,9 +128,9 @@ const MESSAGE_STYLES = {
  * @constant
  */
 const STATUS_EFFECT_STYLES = {
-    poison: { color: '#9c27b0', effect: 'fade' },
-    burn: { color: '#ff5722', effect: 'waving' },
-    heal: { color: '#4caf50', effect: 'glowing' },
+  poison: { color: '#9c27b0', effect: 'fade' },
+  burn: { color: '#ff5722', effect: 'waving' },
+  heal: { color: '#4caf50', effect: 'glowing' },
 };
 
 /**
@@ -140,10 +140,10 @@ const STATUS_EFFECT_STYLES = {
  * @constant
  */
 const ITEM_AUDIO_MAP = {
-    health: 'health-potion',
-    poison: 'poison-potion',
-    fire: 'fire-potion',
-    mystery: 'mystery-potion',
+  health: 'health-potion',
+  poison: 'poison-potion',
+  fire: 'fire-potion',
+  mystery: 'mystery-potion',
 };
 
 /**
@@ -153,8 +153,8 @@ const ITEM_AUDIO_MAP = {
  * @constant
  */
 const ATTACK_AUDIO_MAP = {
-    strike: 'mp-strike',
-    heavy: 'mp-heavy',
+  strike: 'mp-strike',
+  heavy: 'mp-heavy',
 };
 
 /**
@@ -170,15 +170,15 @@ const ATTACK_AUDIO_MAP = {
  * playAudioForName('Health Potion', ITEM_AUDIO_MAP);
  */
 function playAudioForName(name, audioMap) {
-    if (!name) return;
+  if (!name) return;
 
-    const lowerName = name.toLowerCase();
-    for (const [keyword, audioKey] of Object.entries(audioMap)) {
-        if (lowerName.includes(keyword)) {
-            audioManager.play(audioKey);
-            return;
-        }
+  const lowerName = name.toLowerCase();
+  for (const [keyword, audioKey] of Object.entries(audioMap)) {
+    if (lowerName.includes(keyword)) {
+      audioManager.play(audioKey);
+      return;
     }
+  }
 }
 
 /**
@@ -190,9 +190,9 @@ function playAudioForName(name, audioMap) {
  * @returns {string} The item name, or empty string if not found
  */
 function getItemName(itemInstance, inventorySlot) {
-    if (itemInstance?.data?.name) return itemInstance.data.name;
-    if (inventorySlot?.name) return inventorySlot.name;
-    return '';
+  if (itemInstance?.data?.name) return itemInstance.data.name;
+  if (inventorySlot?.name) return inventorySlot.name;
+  return '';
 }
 
 /**
@@ -210,59 +210,59 @@ function getItemName(itemInstance, inventorySlot) {
  * @returns {boolean} [returns.hasCritical] - Whether message contains critical hit
  */
 function getMessageStyle(message, playerName, enemyName) {
-    // Check predefined patterns
-    for (const [key, config] of Object.entries(MESSAGE_STYLES)) {
-        if (config.pattern.test(message)) {
-            return {
-                speaker: createSpeaker('', {
-                    orientation: config.orientation,
-                    showPrefix: false,
-                    color: config.color,
-                }),
-                speed: config.speed,
-                wrapStyle: config.style,
-                wrapEffect: config.effect,
-            };
-        }
-    }
-
-    // Player messages
-    if (message.includes(playerName)) {
-        return {
-            speaker: createSpeaker(playerName, {
-                orientation: 'left',
-                color: '#4af',
-                prefix: '',
-                showPrefix: false,
-            }),
-            speed: 20,
-            hasCritical: message.toLowerCase().includes('critical') || message.includes('!'),
-        };
-    }
-
-    // Enemy messages
-    if (message.includes(enemyName)) {
-        return {
-            speaker: createSpeaker(enemyName, {
-                orientation: 'left',
-                color: '#f44',
-                prefix: '',
-                showPrefix: false,
-            }),
-            speed: 20,
-            hasCritical: message.toLowerCase().includes('critical') || message.includes('!'),
-        };
-    }
-
-    // Default
-    return {
+  // Check predefined patterns
+  for (const [key, config] of Object.entries(MESSAGE_STYLES)) {
+    if (config.pattern.test(message)) {
+      return {
         speaker: createSpeaker('', {
-            orientation: 'left',
-            showPrefix: false,
-            color: '#aaa',
+          orientation: config.orientation,
+          showPrefix: false,
+          color: config.color,
         }),
-        speed: 20,
+        speed: config.speed,
+        wrapStyle: config.style,
+        wrapEffect: config.effect,
+      };
+    }
+  }
+
+  // Player messages
+  if (message.includes(playerName)) {
+    return {
+      speaker: createSpeaker(playerName, {
+        orientation: 'left',
+        color: '#4af',
+        prefix: '',
+        showPrefix: false,
+      }),
+      speed: 20,
+      hasCritical: message.toLowerCase().includes('critical') || message.includes('!'),
     };
+  }
+
+  // Enemy messages
+  if (message.includes(enemyName)) {
+    return {
+      speaker: createSpeaker(enemyName, {
+        orientation: 'left',
+        color: '#f44',
+        prefix: '',
+        showPrefix: false,
+      }),
+      speed: 20,
+      hasCritical: message.toLowerCase().includes('critical') || message.includes('!'),
+    };
+  }
+
+  // Default
+  return {
+    speaker: createSpeaker('', {
+      orientation: 'left',
+      showPrefix: false,
+      color: '#aaa',
+    }),
+    speed: 20,
+  };
 }
 
 /**
@@ -277,12 +277,15 @@ function getMessageStyle(message, playerName, enemyName) {
  * // Returns: "You were hit by [color: #9c27b0, effect: fade]poison[/]!"
  */
 function applyStatusEffectStyles(message) {
-    let styled = message;
-    for (const [keyword, config] of Object.entries(STATUS_EFFECT_STYLES)) {
-        const regex = new RegExp(keyword, 'gi');
-        styled = styled.replace(regex, `[color: ${config.color}, effect: ${config.effect}]${keyword}[/]`);
-    }
-    return styled;
+  let styled = message;
+  for (const [keyword, config] of Object.entries(STATUS_EFFECT_STYLES)) {
+    const regex = new RegExp(keyword, 'gi');
+    styled = styled.replace(
+      regex,
+      `[color: ${config.color}, effect: ${config.effect}]${keyword}[/]`
+    );
+  }
+  return styled;
 }
 
 /**
@@ -297,9 +300,9 @@ function applyStatusEffectStyles(message) {
  * // Returns: "[style: yelling, effect: shaking]CRITICAL[/] hit[color: #ff6600]![/]"
  */
 function applyCriticalStyles(message) {
-    let styled = message.replace(/critical/gi, '[style: yelling, effect: shaking]CRITICAL[/]');
-    styled = styled.replace(/!/g, '[color: #ff6600]![/]');
-    return styled;
+  let styled = message.replace(/critical/gi, '[style: yelling, effect: shaking]CRITICAL[/]');
+  styled = styled.replace(/!/g, '[color: #ff6600]![/]');
+  return styled;
 }
 
 /**
@@ -312,28 +315,29 @@ function applyCriticalStyles(message) {
  * @returns {void}
  */
 function attachTooltipHandlers(icon, effect, prefix) {
-    icon.addEventListener('mouseover', () => {
-        const tooltip = document.getElementById('status-tooltip');
-        const turnText = effect.duration === 1 ? 'turn -' : 'turns -';
-        tooltip.textContent = `${effect.name}: ${effect.duration} ${turnText} ${effect.description}`;
-        tooltip.style.display = 'block';
-        tooltip.style.opacity = '1';
-        tooltip.style.visibility = 'visible';
+  icon.addEventListener('mouseover', () => {
+    const tooltip = document.getElementById('status-tooltip');
+    const turnText = effect.duration === 1 ? 'turn -' : 'turns -';
+    tooltip.textContent = `${effect.name}: ${effect.duration} ${turnText} ${effect.description}`;
+    tooltip.style.display = 'block';
+    tooltip.style.opacity = '1';
+    tooltip.style.visibility = 'visible';
 
-        const rect = icon.getBoundingClientRect();
-        const offset = 10;
-        tooltip.style.left = prefix === 'player'
-            ? `${rect.right + offset}px`
-            : `${rect.left - tooltip.offsetWidth - offset}px`;
-        tooltip.style.top = `${rect.top + rect.height / 2 - tooltip.offsetHeight / 2}px`;
-    });
+    const rect = icon.getBoundingClientRect();
+    const offset = 10;
+    tooltip.style.left =
+      prefix === 'player'
+        ? `${rect.right + offset}px`
+        : `${rect.left - tooltip.offsetWidth - offset}px`;
+    tooltip.style.top = `${rect.top + rect.height / 2 - tooltip.offsetHeight / 2}px`;
+  });
 
-    icon.addEventListener('mouseout', () => {
-        const tooltip = document.getElementById('status-tooltip');
-        tooltip.style.display = 'none';
-        tooltip.style.opacity = '0';
-        tooltip.style.visibility = 'hidden';
-    });
+  icon.addEventListener('mouseout', () => {
+    const tooltip = document.getElementById('status-tooltip');
+    tooltip.style.display = 'none';
+    tooltip.style.opacity = '0';
+    tooltip.style.visibility = 'hidden';
+  });
 }
 
 /**
@@ -344,12 +348,12 @@ function attachTooltipHandlers(icon, effect, prefix) {
  * @returns {HTMLImageElement} The configured icon element
  */
 function createStatusIcon(effect, prefix) {
-    const icon = document.createElement('img');
-    icon.src = effect.icon;
-    icon.className = 'status-icon';
-    icon.dataset.info = effect.description;
-    attachTooltipHandlers(icon, effect, prefix);
-    return icon;
+  const icon = document.createElement('img');
+  icon.src = effect.icon;
+  icon.className = 'status-icon';
+  icon.dataset.info = effect.description;
+  attachTooltipHandlers(icon, effect, prefix);
+  return icon;
 }
 
 /**
@@ -360,8 +364,8 @@ function createStatusIcon(effect, prefix) {
  * @returns {string} HTML string for the inventory item list element
  */
 function buildInventoryItemHTML(inventorySlot, index) {
-    const itemClass = getItemByName(inventorySlot.name);
-    return `
+  const itemClass = getItemByName(inventorySlot.name);
+  return `
     <li class="inventory-item interactive" data-item-index="${index}">
       <img src="${itemClass.data.spritePath}" alt="${inventorySlot.name}" class="inventory-item__icon">
       <div class="inventory-item__info">
@@ -382,7 +386,7 @@ function buildInventoryItemHTML(inventorySlot, index) {
  * @returns {string} HTML string for the empty inventory display
  */
 function buildEmptyInventoryHTML() {
-    return `
+  return `
     <li class="inventory-item" style="cursor: default; opacity: 0.6;">
       <div class="inventory-item__info" style="width: 100%; text-align: center;">
     <li class="inventory-item" style="cursor: default; opacity: 0.6; text-align: center;">
@@ -401,11 +405,12 @@ function buildEmptyInventoryHTML() {
  * @returns {string} Complete HTML string for the inventory container
  */
 function buildInventoryHTML(inventory) {
-    const itemsHTML = inventory.length === 0
-        ? buildEmptyInventoryHTML()
-        : inventory.map((slot, i) => buildInventoryItemHTML(slot, i)).join('');
+  const itemsHTML =
+    inventory.length === 0
+      ? buildEmptyInventoryHTML()
+      : inventory.map((slot, i) => buildInventoryItemHTML(slot, i)).join('');
 
-    return `
+  return `
     <div class="inventory-container">
       <div class="inventory-header">
         <button id="btn-inventory-back" class="action-btn action-btn--back">Back</button>
@@ -444,15 +449,15 @@ function buildInventoryHTML(inventory) {
  * );
  */
 export class BattleSceneController {
-    /**
-     * Create a new battle scene controller.
-     *
-     * @param {Entity} player - The player entity
-     * @param {Entity} enemy - The enemy entity
-     * @param {InventorySlot[]} [inventory=[]] - Player's inventory items
-     * @param {Function} onBattleEnd - Callback when battle ends, receives winner entity
-     */
-        
+  /**
+   * Create a new battle scene controller.
+   *
+   * @param {Entity} player - The player entity
+   * @param {Entity} enemy - The enemy entity
+   * @param {InventorySlot[]} [inventory=[]] - Player's inventory items
+   * @param {Function} onBattleEnd - Callback when battle ends, receives winner entity
+   */
+
   constructor(player, enemy, background, inventory = [], onBattleEnd) {
     /**
      * Callback function invoked when the battle ends
@@ -474,8 +479,8 @@ export class BattleSceneController {
 
     // Read exploration header background
     const explBG = getComputedStyle(document.documentElement)
-        .getPropertyValue('--exploration-header-bg')
-        .trim();
+      .getPropertyValue('--exploration-header-bg')
+      .trim();
 
     // Decide what background to use:
     // 1. prefer the passed-in background
@@ -483,257 +488,256 @@ export class BattleSceneController {
     const finalBG = background || explBG;
 
     if (finalBG) {
-        document.documentElement.style.setProperty(
-            '--battle-header-bg',
-            `url('${finalBG.replace(/url\(|\)|"/g, "")}')`
-        );
+      document.documentElement.style.setProperty(
+        '--battle-header-bg',
+        `url('${finalBG.replace(/url\(|\)|"/g, '')}')`
+      );
     }
     audioManager.stop('explore-scene');
     audioManager.play('battle-background', true);
 
-        /**
-         * Player's inventory of usable items
-         * @type {InventorySlot[]}
-         */
-        this.inventory = inventory;
-
-        /**
-         * The entity whose turn is currently being processed
-         * @type {Entity|null}
-         */
-        this.currentTurnEntity = null;
-
-        /**
-         * Whether a turn is currently being processed (prevents double actions)
-         * @type {boolean}
-         */
-        this.isProcessingTurn = false;
-
-        /**
-         * Queue of entities in turn order
-         * @type {Entity[]}
-         */
-        this.turnOrderQueue = [];
-
-        /**
-         * Current state of the UI
-         * @type {UIState}
-         */
-        this.uiState = 'actions';
-
-        /**
-         * Currently selected item instance (for variable target items)
-         * @type {ItemInstance|null}
-         */
-        this.selectedItem = null;
-
-        /**
-         * Index of the pending item in inventory (awaiting target selection)
-         * @type {number|null}
-         */
-        this.pendingItem = null;
-
-        /**
-         * Reference to the typewriter text display component
-         * @type {TypewriterTextbox|null}
-         */
-        this.typewriterController = null;
-
-        this.initializeUI();
-        this.setupEventListeners();
-        this.startBattle();
-    }
+    /**
+     * Player's inventory of usable items
+     * @type {InventorySlot[]}
+     */
+    this.inventory = inventory;
 
     /**
-     * Initialize the battle UI with entity information.
-     * Sets up player/enemy names, sprites, stats, and the typewriter controller.
-     *
-     * @returns {void}
+     * The entity whose turn is currently being processed
+     * @type {Entity|null}
      */
-    initializeUI() {
-        document.getElementById('player-name').textContent = this.player.name.toUpperCase();
-        document.getElementById('player-sprite').src = this.player.image;
-
-        document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
-        document.getElementById('enemy-sprite').src = this.enemy.image;
-        this.updateEntityStats();
-
-        // Initialize typewriter controller
-        this.typewriterController = document.getElementById('combat-log-text');
-        this.typewriterController.init({
-            defaultSpeed: 20,
-            showCursor: false,
-            autoAdvance: true,
-            autoAdvanceDelay: 800,
-        });
-
-        this.showActionButtons();
-    }
+    this.currentTurnEntity = null;
 
     /**
-     * Set up event listeners for battle interactions.
-     * Adds click handlers for target selection on entity sprites.
-     *
-     * @returns {void}
+     * Whether a turn is currently being processed (prevents double actions)
+     * @type {boolean}
      */
-    setupEventListeners() {
-        // Listen for battle log updates
-        // NOTE: battleEngine is not initialized, skipping log event binding
-        // TODO: Initialize proper battle engine if needed
-
-        // Add click listeners for target selection
-        document.getElementById('player-sprite').addEventListener('click', () => {
-            if (this.uiState === 'target-selection') {
-                this.handleTargetSelection(this.player);
-            }
-        });
-        document.getElementById('enemy-sprite').addEventListener('click', () => {
-            if (this.uiState === 'target-selection') {
-                this.handleTargetSelection(this.enemy);
-            }
-        });
-    }
+    this.isProcessingTurn = false;
 
     /**
-     * Start the battle by determining turn order and beginning the first turn.
-     * Turn order is based on entity speed stats (higher speed goes first).
-     *
-     * @async
-     * @returns {Promise<void>}
+     * Queue of entities in turn order
+     * @type {Entity[]}
      */
-    async startBattle() {
-        // Initialize battle
-        if (this.player.stats.SPEED >= this.enemy.stats.SPEED) {
-            this.turnOrderQueue.push(this.player, this.enemy);
-        } else {
-            this.turnOrderQueue.push(this.enemy, this.player);
-        }
-        this.addLogEntry(`${this.player.name} vs ${this.enemy.name}`);
-
-        // Start the first turn
-        this.processNextTurn();
-    }
+    this.turnOrderQueue = [];
 
     /**
-     * Process a single turn for an entity.
-     * Handles status effects at turn start/end and executes the chosen action.
-     *
-     * @async
-     * @param {Entity} entity - The entity taking the turn
-     * @param {Action} action - The action to perform
-     * @param {Entity} target - The target entity for the action
-     * @returns {Promise<void>} Resolves when the turn and animations are complete
+     * Current state of the UI
+     * @type {UIState}
      */
-    async processTurn(entity, action, target) {
-        this.addLogEntry(`--- ${entity.name}'s turn ---`);
-
-        // 1. Process pre-turn status effects
-        entity.processStatusEffectsTurnStart(this);
-
-        // 2. Execute the action (waits for animation to complete)
-        if (action) {
-            await action.execute(entity, target, this);
-        }
-
-        // 3. Process post-turn status effects (decrements duration, removes expired effects)
-        entity.processStatusEffectsTurnEnd(this);
-
-        // 4. Check for win/loss conditions
-        this.checkBattleEnd();
-    }
+    this.uiState = 'actions';
 
     /**
-     * Check if the battle has ended (player or enemy defeated).
-     * Calls onBattleEnd callback with the winner if battle is over.
-     *
-     * @returns {void}
+     * Currently selected item instance (for variable target items)
+     * @type {ItemInstance|null}
      */
-    checkBattleEnd() {
-        if (!this.player.isAlive()) {
-            this.addLogEntry(`${this.enemy.name} wins!`);
-            this.onBattleEnd(this.enemy);
-        } else if (!this.enemy.isAlive()) {
-            this.addLogEntry(`${this.player.name} wins!`);
-            this.onBattleEnd(this.player);
-        }
-    }
+    this.selectedItem = null;
 
     /**
-     * Add a message to the battle log.
-     * Alias for addLogEntry for external use.
-     *
-     * @param {string} message - The message to log
-     * @returns {void}
+     * Index of the pending item in inventory (awaiting target selection)
+     * @type {number|null}
      */
-    logEvent(message) {
-        this.addLogEntry(message);
-    }
+    this.pendingItem = null;
 
     /**
-     * Process the next turn in the queue.
-     * Waits for typewriter to finish, then either enables player actions
-     * or processes the enemy's turn automatically.
-     *
-     * @async
-     * @returns {Promise<void>}
+     * Reference to the typewriter text display component
+     * @type {TypewriterTextbox|null}
      */
-    async processNextTurn() {
-        await this.waitForTypewriter();
-        this.isProcessingTurn = true;
+    this.typewriterController = null;
 
-        this.currentTurnEntity = this.turnOrderQueue.shift();
-        const isPlayerTurn = this.currentTurnEntity === this.player;
+    this.initializeUI();
+    this.setupEventListeners();
+    this.startBattle();
+  }
 
-        if (isPlayerTurn) {
-            this.showActionButtons();
-            this.enableActionButtons();
-            this.isProcessingTurn = false;
-        } else {
-            this.showActionButtons();
-            this.disableActionButtons();
-            await this.processEnemyTurn();
-        }
+  /**
+   * Initialize the battle UI with entity information.
+   * Sets up player/enemy names, sprites, stats, and the typewriter controller.
+   *
+   * @returns {void}
+   */
+  initializeUI() {
+    document.getElementById('player-name').textContent = this.player.name.toUpperCase();
+    document.getElementById('player-sprite').src = this.player.image;
+
+    document.getElementById('enemy-name').textContent = this.enemy.name.toUpperCase();
+    document.getElementById('enemy-sprite').src = this.enemy.image;
+    this.updateEntityStats();
+
+    // Initialize typewriter controller
+    this.typewriterController = document.getElementById('combat-log-text');
+    this.typewriterController.init({
+      defaultSpeed: 20,
+      showCursor: false,
+      autoAdvance: true,
+      autoAdvanceDelay: 800,
+    });
+
+    this.showActionButtons();
+  }
+
+  /**
+   * Set up event listeners for battle interactions.
+   * Adds click handlers for target selection on entity sprites.
+   *
+   * @returns {void}
+   */
+  setupEventListeners() {
+    // Listen for battle log updates
+    // NOTE: battleEngine is not initialized, skipping log event binding
+    // TODO: Initialize proper battle engine if needed
+
+    // Add click listeners for target selection
+    document.getElementById('player-sprite').addEventListener('click', () => {
+      if (this.uiState === 'target-selection') {
+        this.handleTargetSelection(this.player);
+      }
+    });
+    document.getElementById('enemy-sprite').addEventListener('click', () => {
+      if (this.uiState === 'target-selection') {
+        this.handleTargetSelection(this.enemy);
+      }
+    });
+  }
+
+  /**
+   * Start the battle by determining turn order and beginning the first turn.
+   * Turn order is based on entity speed stats (higher speed goes first).
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
+  async startBattle() {
+    // Initialize battle
+    if (this.player.stats.SPEED >= this.enemy.stats.SPEED) {
+      this.turnOrderQueue.push(this.player, this.enemy);
+    } else {
+      this.turnOrderQueue.push(this.enemy, this.player);
     }
+    this.addLogEntry(`${this.player.name} vs ${this.enemy.name}`);
+
+    // Start the first turn
+    this.processNextTurn();
+  }
+
+  /**
+   * Process a single turn for an entity.
+   * Handles status effects at turn start/end and executes the chosen action.
+   *
+   * @async
+   * @param {Entity} entity - The entity taking the turn
+   * @param {Action} action - The action to perform
+   * @param {Entity} target - The target entity for the action
+   * @returns {Promise<void>} Resolves when the turn and animations are complete
+   */
+  async processTurn(entity, action, target) {
+    this.addLogEntry(`--- ${entity.name}'s turn ---`);
+
+    // 1. Process pre-turn status effects
+    entity.processStatusEffectsTurnStart(this);
+
+    // 2. Execute the action (waits for animation to complete)
+    if (action) {
+      await action.execute(entity, target, this);
+    }
+
+    // 3. Process post-turn status effects (decrements duration, removes expired effects)
+    entity.processStatusEffectsTurnEnd(this);
+
+    // 4. Check for win/loss conditions
+    this.checkBattleEnd();
+  }
+
+  /**
+   * Check if the battle has ended (player or enemy defeated).
+   * Calls onBattleEnd callback with the winner if battle is over.
+   *
+   * @returns {void}
+   */
+  checkBattleEnd() {
+    if (!this.player.isAlive()) {
+      this.addLogEntry(`${this.enemy.name} wins!`);
+      this.onBattleEnd(this.enemy);
+    } else if (!this.enemy.isAlive()) {
+      this.addLogEntry(`${this.player.name} wins!`);
+      this.onBattleEnd(this.player);
+    }
+  }
+
+  /**
+   * Add a message to the battle log.
+   * Alias for addLogEntry for external use.
+   *
+   * @param {string} message - The message to log
+   * @returns {void}
+   */
+  logEvent(message) {
+    this.addLogEntry(message);
+  }
+
+  /**
+   * Process the next turn in the queue.
+   * Waits for typewriter to finish, then either enables player actions
+   * or processes the enemy's turn automatically.
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
+  async processNextTurn() {
+    await this.waitForTypewriter();
+    this.isProcessingTurn = true;
+
+    this.currentTurnEntity = this.turnOrderQueue.shift();
+    const isPlayerTurn = this.currentTurnEntity === this.player;
+
+    if (isPlayerTurn) {
+      this.showActionButtons();
+      this.enableActionButtons();
+      this.isProcessingTurn = false;
+    } else {
+      this.showActionButtons();
+      this.disableActionButtons();
+      await this.processEnemyTurn();
+    }
+  }
 
   async processEnemyTurn() {
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
     const moves = this.enemy.moves || [];
     const choice = moves[Math.floor(Math.random() * moves.length)] || moves[0];
     const AttackClass = getAttackByName(choice);
     if (AttackClass && this.player.isAlive()) {
-        const attackInstance = new AttackClass();
-        await this.processTurn(this.enemy, attackInstance, this.player);
-        audioManager.play("enemy-hit");
-        this.updateEntityStats();
-        this.turnOrderQueue.push(this.currentTurnEntity);
-        this.isProcessingTurn = false;
-        this.checkBattleEnd();
-        setTimeout(() => this.processNextTurn(), 500);
+      const attackInstance = new AttackClass();
+      await this.processTurn(this.enemy, attackInstance, this.player);
+      audioManager.play('enemy-hit');
+      this.updateEntityStats();
+      this.turnOrderQueue.push(this.currentTurnEntity);
+      this.isProcessingTurn = false;
+      this.checkBattleEnd();
+      setTimeout(() => this.processNextTurn(), 500);
     } else {
-        this.isProcessingTurn = false;
+      this.isProcessingTurn = false;
     }
-    }
-
+  }
 
   showActionButtons() {
     const container = document.getElementById('action-container');
 
-        this.uiState = 'actions';
-        this.selectedItem = null;
-        this.pendingItem = null;
+    this.uiState = 'actions';
+    this.selectedItem = null;
+    this.pendingItem = null;
 
-        // Remove target selection highlights
-        document.getElementById('player-sprite').classList.remove('target-selectable');
-        document.getElementById('enemy-sprite').classList.remove('target-selectable');
+    // Remove target selection highlights
+    document.getElementById('player-sprite').classList.remove('target-selectable');
+    document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
-        if (this.currentTurnEntity === this.player) {
-            audioManager.play('button-click');
-            const attacks = this.player.moves;
+    if (this.currentTurnEntity === this.player) {
+      audioManager.play('button-click');
+      const attacks = this.player.moves;
 
-            let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0]}</button>`;
-            let attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">${attacks[1]}</button>`;
+      let attackButton1 = `<button id="btn-attack-1" class="action-btn action-btn--primary">${attacks[0]}</button>`;
+      let attackButton2 = `<button id="btn-attack-2" class="action-btn action-btn--primary">${attacks[1]}</button>`;
 
-            container.innerHTML = `
+      container.innerHTML = `
                 <div class="action-buttons-container">
                     ${attackButton1}
                     ${attackButton2}
@@ -741,344 +745,342 @@ export class BattleSceneController {
                 </div>
             `;
 
-            // Add event listeners
-            document.getElementById('btn-attack-1').addEventListener('click', () => {
-                const attackName = getAttackByName(attacks[0]);
-                const attackInstance = new attackName();
-                this.handleActionClick(attackInstance);
-            });
-            document.getElementById('btn-attack-2').addEventListener('click', () => {
-                const attackName = getAttackByName(attacks[1]);
-                const attackInstance = new attackName();
-                this.handleActionClick(attackInstance);
-            });
-            document.getElementById('btn-inventory').addEventListener('click', () => {
-                this.showInventory();
-            });
-        } else {
-            // Show waiting message during enemy turn
-            container.innerHTML = `
+      // Add event listeners
+      document.getElementById('btn-attack-1').addEventListener('click', () => {
+        const attackName = getAttackByName(attacks[0]);
+        const attackInstance = new attackName();
+        this.handleActionClick(attackInstance);
+      });
+      document.getElementById('btn-attack-2').addEventListener('click', () => {
+        const attackName = getAttackByName(attacks[1]);
+        const attackInstance = new attackName();
+        this.handleActionClick(attackInstance);
+      });
+      document.getElementById('btn-inventory').addEventListener('click', () => {
+        this.showInventory();
+      });
+    } else {
+      // Show waiting message during enemy turn
+      container.innerHTML = `
                 <div class="action-buttons-container">
                     <button class="action-btn action-btn--primary" disabled>Waiting for enemy turn...</button>
                 </div>
             `;
-        }
+    }
+  }
+
+  /**
+   * Display the inventory panel.
+   * Shows all items with their icons, names, quantities, and descriptions.
+   * Items can be clicked to use them.
+   *
+   * @returns {void}
+   */
+  showInventory() {
+    audioManager.play('inventory');
+    const container = document.getElementById('action-container');
+
+    this.uiState = 'inventory';
+    this.selectedItem = null;
+    this.pendingItem = null;
+    this._removeTargetHighlights();
+
+    container.innerHTML = buildInventoryHTML(this.inventory);
+
+    document.getElementById('btn-inventory-back').addEventListener('click', () => {
+      this.showActionButtons();
+    });
+
+    document.querySelectorAll('.inventory-item').forEach((itemEl, index) => {
+      itemEl.addEventListener('click', () => this.selectInventoryItem(index));
+    });
+  }
+
+  /**
+   * Remove target selection highlight classes from entity sprites.
+   *
+   * @private
+   * @returns {void}
+   */
+  _removeTargetHighlights() {
+    document.getElementById('player-sprite').classList.remove('target-selectable');
+    document.getElementById('enemy-sprite').classList.remove('target-selectable');
+  }
+
+  /**
+   * Handle selection of an inventory item.
+   * If item requires target selection, shows target selection UI.
+   * Otherwise, uses the item on its default target.
+   *
+   * @async
+   * @param {number} index - Index of the selected item in inventory
+   * @returns {Promise<void>}
+   */
+  async selectInventoryItem(index) {
+    audioManager.play('button-click');
+    if (this.isProcessingTurn) {
+      return;
     }
 
-    /**
-     * Display the inventory panel.
-     * Shows all items with their icons, names, quantities, and descriptions.
-     * Items can be clicked to use them.
-     *
-     * @returns {void}
-     */
-    showInventory() {
-        audioManager.play('inventory');
-        const container = document.getElementById('action-container');
+    const inventorySlot = this.inventory[index];
+    const itemClass = getItemByName(inventorySlot.name);
+    const itemInstance = new itemClass();
 
-        this.uiState = 'inventory';
-        this.selectedItem = null;
-        this.pendingItem = null;
-        this._removeTargetHighlights();
+    // Store the item instance and inventory index
+    this.selectedItem = itemInstance;
+    this.pendingItem = index;
 
-        container.innerHTML = buildInventoryHTML(this.inventory);
-
-        document.getElementById('btn-inventory-back').addEventListener('click', () => {
-            this.showActionButtons();
-        });
-
-        document.querySelectorAll('.inventory-item').forEach((itemEl, index) => {
-            itemEl.addEventListener('click', () => this.selectInventoryItem(index));
-        });
+    // Check if item needs target selection
+    if (itemInstance.data.isVariableTarget) {
+      this.showTargetSelection();
+    } else {
+      // Use default target
+      const defaultTarget = itemInstance.data.defaultTarget === 1 ? this.enemy : this.player;
+      await this.executeItem(defaultTarget);
     }
+  }
 
-    /**
-     * Remove target selection highlight classes from entity sprites.
-     *
-     * @private
-     * @returns {void}
-     */
-    _removeTargetHighlights() {
-        document.getElementById('player-sprite').classList.remove('target-selectable');
-        document.getElementById('enemy-sprite').classList.remove('target-selectable');
-    }
+  /**
+   * Display the target selection UI.
+   * Highlights entity sprites as clickable targets and shows cancel button.
+   *
+   * @returns {void}
+   */
+  showTargetSelection() {
+    audioManager.play('button-click');
+    const container = document.getElementById('action-container');
+    this.uiState = 'target-selection';
 
-
-    /**
-     * Handle selection of an inventory item.
-     * If item requires target selection, shows target selection UI.
-     * Otherwise, uses the item on its default target.
-     *
-     * @async
-     * @param {number} index - Index of the selected item in inventory
-     * @returns {Promise<void>}
-     */
-    async selectInventoryItem(index) {
-        audioManager.play('button-click');
-        if (this.isProcessingTurn) {
-            return;
-        }
-
-        const inventorySlot = this.inventory[index];
-        const itemClass = getItemByName(inventorySlot.name);
-        const itemInstance = new itemClass();
-
-        // Store the item instance and inventory index
-        this.selectedItem = itemInstance;
-        this.pendingItem = index;
-
-        // Check if item needs target selection
-        if (itemInstance.data.isVariableTarget) {
-            this.showTargetSelection();
-        } else {
-            // Use default target
-            const defaultTarget = itemInstance.data.defaultTarget === 1 ? this.enemy : this.player;
-            await this.executeItem(defaultTarget);
-        }
-    }
-
-    /**
-     * Display the target selection UI.
-     * Highlights entity sprites as clickable targets and shows cancel button.
-     *
-     * @returns {void}
-     */
-    showTargetSelection() {
-        audioManager.play('button-click');
-        const container = document.getElementById('action-container');
-        this.uiState = 'target-selection';
-
-        container.innerHTML = `
+    container.innerHTML = `
             <div class="target-selection-container">
                 <button id="btn-target-cancel" class="action-btn action-btn--back">Cancel</button>
                 <p class="target-selection-text">Select target for ${this.selectedItem.name}</p>
             </div>
         `;
 
-        document.getElementById('btn-target-cancel').addEventListener('click', () => {
-            this.selectedItem = null;
-            this.pendingItem = null;
-            this.showInventory();
-        });
+    document.getElementById('btn-target-cancel').addEventListener('click', () => {
+      this.selectedItem = null;
+      this.pendingItem = null;
+      this.showInventory();
+    });
 
-        document.getElementById('player-sprite').classList.add('target-selectable');
-        document.getElementById('enemy-sprite').classList.add('target-selectable');
+    document.getElementById('player-sprite').classList.add('target-selectable');
+    document.getElementById('enemy-sprite').classList.add('target-selectable');
+  }
+
+  /**
+   * Handle target selection for a variable-target item.
+   * Validates state and executes the item on the selected target.
+   *
+   * @async
+   * @param {Entity} target - The selected target entity
+   * @returns {Promise<void>}
+   */
+  async handleTargetSelection(target) {
+    if (this.selectedItem === null || this.pendingItem === null || this.isProcessingTurn) {
+      return;
     }
 
-    /**
-     * Handle target selection for a variable-target item.
-     * Validates state and executes the item on the selected target.
-     *
-     * @async
-     * @param {Entity} target - The selected target entity
-     * @returns {Promise<void>}
-     */
-    async handleTargetSelection(target) {
-        if (this.selectedItem === null || this.pendingItem === null || this.isProcessingTurn) {
-            return;
-        }
+    document.getElementById('player-sprite').classList.remove('target-selectable');
+    document.getElementById('enemy-sprite').classList.remove('target-selectable');
 
-        document.getElementById('player-sprite').classList.remove('target-selectable');
-        document.getElementById('enemy-sprite').classList.remove('target-selectable');
+    await this.executeItem(target);
+  }
 
-        await this.executeItem(target);
+  /**
+   * Execute the selected item on a target.
+   * Processes the turn, decrements item quantity, and advances to next turn.
+   *
+   * @async
+   * @param {Entity} target - The target entity for the item
+   * @returns {Promise<void>}
+   */
+  async executeItem(target) {
+    this.isProcessingTurn = true;
+    this.disableActionButtons();
+
+    const inventoryIndex = this.pendingItem;
+    const itemInstance = this.selectedItem;
+    const inventorySlot = this.inventory[inventoryIndex];
+
+    try {
+      const itemName = getItemName(itemInstance, inventorySlot);
+      playAudioForName(itemName, ITEM_AUDIO_MAP);
+    } catch (e) {
+      console.warn('Audio play skipped — could not determine item name.', e);
     }
 
-    /**
-     * Execute the selected item on a target.
-     * Processes the turn, decrements item quantity, and advances to next turn.
-     *
-     * @async
-     * @param {Entity} target - The target entity for the item
-     * @returns {Promise<void>}
-     */
-    async executeItem(target) {
-        this.isProcessingTurn = true;
-        this.disableActionButtons();
+    // Execute the item
+    await this.processTurn(this.player, itemInstance, target);
 
-        const inventoryIndex = this.pendingItem;
-        const itemInstance = this.selectedItem;
-        const inventorySlot = this.inventory[inventoryIndex];
+    // Wait for all typewriter messages to finish
+    await this.waitForTypewriter();
 
-        try {
-            const itemName = getItemName(itemInstance, inventorySlot);
-            playAudioForName(itemName, ITEM_AUDIO_MAP);
-        } catch (e) {
-            console.warn('Audio play skipped — could not determine item name.', e);
-        }
-
-
-        // Execute the item
-        await this.processTurn(this.player, itemInstance, target);
-
-        // Wait for all typewriter messages to finish
-        await this.waitForTypewriter();
-
-        // Decrement quantity and remove from inventory if needed
-        inventorySlot.quantity -= 1;
-        if (inventorySlot.quantity <= 0) {
-            this.inventory.splice(inventoryIndex, 1);
-        }
-
-        this.updateEntityStats();
-
-        // Clear selected item
-        this.selectedItem = null;
-        this.pendingItem = null;
-
-        // Rotate turn order
-        this.turnOrderQueue.push(this.currentTurnEntity);
-        this.isProcessingTurn = false;
-        this.showActionButtons();
-
-        setTimeout(() => this.processNextTurn(), 500);
+    // Decrement quantity and remove from inventory if needed
+    inventorySlot.quantity -= 1;
+    if (inventorySlot.quantity <= 0) {
+      this.inventory.splice(inventoryIndex, 1);
     }
 
-    /**
-     * Handle click on an attack action button.
-     * Executes the attack, waits for animations, and advances to next turn.
-     *
-     * @async
-     * @param {Action} action - The attack action to execute
-     * @returns {Promise<void>}
-     */
-    async handleActionClick(action) {
-        if (this.isProcessingTurn || this.currentTurnEntity !== this.player) return;
+    this.updateEntityStats();
 
-        this.disableActionButtons();
+    // Clear selected item
+    this.selectedItem = null;
+    this.pendingItem = null;
 
-        this.isProcessingTurn = true;
-        await this.processTurn(this.player, action, this.enemy);
+    // Rotate turn order
+    this.turnOrderQueue.push(this.currentTurnEntity);
+    this.isProcessingTurn = false;
+    this.showActionButtons();
 
-        // Wait for all typewriter messages to finish
-        await this.waitForTypewriter();
-        try {
-            playAudioForName(action.name, ATTACK_AUDIO_MAP);
-        } catch (e) {
-            console.warn('Attack sound skipped', e);
-        }
-        this.updateEntityStats();
+    setTimeout(() => this.processNextTurn(), 500);
+  }
 
-        this.turnOrderQueue.push(this.currentTurnEntity);
+  /**
+   * Handle click on an attack action button.
+   * Executes the attack, waits for animations, and advances to next turn.
+   *
+   * @async
+   * @param {Action} action - The attack action to execute
+   * @returns {Promise<void>}
+   */
+  async handleActionClick(action) {
+    if (this.isProcessingTurn || this.currentTurnEntity !== this.player) return;
 
-        this.isProcessingTurn = false;
+    this.disableActionButtons();
 
-        this.checkBattleEnd();
-        setTimeout(() => this.processNextTurn(), 500);
+    this.isProcessingTurn = true;
+    await this.processTurn(this.player, action, this.enemy);
+
+    // Wait for all typewriter messages to finish
+    await this.waitForTypewriter();
+    try {
+      playAudioForName(action.name, ATTACK_AUDIO_MAP);
+    } catch (e) {
+      console.warn('Attack sound skipped', e);
+    }
+    this.updateEntityStats();
+
+    this.turnOrderQueue.push(this.currentTurnEntity);
+
+    this.isProcessingTurn = false;
+
+    this.checkBattleEnd();
+    setTimeout(() => this.processNextTurn(), 500);
+  }
+
+  /**
+   * Enable all action buttons (except special cases).
+   *
+   * @returns {void}
+   */
+  enableActionButtons() {
+    const buttons = document.querySelectorAll('.action-btn');
+    buttons.forEach((btn) => {
+      if (!btn.disabled && btn.id !== 'btn-use-item') {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  /**
+   * Disable all action buttons to prevent input during processing.
+   *
+   * @returns {void}
+   */
+  disableActionButtons() {
+    const buttons = document.querySelectorAll('.action-btn');
+    buttons.forEach((btn) => (btn.disabled = true));
+  }
+
+  /**
+   * Update the HP bars and status icons for both entities.
+   *
+   * @returns {void}
+   */
+  updateEntityStats() {
+    this._updateEntityUI('player', this.player);
+    this._updateEntityUI('enemy', this.enemy);
+  }
+
+  /**
+   * Update the UI elements for a single entity (HP bar and status icons).
+   *
+   * @private
+   * @param {'player'|'enemy'} prefix - The entity prefix for DOM element IDs
+   * @param {Entity} entity - The entity to update UI for
+   * @returns {void}
+   */
+  _updateEntityUI(prefix, entity) {
+    // Update HP bar
+    const hpBar = document.getElementById(`${prefix}-hp`);
+    const hpText = document.getElementById(`${prefix}-hp-text`);
+    const hpMax = document.getElementById(`${prefix}-hp-max`);
+
+    hpBar.max = entity.maxHP;
+    hpBar.value = entity.currentHP;
+    hpText.textContent = entity.currentHP;
+    hpMax.textContent = entity.maxHP;
+
+    // Update status icons
+    const iconContainer = document.getElementById(`${prefix}-status-icons`);
+    iconContainer.innerHTML = '';
+
+    entity.activeEffects.forEach((effect) => {
+      const icon = createStatusIcon(effect, prefix);
+      iconContainer.appendChild(icon);
+    });
+  }
+
+  /**
+   * Add a styled message to the battle log using the typewriter component.
+   * Automatically applies styling based on message content.
+   *
+   * @param {string} message - The message to add to the log
+   * @returns {void}
+   */
+  addLogEntry(message) {
+    if (!this.typewriterController) return;
+
+    const styleConfig = getMessageStyle(message, this.player.name, this.enemy.name);
+    let styledMessage = message;
+
+    // Apply wrapper style if specified
+    if (styleConfig.wrapStyle || styleConfig.wrapEffect) {
+      const styleStr = [
+        styleConfig.wrapStyle ? `style: ${styleConfig.wrapStyle}` : '',
+        styleConfig.wrapEffect ? `effect: ${styleConfig.wrapEffect}` : '',
+      ]
+        .filter(Boolean)
+        .join(', ');
+      styledMessage = `[${styleStr}]${message}[/]`;
     }
 
-    /**
-     * Enable all action buttons (except special cases).
-     *
-     * @returns {void}
-     */
-    enableActionButtons() {
-        const buttons = document.querySelectorAll('.action-btn');
-        buttons.forEach((btn) => {
-            if (!btn.disabled && btn.id !== 'btn-use-item') {
-                btn.disabled = false;
-            }
-        });
+    // Apply critical styling if needed
+    if (styleConfig.hasCritical) {
+      styledMessage = applyCriticalStyles(styledMessage);
     }
 
-    /**
-     * Disable all action buttons to prevent input during processing.
-     *
-     * @returns {void}
-     */
-    disableActionButtons() {
-        const buttons = document.querySelectorAll('.action-btn');
-        buttons.forEach((btn) => (btn.disabled = true));
+    // Apply status effect styling
+    styledMessage = applyStatusEffectStyles(styledMessage);
+
+    this.typewriterController.queue(styledMessage, {
+      speed: styleConfig.speed,
+      speaker: styleConfig.speaker,
+    });
+  }
+
+  /**
+   * Wait for the typewriter to finish displaying all queued messages.
+   * Polls the typewriter state until queue is empty and not active.
+   *
+   * @async
+   * @returns {Promise<void>} Resolves when all messages have been displayed
+   */
+  async waitForTypewriter() {
+    while (this.typewriterController.getQueueLength() > 0 || this.typewriterController.isActive()) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
-
-    /**
-     * Update the HP bars and status icons for both entities.
-     *
-     * @returns {void}
-     */
-    updateEntityStats() {
-        this._updateEntityUI('player', this.player);
-        this._updateEntityUI('enemy', this.enemy);
-    }
-
-    /**
-     * Update the UI elements for a single entity (HP bar and status icons).
-     *
-     * @private
-     * @param {'player'|'enemy'} prefix - The entity prefix for DOM element IDs
-     * @param {Entity} entity - The entity to update UI for
-     * @returns {void}
-     */
-    _updateEntityUI(prefix, entity) {
-        // Update HP bar
-        const hpBar = document.getElementById(`${prefix}-hp`);
-        const hpText = document.getElementById(`${prefix}-hp-text`);
-        const hpMax = document.getElementById(`${prefix}-hp-max`);
-
-        hpBar.max = entity.maxHP;
-        hpBar.value = entity.currentHP;
-        hpText.textContent = entity.currentHP;
-        hpMax.textContent = entity.maxHP;
-
-        // Update status icons
-        const iconContainer = document.getElementById(`${prefix}-status-icons`);
-        iconContainer.innerHTML = '';
-
-        entity.activeEffects.forEach((effect) => {
-            const icon = createStatusIcon(effect, prefix);
-            iconContainer.appendChild(icon);
-        });
-    }
-
-
-    /**
-     * Add a styled message to the battle log using the typewriter component.
-     * Automatically applies styling based on message content.
-     *
-     * @param {string} message - The message to add to the log
-     * @returns {void}
-     */
-    addLogEntry(message) {
-        if (!this.typewriterController) return;
-
-        const styleConfig = getMessageStyle(message, this.player.name, this.enemy.name);
-        let styledMessage = message;
-
-        // Apply wrapper style if specified
-        if (styleConfig.wrapStyle || styleConfig.wrapEffect) {
-            const styleStr = [
-                styleConfig.wrapStyle ? `style: ${styleConfig.wrapStyle}` : '',
-                styleConfig.wrapEffect ? `effect: ${styleConfig.wrapEffect}` : '',
-            ].filter(Boolean).join(', ');
-            styledMessage = `[${styleStr}]${message}[/]`;
-        }
-
-        // Apply critical styling if needed
-        if (styleConfig.hasCritical) {
-            styledMessage = applyCriticalStyles(styledMessage);
-        }
-
-        // Apply status effect styling
-        styledMessage = applyStatusEffectStyles(styledMessage);
-
-        this.typewriterController.queue(styledMessage, {
-            speed: styleConfig.speed,
-            speaker: styleConfig.speaker,
-        });
-    }
-
-
-    /**
-     * Wait for the typewriter to finish displaying all queued messages.
-     * Polls the typewriter state until queue is empty and not active.
-     *
-     * @async
-     * @returns {Promise<void>} Resolves when all messages have been displayed
-     */
-    async waitForTypewriter() {
-        while (this.typewriterController.getQueueLength() > 0 || this.typewriterController.isActive()) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-        await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 }

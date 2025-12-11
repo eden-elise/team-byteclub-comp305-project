@@ -4,11 +4,11 @@
  */
 
 import {
-  getElementPosition,
-  createAnimatedElement,
-  removeAnimatedElement,
-  playSound,
   animateWithFrame,
+  createAnimatedElement,
+  getElementPosition,
+  playSound,
+  removeAnimatedElement,
 } from './AnimationUtils.js';
 
 /**
@@ -151,3 +151,15 @@ export const createThrowAnimationCallback =
   (config = {}) =>
   (source, target, applyEffects) =>
     createThrowAnimation(source, target, applyEffects, config);
+
+/**
+ * Find the DOM sprite element for a given combat entity.
+ * Assumes entities expose an `isPlayer` boolean.
+ *
+ * @param {Object} entity - The combat entity (player or enemy)
+ * @returns {HTMLElement|null} The corresponding sprite element, or null if not found
+ */
+function findSpriteElement(entity) {
+  const spriteId = entity.isPlayer ? 'player-sprite' : 'enemy-sprite';
+  return document.getElementById(spriteId);
+}

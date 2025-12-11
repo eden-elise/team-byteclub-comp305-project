@@ -9,7 +9,18 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.{js,css,html}\"",
-    "format:check": "prettier --check \"src/**/*.{js,css,html}\""
+    "format:check": "prettier --check \"src/**/*.{js,css,html}\"",
+    "prepare": "husky",
+    "docs": "jsdoc -c jsdoc.config.json"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{css,html}": [
+      "prettier --write"
+    ]
   },
   "repository": {
     "type": "git",
@@ -23,10 +34,13 @@
   },
   "homepage": "https://github.com/eden-elise/team-byteclub-comp305-project#readme",
   "devDependencies": {
-    "eslint": "^9.39.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
     "jsdom": "^27.3.0",
+    "jsdoc": "^4.0.5",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4"
   }
 }
