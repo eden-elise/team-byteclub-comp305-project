@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Unit tests for MainMenuSceneController, covering initialization,
+ * button interactions, save file checking, user input detection, and cleanup.
+ * Tests use JSDOM to simulate a browser environment and spies for audio and
+ * animation control.
+ * @module tests/core/MainMenuScene.test
+ */
+
+// ===========================================================================================
+// IMPORTS & CONFIGURATION
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -13,22 +25,25 @@ const MAIN_MENU_HTML = `<!doctype html>
     <div id="birds-container"></div>
     <div id="lightning-flash"></div>
 
-    <div id="title-text"><h1>Dravic's Castle</h1></div>
+    <!-- Add this wrapper that your real code expects -->
+    <div class="ui-container">
+      <div id="title-text"><h1>Dravic's Castle</h1></div>
 
-    <div id="menu-buttons">
-      <div id="initial-buttons">
-        <button id="btn-play">Play</button>
-        <button id="btn-exit">Exit</button>
-      </div>
-
-      <div id="secondary-buttons" style="display: none">
-        <div id="continue-container">
-          <button id="btn-continue">Continue</button>
-          <div id="save-info"></div>
+      <div id="menu-buttons">
+        <div id="initial-buttons">
+          <button id="btn-play">Play</button>
+          <button id="btn-exit">Exit</button>
         </div>
-        <button id="btn-load-file">Load File</button>
-        <button id="btn-new-game">New Game</button>
-        <button id="btn-back">Back</button>
+
+        <div id="secondary-buttons" style="display: none">
+          <div id="continue-container">
+            <button id="btn-continue">Continue</button>
+            <div id="save-info"></div>
+          </div>
+          <button id="btn-load-file">Load File</button>
+          <button id="btn-new-game">New Game</button>
+          <button id="btn-back">Back</button>
+        </div>
       </div>
     </div>
 
@@ -39,24 +54,42 @@ const MAIN_MENU_HTML = `<!doctype html>
   </body>
 </html>`;
 
+// ===========================================================================================
+// TEST STATE & HELPERS
+// ===========================================================================================
+
 let dom;
-let controller; // shared instance for cleanup
+/**
+ * Shared controller instance across tests. Held for proper cleanup in afterEach.
+ */
+let controller;
 
 let origGetFullSaveData;
 let origAudioPlay;
 let origAudioStop;
 let origWindowClose;
-let origStartAnimationSequence; // <--- stubbed in tests
+/**
+ * Prevents animation sequence timers from running in tests.
+ * Tests run too fast for animation to meaningfully complete.
+ */
+let origStartAnimationSequence;
 
 let audioPlayCalls;
 let audioStopCalls;
 
+/**
+ * Default callback stubs passed to controller constructor.
+ * Individual tests override these as needed.
+ */
 const defaultCallbacks = {
   onNewGame: () => {},
   onContinue: () => {},
   onLoadFile: () => {},
 };
 
+/**
+ * Set up the JSDOM environment with the main menu HTML template.
+ */
 function setupDom() {
   dom = new JSDOM(MAIN_MENU_HTML, { url: 'http://localhost/' });
   globalThis.window = dom.window;
@@ -64,6 +97,9 @@ function setupDom() {
   globalThis.localStorage = dom.window.localStorage;
 }
 
+/**
+ * Tear down the JSDOM environment and clean globals.
+ */
 function teardownDom() {
   delete globalThis.window;
   delete globalThis.document;
@@ -71,6 +107,10 @@ function teardownDom() {
   dom = undefined;
 }
 
+/**
+ * Install audio manager spies to track play and stop calls.
+ * Calls are recorded without triggering actual audio playback.
+ */
 function installAudioSpies() {
   origAudioPlay = audioManager.play;
   origAudioStop = audioManager.stop;
@@ -85,24 +125,52 @@ function installAudioSpies() {
   };
 }
 
+/**
+ * Restore original audio manager methods after test completion.
+ */
 function restoreAudio() {
   audioManager.play = origAudioPlay;
   audioManager.stop = origAudioStop;
 }
 
+/**
+ * Check if a specific audio track was played, optionally with a predicate.
+ *
+ * @param {string} name - The audio track name.
+ * @param {Function} [predicate=()=>true] - Optional filter function.
+ * @returns {boolean} True if the audio was played matching the predicate.
+ */
 function audioPlayed(name, predicate = () => true) {
   return audioPlayCalls.some((c) => c.name === name && predicate(c));
 }
 
+/**
+ * Check if a specific audio track was stopped.
+ *
+ * @param {string} name - The audio track name.
+ * @returns {boolean} True if the audio was stopped.
+ */
 function audioStopped(name) {
   return audioStopCalls.some((c) => c.name === name);
 }
 
+/**
+ * Factory to create a controller instance with optional callback overrides.
+ *
+ * @param {Object} [overrides={}] - Optional callback overrides.
+ * @returns {MainMenuSceneController} A controller instance ready for testing.
+ */
 function createController(overrides = {}) {
   controller = new MainMenuSceneController({ ...defaultCallbacks, ...overrides });
   return controller;
 }
 
+/**
+ * Helper to dispatch a DOM click event on an element by ID.
+ *
+ * @param {string} id - The element ID to click.
+ * @param {string} [type='click'] - The event type (click, change, etc.).
+ */
 function click(id, type = 'click') {
   const el = document.getElementById(id);
   assert.ok(el, `Expected element #${id} to exist`);
@@ -114,33 +182,49 @@ describe('MainMenuSceneController (unit)', () => {
     setupDom();
     localStorage.clear();
 
+    /**
+     * Save original gameState.getFullSaveData method to spy on it during tests.
+     */
     origGetFullSaveData = gameState.getFullSaveData;
 
     installAudioSpies();
 
+    /**
+     * Mock window.close to track exit attempts without actually closing the window.
+     */
     origWindowClose = window.close;
     window.close = () => {
       window.close.called = true;
     };
     window.close.called = false;
 
-    // *** Prevent animation timers from running in tests ***
+    /**
+     * Suppress animation timers during tests. Animations run asynchronously and
+     * tests complete faster than animations can finish. We replace with a no-op
+     * to prevent timeout-related test failures and unnecessary delays.
+     */
     origStartAnimationSequence =
       MainMenuSceneController.prototype.startAnimationSequence;
     MainMenuSceneController.prototype.startAnimationSequence = function () {
-      // no-op in tests
+      // Intentionally disabled for test speed and isolation
     };
 
     controller = undefined;
   });
 
   afterEach(() => {
-    // Best-effort cleanup for any interval the test might set on the instance
+    /**
+     * Call cleanup on the controller if it exists. This clears timers and
+     * intervals to prevent async work from running after test completion.
+     */
     if (controller && typeof controller.cleanup === 'function') {
       controller.cleanup();
     }
     controller = undefined;
 
+    /**
+     * Restore all patched prototype methods and globals to their original state.
+     */
     MainMenuSceneController.prototype.startAnimationSequence =
       origStartAnimationSequence;
 
@@ -150,9 +234,9 @@ describe('MainMenuSceneController (unit)', () => {
     teardownDom();
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // constructor / init
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('constructor', () => {
     it('stores callbacks and initializes flags', () => {
@@ -171,9 +255,23 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  describe('init()', () => {
+    it('plays loading-screen music in a loop on initialization', () => {
+      audioPlayCalls = [];
+
+      createController();
+
+      const loadingCalls = audioPlayCalls.filter(
+        (c) => c.name === 'loading-screen',
+      );
+      assert.strictEqual(loadingCalls.length, 1);
+      assert.strictEqual(loadingCalls[0].loop, true);
+    });
+  });
+
+  // ------------------------------------------------------------------------------------
   // checkSaveFile
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('checkSaveFile()', () => {
     it('hides continue container when no save exists', () => {
@@ -204,9 +302,9 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // Buttons
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('button handlers', () => {
     it('Play button calls showSecondaryMenu and plays button-click audio', () => {
@@ -394,88 +492,112 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // User input detection
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('setupUserInputDetection()', () => {
-    it('first user input sets userInterrupted, calls skipToButtons, and starts loading-screen music once', () => {
+    it('first user input sets userInterrupted and calls skipToButtons once', () => {
       const original = MainMenuSceneController.prototype.skipToButtons;
-      let skipCalled = false;
+      let skipCalls = 0;
 
       try {
         MainMenuSceneController.prototype.skipToButtons = function () {
-          skipCalled = true;
+          skipCalls += 1;
         };
 
         const ctrl = createController();
 
-        audioPlayCalls = [];
-
-        // first input
+        // We only care about the interruption / skip; music is handled by init()
         document.dispatchEvent(
           new dom.window.Event('keydown', { bubbles: true }),
         );
 
         assert.strictEqual(ctrl.userInterrupted, true);
-        assert.ok(skipCalled, 'skipToButtons should be called once');
-        const loadingCalls = audioPlayCalls.filter(
-          (c) => c.name === 'loading-screen',
+        assert.strictEqual(
+          skipCalls,
+          1,
+          'skipToButtons should be called exactly once on first input',
         );
-        assert.strictEqual(loadingCalls.length, 1);
-        assert.strictEqual(loadingCalls[0].loop, true);
 
-        // second input should not trigger again
-        const before = audioPlayCalls.length;
+        // Second input should not trigger again due to { once: true } listener
         document.dispatchEvent(
           new dom.window.Event('keydown', { bubbles: true }),
         );
-        assert.strictEqual(audioPlayCalls.length, before);
+        assert.strictEqual(
+          skipCalls,
+          1,
+          'skipToButtons should not be called again on subsequent input',
+        );
       } finally {
         MainMenuSceneController.prototype.skipToButtons = original;
       }
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // cleanup
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('cleanup()', () => {
-    it('clears birdInterval when set', () => {
+    it('clears all stored timeouts and intervals', () => {
       const ctrl = createController();
-      let clearedWith = null;
 
+      const clearedTimeouts = [];
+      const clearedIntervals = [];
+
+      const origClearTimeout = globalThis.clearTimeout;
       const origClearInterval = globalThis.clearInterval;
-      globalThis.clearInterval = (id) => {
-        clearedWith = id;
-      };
 
       try {
-        ctrl.birdInterval = 123;
+        globalThis.clearTimeout = (id) => {
+          clearedTimeouts.push(id);
+        };
+        globalThis.clearInterval = (id) => {
+          clearedIntervals.push(id);
+        };
+
+        // Simulate timers having been registered
+        ctrl.timeouts = [1, 2, 3];
+        ctrl.intervals = [10, 20];
+
         ctrl.cleanup();
 
-        assert.strictEqual(clearedWith, 123);
+        assert.deepEqual(clearedTimeouts, [1, 2, 3]);
+        assert.deepEqual(clearedIntervals, [10, 20]);
+        assert.deepEqual(ctrl.timeouts, []);
+        assert.deepEqual(ctrl.intervals, []);
       } finally {
+        globalThis.clearTimeout = origClearTimeout;
         globalThis.clearInterval = origClearInterval;
       }
     });
 
-    it('does not call clearInterval when birdInterval is undefined', () => {
+    it('does not call clearTimeout/clearInterval when there are no timers', () => {
       const ctrl = createController();
-      let called = false;
+      ctrl.timeouts = [];
+      ctrl.intervals = [];
 
+      let timeoutCalled = false;
+      let intervalCalled = false;
+
+      const origClearTimeout = globalThis.clearTimeout;
       const origClearInterval = globalThis.clearInterval;
-      globalThis.clearInterval = () => {
-        called = true;
-      };
 
       try {
-        ctrl.birdInterval = undefined;
+        globalThis.clearTimeout = () => {
+          timeoutCalled = true;
+        };
+        globalThis.clearInterval = () => {
+          intervalCalled = true;
+        };
+
         ctrl.cleanup();
 
-        assert.strictEqual(called, false);
+        assert.strictEqual(timeoutCalled, false);
+        assert.strictEqual(intervalCalled, false);
       } finally {
+        globalThis.clearTimeout = origClearTimeout;
         globalThis.clearInterval = origClearInterval;
       }
     });

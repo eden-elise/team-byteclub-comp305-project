@@ -10,10 +10,10 @@ import { createCursedScholar } from '../../definitions/enemiesRegistry.js';
 
 // Backgrounds used in Floor 2
 const BACKGROUNDS = {
-    AISLE: '../../src/assets/art/backgrounds/floor3/bg_f3_01_laboratory_aisle.png',
-    WORKBENCH: '../../src/assets/art/backgrounds/floor3/bg_f3_02_research_table.png',
-    READING_ROOM: '../../src/assets/art/backgrounds/floor3/bg_f3_03_circular_reading_room.png',
-    ARCHIVE: '../../src/assets/art/backgrounds/floor3/bg_f3_04_circular_reading_room_with_shard.png'
+  AISLE: '../../src/assets/art/backgrounds/floor3/bg_f3_01_laboratory_aisle.png',
+  WORKBENCH: '../../src/assets/art/backgrounds/floor3/bg_f3_02_research_table.png',
+  READING_ROOM: '../../src/assets/art/backgrounds/floor3/bg_f3_03_circular_reading_room.png',
+  ARCHIVE: '../../src/assets/art/backgrounds/floor3/bg_f3_04_circular_reading_room_with_shard.png',
 };
 
 // Enemy visual entity
@@ -43,7 +43,7 @@ const SPEAKERS = {
   },
 };
 
-// Enemy logic factory (placeholder stats)
+// Enemy logic factory (placeholder statistics)
 const createCursedScholarEnemy = () => {
   const scholar = new Knight(false);
   scholar.name = 'Cursed Scholar';
@@ -111,6 +111,10 @@ export const F2_INTRO = {
 export const F2_MAIN_HALL = {
   id: 'F2_MAIN_HALL',
   events: [
+    {
+      type: 'background-change',
+      params: { background: BACKGROUNDS.AISLE },
+    },
     {
       type: 'dialogue',
       params: {

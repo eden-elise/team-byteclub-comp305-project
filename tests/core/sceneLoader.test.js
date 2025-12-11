@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Unit tests for loadScene function, covering HTML injection,
+ * stylesheet management, and gameState integration. Tests use JSDOM and mock
+ * fetch to verify scene loading behavior in isolation.
+ * @module tests/core/sceneLoader.test
+ */
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -11,25 +18,39 @@ describe('loadScene (node:test + jsdom)', () => {
   let originalSetCurrentScene;
 
   beforeEach(() => {
+    /**
+     * Create a fresh JSDOM environment with a minimal HTML structure.
+     * The #app container is where scene HTML will be injected.
+     */
     dom = new JSDOM('<!doctype html><html><head></head><body><div id="app"></div></body></html>', {
       url: 'http://localhost/',
     });
 
-    // Bind jsdom globals (avoid overwriting readonly globals like navigator)
+    /**
+     * Bind all required globals to the JSDOM window context.
+     * Avoid overwriting readonly globals like navigator.
+     */
     globalThis.window = dom.window;
     globalThis.document = dom.window.document;
     globalThis.HTMLElement = dom.window.HTMLElement;
     globalThis.Node = dom.window.Node;
     globalThis.localStorage = dom.window.localStorage;
 
-    // Mock fetch
+    /**
+     * Mock the fetch API to intercept scene HTML requests.
+     * Tracks all fetch calls and returns mock scene HTML without
+     * attempting actual network requests.
+     */
     fetchCalls = [];
     globalThis.fetch = async (url) => {
       fetchCalls.push(url);
       return { text: async () => '<p>Mock scene HTML</p>' };
     };
 
-    // Spy on gameState.setCurrentScene
+    /**
+     * Spy on gameState.setCurrentScene to verify the scene name
+     * is properly recorded after loading completes.
+     */
     originalSetCurrentScene = gameState.setCurrentScene;
     gameState.setCurrentScene = (sceneName) => {
       if (!gameState.__spyCalls) gameState.__spyCalls = [];
@@ -38,6 +59,10 @@ describe('loadScene (node:test + jsdom)', () => {
   });
 
   afterEach(() => {
+    /**
+     * Clean up all injected globals to ensure subsequent tests
+     * start with a fresh environment.
+     */
     delete globalThis.window;
     delete globalThis.document;
     delete globalThis.navigator;
@@ -46,6 +71,10 @@ describe('loadScene (node:test + jsdom)', () => {
     delete globalThis.localStorage;
     delete globalThis.fetch;
 
+    /**
+     * Restore the original gameState.setCurrentScene method and remove
+     * the spy tracking array.
+     */
     gameState.setCurrentScene = originalSetCurrentScene;
     delete gameState.__spyCalls;
   });
