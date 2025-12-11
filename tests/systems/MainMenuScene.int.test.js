@@ -1,3 +1,14 @@
+/**
+ * @fileoverview Integration tests for MainMenuSceneController. These specs
+ * exercise the controller in a near-real environment using JSDOM and the
+ * real `gameState` to verify continuation, new-game, and input flows.
+ * @module tests/systems/mainMenuScene.int.test
+ */
+
+// ===========================================================================================
+// IMPORTS
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -68,20 +79,42 @@ describe('MainMenuSceneController (integration)', () => {
     globalThis.localStorage = dom.window.localStorage;
   };
 
-  // ---------- small helpers --------------------------------------------------
+  // =======================================================================================
+  // HELPERS & TEST DOUBLES
+  // =======================================================================================
 
+  /**
+   * Create and register a controller instance for cleanup. Keeps tests
+   * responsible for tearing down all created controllers to avoid leaks.
+   *
+   * @param {Object} callbacks - Callback hooks passed to the controller.
+   * @returns {MainMenuSceneController}
+   */
   function createController(callbacks) {
     const c = new MainMenuSceneController(callbacks);
     controllers.push(c);
     return c;
   }
 
+  /**
+   * Dispatches a click event on the element with the provided ID. Asserts the
+   * element exists so tests fail clearly when fixtures are incomplete.
+   *
+   * @param {string} id - DOM element id to click.
+   */
   function click(id) {
     const el = document.getElementById(id);
     assert.ok(el, `Expected element #${id} to exist`);
     el.dispatchEvent(new dom.window.Event('click', { bubbles: true }));
   }
 
+  /**
+   * Replace `audioManager` play/stop with test spies that record calls.
+   * Returns a restorer function to re-install originals. This isolates audio
+   * side effects and enables assertions about what audio is played/stopped.
+   *
+   * @returns {Function} restore function
+   */
   function stubAudioManager() {
     const origPlay = audioManager.play;
     const origStop = audioManager.stop;
@@ -104,6 +137,12 @@ describe('MainMenuSceneController (integration)', () => {
     };
   }
 
+  /**
+   * Stub animation-related prototype methods to make integration tests
+   * deterministic and fast. Returns a restorer to revert the prototype.
+   *
+   * @returns {Function} restore function
+   */
   function stubControllerAnimations() {
     const proto = MainMenuSceneController.prototype;
 
