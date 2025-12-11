@@ -673,3 +673,11 @@ body {
     gap: 0.25rem;
   }
 }
+
+#battle-header {
+  background-image: var(--battle-header-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
