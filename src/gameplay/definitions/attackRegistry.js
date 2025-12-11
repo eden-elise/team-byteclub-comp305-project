@@ -1,11 +1,12 @@
 import { Attack } from '../core/Attack.js';
 import { createBaseAttackAnimationCallback } from '../animations/AttackAnimations.js';
 import {
-    MemoryDrainStatusEffect,
-    DarkResonanceStatusEffect,
-    FracturedGuardStatusEffect,
-    ShacklesRattleStatusEffect,
-    PoisonStatusEffect, BurnStatusEffect,
+  MemoryDrainStatusEffect,
+  DarkResonanceStatusEffect,
+  FracturedGuardStatusEffect,
+  ShacklesRattleStatusEffect,
+  PoisonStatusEffect,
+  BurnStatusEffect,
 } from './statusEffectRegistry.js';
 
 export class BasicStrike extends Attack {
@@ -39,19 +40,19 @@ export class HeavySwing extends Attack {
  * High damage arrow
  */
 export class PiercingShot extends Attack {
-    static data = {
-        basePower: 1.8,
-        description: 'A powerful arrow that pierces through armor.',
-    };
+  static data = {
+    basePower: 1.8,
+    description: 'A powerful arrow that pierces through armor.',
+  };
 
-    static animationCallback = createBaseAttackAnimationCallback({
-        lungeDistance: 30,
-        duration: 350,
-    });
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 30,
+    duration: 350,
+  });
 
-    constructor() {
-        super('Piercing Shot', PiercingShot.data, PiercingShot.animationCallback);
-    }
+  constructor() {
+    super('Piercing Shot', PiercingShot.data, PiercingShot.animationCallback);
+  }
 }
 
 /**
@@ -59,21 +60,21 @@ export class PiercingShot extends Attack {
  * med damage arrow that inflicts possible poison
  */
 export class PoisonArrow extends Attack {
-    static data = {
-        basePower: 1.2,
-        statusEffect: new PoisonStatusEffect(),
-        statusEffectChance: 0.5,
-        description: 'A venomous arrow that may poison the target.',
-    };
+  static data = {
+    basePower: 1.2,
+    statusEffect: new PoisonStatusEffect(),
+    statusEffectChance: 0.5,
+    description: 'A venomous arrow that may poison the target.',
+  };
 
-    static animationCallback = createBaseAttackAnimationCallback({
-        lungeDistance: 30,
-        duration: 300,
-    });
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 30,
+    duration: 300,
+  });
 
-    constructor() {
-        super('Poison Arrow', PoisonArrow.data, PoisonArrow.animationCallback);
-    }
+  constructor() {
+    super('Poison Arrow', PoisonArrow.data, PoisonArrow.animationCallback);
+  }
 }
 
 /**
@@ -81,21 +82,21 @@ export class PoisonArrow extends Attack {
  * med damage fireball that likely will inflict burn
  */
 export class Fireball extends Attack {
-    static data = {
-        basePower: 1.4,
-        statusEffect: new BurnStatusEffect(),
-        statusEffectChance: 0.75,
-        description: 'A blazing sphere of fire that may ignite the target.',
-    };
+  static data = {
+    basePower: 1.4,
+    statusEffect: new BurnStatusEffect(),
+    statusEffectChance: 0.75,
+    description: 'A blazing sphere of fire that may ignite the target.',
+  };
 
-    static animationCallback = createBaseAttackAnimationCallback({
-        lungeDistance: 25,
-        duration: 300,
-    });
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 25,
+    duration: 300,
+  });
 
-    constructor() {
-        super('Fireball', Fireball.data, Fireball.animationCallback);
-    }
+  constructor() {
+    super('Fireball', Fireball.data, Fireball.animationCallback);
+  }
 }
 
 /**
@@ -103,22 +104,20 @@ export class Fireball extends Attack {
  * high damage blast
  */
 export class ArcaneBlast extends Attack {
-    static data = {
-        basePower: 1.9,
-        description: 'A concentrated burst of pure magical energy.',
-    };
+  static data = {
+    basePower: 1.9,
+    description: 'A concentrated burst of pure magical energy.',
+  };
 
-    static animationCallback = createBaseAttackAnimationCallback({
-        lungeDistance: 20,
-        duration: 350,
-    });
+  static animationCallback = createBaseAttackAnimationCallback({
+    lungeDistance: 20,
+    duration: 350,
+  });
 
-    constructor() {
-        super('Arcane Blast', ArcaneBlast.data, ArcaneBlast.animationCallback);
-    }
+  constructor() {
+    super('Arcane Blast', ArcaneBlast.data, ArcaneBlast.animationCallback);
+  }
 }
-
-
 
 /**
  * Memory Wipe - Dravik's signature attack
@@ -333,7 +332,6 @@ export class ShacklesRattle extends Attack {
   }
 }
 
-
 export const AttackMap = {
   'Basic Strike': BasicStrike,
   'Heavy Swing': HeavySwing,
@@ -344,7 +342,7 @@ export const AttackMap = {
   'Runic Snare': RunicSnare,
   'Piercing Shot': PiercingShot,
   'Poison Arrow': PoisonArrow,
-  'Fireball': Fireball,
+  Fireball: Fireball,
   'Arcane Blast': ArcaneBlast,
   'Echo Rend': EchoRend,
   'Haunting Pulse': HauntingPulse,

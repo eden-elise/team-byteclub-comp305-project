@@ -7,13 +7,12 @@ import {
 } from '../../animations/ExplorationAnimations.js';
 
 const BACKGROUNDS = {
-    BEDROOM: '../../src/assets/art/backgrounds/floor4/bg_f4_02_bedroom.png',
-    CHAPEL: '../../src/assets/art/backgrounds/floor4/bg_f4_03_chapel.png',
-    GRAND_CORRIDOR: '../../src/assets/art/backgrounds/floor4/bg_f4_01_grand_corridor.png',
-    MEMORY_WRAITH_BG: '../../src/assets/art/backgrounds/floor4/bg_f4_04_memory_wraith_corridor.png',
-    MWC: '../../src/assets/art/backgrounds/floor4/bg_f4_05_memory_wraith_corridor_with_shard.png'
+  BEDROOM: '../../src/assets/art/backgrounds/floor4/bg_f4_02_bedroom.png',
+  CHAPEL: '../../src/assets/art/backgrounds/floor4/bg_f4_03_chapel.png',
+  GRAND_CORRIDOR: '../../src/assets/art/backgrounds/floor4/bg_f4_01_grand_corridor.png',
+  MEMORY_WRAITH_BG: '../../src/assets/art/backgrounds/floor4/bg_f4_04_memory_wraith_corridor.png',
+  MWC: '../../src/assets/art/backgrounds/floor4/bg_f4_05_memory_wraith_corridor_with_shard.png',
 };
-
 
 const MEMORY_WRAITH = {
   name: 'Memory-Wraith',
@@ -48,7 +47,6 @@ const SPEAKERS = {
     fontWeight: 'bold',
   },
 };
-
 
 export const F3_INTRO = {
   id: 'F3_INTRO',

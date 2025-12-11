@@ -4,7 +4,7 @@ import { createNewSave } from './SaveSchema.js';
 const CHARACTER_CLASSES = {
   knight: Knight,
   archer: Archer,
-  mage: Mage
+  mage: Mage,
 };
 
 export class GameState {
@@ -78,39 +78,6 @@ export class GameState {
     }
   }
 
-    /**
-     * Updates the current scene in the save data and persists it.
-     * @param {string} sceneName 
-     */
-    setCurrentScene(sceneName) {
-        if (!this.currentSaveData) return;
-        this.currentSaveData.world.currentScene = sceneName;
-        this.saveGame();
-    }
-
-    /**
-     * Updates exploration state in the save data.
-     * @param {string} roomId
-     * @param {number} eventIndex
-     */
-    setExplorationState(roomId, eventIndex) {
-        if (!this.currentSaveData) return;
-        this.currentSaveData.world.currentRoomId = roomId;
-        this.currentSaveData.world.eventIndex = eventIndex;
-        this.saveGame();
-    }
-
-    /**
-     * Retrieves the saved exploration state
-     * @returns {{roomId: string, eventIndex: number}}
-     */
-    getExplorationState() {
-        if (!this.currentSaveData) return { roomId: null, eventIndex: 0 };
-        return {
-            roomId: this.currentSaveData.world.currentRoomId,
-            eventIndex: this.currentSaveData.world.eventIndex || 0
-        };
-    }
   /**
    * Updates the current scene in the save data and persists it.
    * @param {string} sceneName
@@ -119,6 +86,30 @@ export class GameState {
     if (!this.currentSaveData) return;
     this.currentSaveData.world.currentScene = sceneName;
     this.saveGame();
+  }
+
+  /**
+   * Updates exploration state in the save data.
+   * @param {string} roomId
+   * @param {number} eventIndex
+   */
+  setExplorationState(roomId, eventIndex) {
+    if (!this.currentSaveData) return;
+    this.currentSaveData.world.currentRoomId = roomId;
+    this.currentSaveData.world.eventIndex = eventIndex;
+    this.saveGame();
+  }
+
+  /**
+   * Retrieves the saved exploration state
+   * @returns {{roomId: string, eventIndex: number}}
+   */
+  getExplorationState() {
+    if (!this.currentSaveData) return { roomId: null, eventIndex: 0 };
+    return {
+      roomId: this.currentSaveData.world.currentRoomId,
+      eventIndex: this.currentSaveData.world.eventIndex || 0,
+    };
   }
 
   /**

@@ -360,7 +360,7 @@ export const F1_FIGHT = {
       type: 'battle',
       params: {
         enemy: createWarden(),
-        background: BACKGROUNDS.WARDEN_CELL
+        background: BACKGROUNDS.WARDEN_CELL,
       },
     },
     {

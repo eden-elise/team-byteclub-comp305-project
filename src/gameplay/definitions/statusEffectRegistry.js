@@ -95,13 +95,9 @@ export class AlchemicalShieldStatusEffect extends StatusEffect {
 
 export class FracturedGuardStatusEffect extends StatusEffect {
   constructor() {
-    super(
-      'Fractured Guard',
-      'Shattered memories erode defenses',
-      3,
-      'alchemical-shield-icon.png',
-      { DEFEND: -4 }
-    );
+    super('Fractured Guard', 'Shattered memories erode defenses', 3, 'alchemical-shield-icon.png', {
+      DEFEND: -4,
+    });
   }
 }
 
