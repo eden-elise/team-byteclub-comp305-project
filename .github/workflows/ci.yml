@@ -28,7 +28,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npm test -- --coverage
+      - run: npm test -- --experimental-test-coverage
       - name: Upload coverage to QLTY
         uses: qltysh/qlty-action/coverage@main
         with:
