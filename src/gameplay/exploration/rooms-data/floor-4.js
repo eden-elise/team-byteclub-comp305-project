@@ -622,6 +622,33 @@ export const F4_PLAYER_CHOICE = {
         speaker: SPEAKERS.PLAYER_THINKING,
       },
     },
+    {
+      type: 'choice',
+      params: {
+        choices: [
+          {
+            text: 'Accept his offer',
+            callback: async (controller) => {
+              await controller.showDialogue({
+                text: 'I... I accept.',
+                speaker: SPEAKERS.PLAYER,
+              });
+              await controller.showDialogue({
+                text: '[effect: glowing]Excellent[/]. Welcome back, apprentice. Let us begin the next iteration... together.',
+                speaker: SPEAKERS.DRAVIK,
+              });
+              window.handleLoss();
+            },
+          },
+          {
+            text: 'Refuse and fight',
+            callback: async (controller) => {
+              // Continue to battle
+            },
+          },
+        ],
+      },
+    },
   ],
   connections: ['F4_FINAL_BATTLE'],
 };
