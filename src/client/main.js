@@ -22,7 +22,7 @@ function showMobileWarning() {
     ">
       <h1 style="font-size: 2rem; margin-bottom: 1rem;">⚔️ BYTECLUB ⚔️</h1>
       <p style="font-size: 1.2rem; max-width: 400px;">
-        This game is designed for <strong>desktop and laptop</strong> computers only.
+        This game is designed for <strong>desktop and laptop</strong> computers only and <strong>requires javaScript enabled to play</strong>.
       </p>
       <p style="font-size: 1rem; margin-top: 1rem; color: #888;">
         Please visit us on a larger screen to play!
