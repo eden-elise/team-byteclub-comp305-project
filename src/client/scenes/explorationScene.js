@@ -221,11 +221,11 @@ export class ExplorationSceneController {
         gameState.currentSaveData.world.currentEventIndex = this.currentEventIndex + 1;
         gameState.saveGame();
       }
-      // Since we already built out the floors without spcifying background, I'm making it so by default
-      // it will just call the battle scene with the current background
-      console.log(this.room.background);
-      params.background = this.room.background;
-      console.log(params.background);
+      const header = document.getElementById('exploration-header');
+      const currentBackground = getComputedStyle(header).backgroundImage;
+
+      // Pass the EXACT bg currently on screen into the battle
+      params.background = currentBackground;
       // Start battle
       if (window.gameApp && window.gameApp.startBattle) {
         await window.gameApp.startBattle(params, async () => {

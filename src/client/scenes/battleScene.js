@@ -469,13 +469,25 @@ export class BattleSceneController {
      * The enemy entity
      * @type {Entity}
      */
-    this.enemy = enemy;
-    audioManager.play('battle-background', true); // Start battle music looping
 
-    document.documentElement.style.setProperty(
-      '--battle-header-bg',
-      `url('${background}')`
-    );
+    this.enemy = enemy;
+
+    // Read exploration header background
+    const explBG = getComputedStyle(document.documentElement)
+        .getPropertyValue('--exploration-header-bg')
+        .trim();
+
+    // Decide what background to use:
+    // 1. prefer the passed-in background
+    // 2. fallback to exploration bg
+    const finalBG = background || explBG;
+
+    if (finalBG) {
+        document.documentElement.style.setProperty(
+            '--battle-header-bg',
+            `url('${finalBG.replace(/url\(|\)|"/g, "")}')`
+        );
+    }
 
     audioManager.play('battle-background', true); // Start battle music looping
 
