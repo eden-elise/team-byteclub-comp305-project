@@ -3,12 +3,6 @@
 }
 
 body {
-  background: var(--color-bg-primary);
-  background-image: radial-gradient(
-    circle at center,
-    var(--color-bg-radial-light) 0%,
-    var(--color-bg-radial-dark) 70%
-  );
   color: var(--color-text-primary);
   font-family: var(--font-primary);
   font-size: clamp(14px, 1.5vw, 18px);
@@ -61,9 +55,22 @@ body {
   position: relative;
 
   /* Background image with tint */
-  background: var(--exploration-header-bg) center/cover no-repeat;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-image:
+    radial-gradient(circle at center,
+      rgba(0, 0, 0, 0) 10%,
+      rgba(0, 0, 0, 0.75) 45%,
+      rgba(0, 0, 0, 0.5) 100%
+    ),
+    var(--exploration-header-bg);
+
+  background-size: cover;
+
+  background-position: center;
+
+  background-repeat: no-repeat;
+
   background-blend-mode: multiply;
+
   transition: opacity 0.3s ease-in-out;
 }
 
@@ -72,6 +79,9 @@ body {
   position: relative;
   overflow: hidden;
   transition: all 0.5s ease-in-out;
+
+  box-shadow: 0 0 0 1.5vw rgba(0, 0, 0, 0.35);
+  border-radius: 32px;
 }
 
 /* When a character is alone on screen, center them absolutely */
@@ -86,12 +96,12 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 15%;
-  right: 15%;
-  background-color: rgba(0, 0, 0, 0.3);
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.35);
   z-index: 0;
   pointer-events: none;
-  border-radius: var(--size-border-radius);
+
 }
 
 .character > * {
