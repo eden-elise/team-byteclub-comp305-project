@@ -281,7 +281,8 @@ export class MainMenuSceneController {
         this.addTimeout(() => {
             if (lightningFlash) lightningFlash.style.animation = '';
         }, 800);
-    }
+    });
+}
 
     /**
      * Shows the menu buttons with fade-in animation.
