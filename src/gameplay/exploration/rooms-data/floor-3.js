@@ -1,4 +1,5 @@
-import { Knight } from '../../definitions/heroesRegistry.js';
+import { createMemoryWraith } from '../../definitions/enemiesRegistry.js';
+
 import {
   FadeInAnimation,
   FadeOutAnimation,
@@ -48,15 +49,6 @@ const SPEAKERS = {
   },
 };
 
-const createMemoryWraithEnemy = () => {
-  const wraith = new Knight(false);
-  wraith.name = 'Memory-Wraith';
-  wraith.image = MEMORY_WRAITH.image;
-  wraith.maxHP = 80;
-  wraith.currentHP = 80;
-  // Add any optional buffs or stats tweaks here
-  return wraith;
-};
 
 export const F3_INTRO = {
   id: 'F3_INTRO',
@@ -154,7 +146,7 @@ export const F3_MEMORY_WRAITH_FIGHT = {
     {
       type: 'entity-enter',
       params: {
-        entity: MEMORY_WRAITH, // Visual only
+        entity: MEMORY_WRAITH,
         position: 'center',
         animation: FadeInAnimation,
       },
@@ -169,7 +161,7 @@ export const F3_MEMORY_WRAITH_FIGHT = {
     {
       type: 'battle',
       params: {
-        enemy: createMemoryWraithEnemy(),
+        enemy: createMemoryWraith(),
       },
     },
     {

@@ -3,6 +3,7 @@ import { createBaseAttackAnimationCallback } from '../animations/AttackAnimation
 import {
     MemoryDrainStatusEffect,
     DarkResonanceStatusEffect,
+    FracturedGuardStatusEffect,
     FreezeStatusEffect, PoisonStatusEffect, BurnStatusEffect,
 } from './statusEffectRegistry.js';
 
