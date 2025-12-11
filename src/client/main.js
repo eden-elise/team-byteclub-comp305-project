@@ -17,6 +17,21 @@ const FLOOR_ROOMS = {
   'floor-4': 'F4_TOWER_INTRO'
 };
 
+// Track the current scene controller to handle cleanup
+let currentSceneController = null;
+
+/**
+ * Sets the current active scene controller and cleans up the previous one.
+ * @param {Object} controller - The new scene controller instance
+ */
+function setCurrentController(controller) {
+  if (currentSceneController && typeof currentSceneController.cleanup === 'function') {
+    console.log('Cleaning up previous scene controller');
+    currentSceneController.cleanup();
+  }
+  currentSceneController = controller;
+}
+
 async function initApp() {
   try {
     // Initialize global options
@@ -42,10 +57,10 @@ async function initApp() {
 
     // Initialize main menu with callbacks
     console.log('Initializing MainMenuSceneController...');
-    new MainMenuSceneController({
+    setCurrentController(new MainMenuSceneController({
       onNewGame: startNewGame,
       onContinue: continueGame,
-    });
+    }));
     console.log('MainMenuSceneController initialized');
   } catch (error) {
     console.error('Error in initApp:', error);
@@ -60,7 +75,7 @@ async function startNewGame() {
   await loadScene('characterSelectScene');
 
   // Initialize character select controller with callback
-  new CharacterSelectSceneController(async (characterData) => {
+  setCurrentController(new CharacterSelectSceneController(async (characterData) => {
     // Create the character using the Class from character data
     const character = new characterData.Class(true);
     gameState.characterEntity = character;
@@ -91,13 +106,13 @@ async function startNewGame() {
 
     // Move to intro scroll scene
     await loadScene('introScrollScene');
-    new IntroScrollSceneController({
+    setCurrentController(new IntroScrollSceneController({
       onComplete: async () => {
         // After intro, start exploring floor 1
         await startFloorExploration('floor-1');
       },
-    });
-  });
+    }));
+  }));
 }
 
 /**
@@ -180,13 +195,14 @@ async function startFloorExploration(floorId = 'floor-1') {
           // All floors completed - show completion screen or main menu
           console.log('Game completed!');
           await loadScene('mainMenuScene');
-          new MainMenuSceneController({
+          setCurrentController(new MainMenuSceneController({
             onNewGame: startNewGame,
             onContinue: continueGame,
-          });
+          }));
         }
       }
     );
+    setCurrentController(explorationController);
 
     window.explorationController = explorationController;
   } catch (error) {
@@ -225,6 +241,7 @@ async function startBattle(params, onWinCallback) {
       }
     }
   );
+  setCurrentController(battleController);
 
   window.battleController = battleController;
 }
@@ -299,10 +316,10 @@ document.addEventListener('keydown', async (e) => {
   } else if (e.key === 'm' || e.key === 'M') {
     // Return to main menu
     await loadScene('mainMenuScene');
-    new MainMenuSceneController({
+    setCurrentController(new MainMenuSceneController({
       onNewGame: startNewGame,
       onContinue: continueGame,
-    });
+    }));
   }
 });
 
