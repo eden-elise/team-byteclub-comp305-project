@@ -5,7 +5,7 @@ import {
     DarkResonanceStatusEffect,
     FracturedGuardStatusEffect,
     ShacklesRattleStatusEffect,
-    FreezeStatusEffect, PoisonStatusEffect, BurnStatusEffect,
+    PoisonStatusEffect, BurnStatusEffect,
 } from './statusEffectRegistry.js';
 
 export class BasicStrike extends Attack {
@@ -178,8 +178,10 @@ export class AlchemistStrike extends Attack {
   }
 }
 
-// Cursed Scholar attacks
-
+/**
+ * Mind Leech - Cursed Scholar's attack
+ * Deals damage and heals the Cursed Scholar for a portion of the damage dealt
+ */
 export class MindLeech extends Attack {
   static data = {
     basePower: 1.25, // modest hit
@@ -215,22 +217,50 @@ export class MindLeech extends Attack {
   }
 }
 
+/**
+ * Runic Snare - Cursed Scholar's specialty attack
+ * Deals damage and applies Poison status effect
+ */
 export class RunicSnare extends Attack {
   static data = {
-    basePower: 1.4,
-    statusEffect: new FreezeStatusEffect(),
-    statusEffectChance: 1,
-    description: 'A binding rune that locks the target for one turn',
+    basePower: 1.1,
+    description: 'A binding rune that injects venom into the target.',
   };
   static animationCallback = createBaseAttackAnimationCallback({
     lungeDistance: 40,
     duration: 350,
   });
+
   constructor() {
     super('Runic Snare', RunicSnare.data, RunicSnare.animationCallback);
   }
+
+  async execute(source, target, battle) {
+    if (!target.isAlive()) return Promise.resolve();
+    battle.logEvent(`${source.name} uses ${this.name}!`);
+
+    const baseDamage = source.stats.ATTACK * this.basePower;
+    const defenseReduction = target.stats.DEFEND / 2;
+    const damage = Math.max(1, Math.floor(baseDamage - defenseReduction));
+
+    await this.playAnimation(source, target, battle);
+    await target.takeDamage(damage);
+    battle.logEvent(`${target.name} takes ${damage} damage!`);
+    if (!target.isAlive()) battle.logEvent(`${target.name} is defeated!`);
+
+    const poison = new PoisonStatusEffect();
+    poison.duration = 3;
+    poison.remainingTurns = 3;
+    target.addStatusEffect(poison, battle.textbox);
+    battle.logEvent(`${target.name} is poisoned!`);
+  }
 }
 
+/**
+ * Echo Rend - Memory Wraith's basic attack
+ * Moderate damage with chance to apply Fractured Guard (reduces DEF)
+ * Applied by Wraith's Echo Rend ability
+ */
 export class EchoRend extends Attack {
   static data = {
     basePower: 1.4,
@@ -247,6 +277,10 @@ export class EchoRend extends Attack {
   }
 }
 
+/**
+ * Haunting Pulse - Memory Wraith's specialty attack
+ * High damage attack
+ */
 export class HauntingPulse extends Attack {
   static data = {
     basePower: 1.8,
@@ -261,6 +295,10 @@ export class HauntingPulse extends Attack {
   }
 }
 
+/**
+ * Shackles Rattle - Warden's attack
+ * Deals damage and buffs Warden's ATTACK stat
+ */
 export class ShacklesRattle extends Attack {
   static data = {
     basePower: 1.3, // same as Basic Strike damage profile

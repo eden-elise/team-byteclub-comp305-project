@@ -88,18 +88,27 @@ export class AlchemicalShieldStatusEffect extends StatusEffect {
   }
 }
 
+/**
+ * Fractured Guard - Reduces target's DEFEND stat
+ * Applied by Wraiths Echo Rend ability
+ */
+
 export class FracturedGuardStatusEffect extends StatusEffect {
   constructor() {
     super(
       'Fractured Guard',
       'Shattered memories erode defenses',
       3,
-      'fractured-guard-icon.png',
+      'alchemical-shield-icon.png',
       { DEFEND: -4 }
     );
   }
 }
 
+/**
+ * Shackles Rattle - Increases Warden's ATTACK stat
+ * Applied by Warden's Shackles Rattle ability
+ */
 export class ShacklesRattleStatusEffect extends StatusEffect {
   constructor() {
     super(
