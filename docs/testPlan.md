@@ -1,7 +1,38 @@
 # Test Plan: Text-Based Rogue-like game
 
 Related: 
-[see Testing ADR]()
+[see Testing ADR](ADRS/TESTING.md)
+
+## 0. Table of Contents
+- [1. Project Overview](#1-project-overview)
+- [2. Current Testing Strategy](#2-current-testing-strategy)
+  - [2.0 Play Testing](#20-play-testing)
+  - [2.1 Test Framework & Style](#21-test-framework--style)
+  - [2.2 Modules with Strong Unit Coverage](#22-modules-with-strong-unit-coverage)
+  - [2.3 Patterns in Current Coverage](#23-patterns-in-current-coverage)
+- [3. Coverage Gaps & Risks](#3-coverage-gaps--risks)
+  - [3.1 Missing or Weak Areas](#31-missing-or-weak-areas)
+  - [3.2 High-Risk Areas (From Complexity & Test Density)](#32-high-risk-areas-from-complexity--test-density)
+- [4. Future Testing Strategy](#4-future-testing-strategy)
+  - [4.1 Unit Testing (Continue & Refine)](#41-unit-testing-continue--refine)
+  - [4.2 Integration Testing](#42-integration-testing)
+  - [4.3 End-to-End (E2E) / Acceptance Testing](#43-end-to-end-e2e--acceptance-testing)
+  - [4.4 Performance Testing](#44-performance-testing)
+  - [4.5 Security Testing](#45-security-testing)
+- [5. Test Environment](#5-test-environment)
+  - [5.1 Framework & Runtime](#51-framework--runtime)
+  - [5.2 Tooling Summary](#52-tooling-summary)
+- [6. Test Data & Fixtures](#6-test-data--fixtures)
+- [7. Pass / Fail Criteria](#7-pass--fail-criteria)
+  - [7.1 Unit Tests](#71-unit-tests)
+  - [7.2 Integration Tests](#72-integration-tests)
+  - [7.3 E2E / Acceptance Tests](#73-e2e--acceptance-tests)
+  - [7.4 Performance](#74-performance)
+  - [7.5 Security](#75-security)
+- [8. Roadmap & Implementation Phases](#8-roadmap--implementation-phases)
+  - [Phase 1 – Stabilize & Measure (1–2 sprints)](#phase-1--stabilize--measure-1-2-sprints)
+  - [Phase 2 – Expand Integration & E2E (3–6 sprints)](#phase-2--expand-integration--e2e-3-6-sprints)
+  - [Phase 3 – Performance & Security (ongoing)](#phase-3--performance--security-ongoing)
 
 ## 1. Project Overview
 
@@ -25,11 +56,98 @@ Core user flows:
 
 ## 2. Current Testing Strategy
 
+### 2.0 Play Testing
+
+#### Test Environment
+- Browser: Chrome 120+, Firefox 120+, Safari 17+
+- Screen: Desktop/laptop (1280x720 minimum)
+
+#### Test Cases
+
+##### TC-001: New Game Flow
+**Preconditions:** Fresh browser session, no saved game
+**Steps:**
+1. Open index.html in browser
+2. Click "New Game"
+3. Select Knight character
+4. Verify intro scroll plays
+5. Verify Floor 1 exploration loads
+
+**Expected Result:** Player enters Floor 1 with Knight selected
+**Status:** [ ] Pass / [ ] Fail
+
+##### TC-002: Character Selection
+**Preconditions:** At main menu
+**Steps:**
+1. Click "New Game"
+2. Select "Archer"
+3. Verify archer sprite displays
+
+**Expected Result:** Archer character is selected and visible
+**Status:** [ ] Pass / [ ] Fail
+
+##### TC-003: Battle System
+**Preconditions:** In exploration mode
+**Steps:**
+1. Trigger a battle encounter
+2. Use Attack 1
+3. Use Attack 2
+4. Use an item from inventory
+5. Defeat enemy
+
+**Expected Result:** Battle completes, return to exploration
+**Status:** [ ] Pass / [ ] Fail
+
+##### TC-004: Save/Load
+**Preconditions:** Progress to Floor 2+
+**Steps:**
+1. Note current floor and HP
+2. Close browser
+3. Reopen and click "Continue"
+4. Verify floor and HP restored
+
+**Expected Result:** Game state correctly restored
+**Status:** [ ] Pass / [ ] Fail
+
+##### TC-005: Full Playthrough
+**Preconditions:** Fresh game
+**Steps:**
+1. Complete all 5 floors
+2. Defeat all bosses
+3. Reach game end
+
+**Expected Result:** Game completes without errors
+**Status:** [ ] Pass / [ ] Fail
+
+#### Audio Tests
+
+##### TC-006: Audio Controls
+**Steps:**
+1. Open options menu
+2. Adjust volume slider
+3. Verify audio level changes
+
+**Expected Result:** Volume adjusts accordingly
+**Status:** [ ] Pass / [ ] Fail
+
+#### Edge Cases
+
+##### TC-007: Death and Retry
+**Steps:**
+1. Lose a battle intentionally
+2. Verify death screen appears
+3. Click restart option
+
+**Expected Result:** Game restarts properly
+**Status:** [ ] Pass / [ ] Fail
+
+
 ### 2.1 Test Framework & Style
 
 * **Runner:** Node’s built-in test harness (`node:test`).
 * **Assertions:** `node:assert/strict`.
 * **DOM Emulation:** `jsdom` is used where DOM access is required.
+* **Playtesting:** ensures the game works correctly through user interactions. [see more](@TODO: LINK)
 * **Mocking:**
 
   * Browser APIs: `Audio`, `fetch`, `localStorage`, timers (`setTimeout`, possibly `requestAnimationFrame`).
