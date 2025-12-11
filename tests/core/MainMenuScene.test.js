@@ -13,22 +13,25 @@ const MAIN_MENU_HTML = `<!doctype html>
     <div id="birds-container"></div>
     <div id="lightning-flash"></div>
 
-    <div id="title-text"><h1>Dravic's Castle</h1></div>
+    <!-- Add this wrapper that your real code expects -->
+    <div class="ui-container">
+      <div id="title-text"><h1>Dravic's Castle</h1></div>
 
-    <div id="menu-buttons">
-      <div id="initial-buttons">
-        <button id="btn-play">Play</button>
-        <button id="btn-exit">Exit</button>
-      </div>
-
-      <div id="secondary-buttons" style="display: none">
-        <div id="continue-container">
-          <button id="btn-continue">Continue</button>
-          <div id="save-info"></div>
+      <div id="menu-buttons">
+        <div id="initial-buttons">
+          <button id="btn-play">Play</button>
+          <button id="btn-exit">Exit</button>
         </div>
-        <button id="btn-load-file">Load File</button>
-        <button id="btn-new-game">New Game</button>
-        <button id="btn-back">Back</button>
+
+        <div id="secondary-buttons" style="display: none">
+          <div id="continue-container">
+            <button id="btn-continue">Continue</button>
+            <div id="save-info"></div>
+          </div>
+          <button id="btn-load-file">Load File</button>
+          <button id="btn-new-game">New Game</button>
+          <button id="btn-back">Back</button>
+        </div>
       </div>
     </div>
 
@@ -38,6 +41,7 @@ const MAIN_MENU_HTML = `<!doctype html>
     </div>
   </body>
 </html>`;
+
 
 let dom;
 let controller; // shared instance for cleanup
@@ -168,6 +172,20 @@ describe('MainMenuSceneController (unit)', () => {
       assert.strictEqual(ctrl.callbacks, callbacks);
       assert.strictEqual(ctrl.animationComplete, false);
       assert.strictEqual(ctrl.userInterrupted, false);
+    });
+  });
+
+  describe('init()', () => {
+    it('plays loading-screen music in a loop on initialization', () => {
+      audioPlayCalls = [];
+
+      createController();
+
+      const loadingCalls = audioPlayCalls.filter(
+        (c) => c.name === 'loading-screen',
+      );
+      assert.strictEqual(loadingCalls.length, 1);
+      assert.strictEqual(loadingCalls[0].loop, true);
     });
   });
 
@@ -399,38 +417,38 @@ describe('MainMenuSceneController (unit)', () => {
   // ---------------------------------------------------------------------------
 
   describe('setupUserInputDetection()', () => {
-    it('first user input sets userInterrupted, calls skipToButtons, and starts loading-screen music once', () => {
+    it('first user input sets userInterrupted and calls skipToButtons once', () => {
       const original = MainMenuSceneController.prototype.skipToButtons;
-      let skipCalled = false;
+      let skipCalls = 0;
 
       try {
         MainMenuSceneController.prototype.skipToButtons = function () {
-          skipCalled = true;
+          skipCalls += 1;
         };
 
         const ctrl = createController();
 
-        audioPlayCalls = [];
-
-        // first input
+        // We only care about the interruption / skip; music is handled by init()
         document.dispatchEvent(
           new dom.window.Event('keydown', { bubbles: true }),
         );
 
         assert.strictEqual(ctrl.userInterrupted, true);
-        assert.ok(skipCalled, 'skipToButtons should be called once');
-        const loadingCalls = audioPlayCalls.filter(
-          (c) => c.name === 'loading-screen',
+        assert.strictEqual(
+          skipCalls,
+          1,
+          'skipToButtons should be called exactly once on first input',
         );
-        assert.strictEqual(loadingCalls.length, 1);
-        assert.strictEqual(loadingCalls[0].loop, true);
 
-        // second input should not trigger again
-        const before = audioPlayCalls.length;
+        // Second input should not trigger again due to { once: true } listener
         document.dispatchEvent(
           new dom.window.Event('keydown', { bubbles: true }),
         );
-        assert.strictEqual(audioPlayCalls.length, before);
+        assert.strictEqual(
+          skipCalls,
+          1,
+          'skipToButtons should not be called again on subsequent input',
+        );
       } finally {
         MainMenuSceneController.prototype.skipToButtons = original;
       }
@@ -442,40 +460,64 @@ describe('MainMenuSceneController (unit)', () => {
   // ---------------------------------------------------------------------------
 
   describe('cleanup()', () => {
-    it('clears birdInterval when set', () => {
+    it('clears all stored timeouts and intervals', () => {
       const ctrl = createController();
-      let clearedWith = null;
 
+      const clearedTimeouts = [];
+      const clearedIntervals = [];
+
+      const origClearTimeout = globalThis.clearTimeout;
       const origClearInterval = globalThis.clearInterval;
-      globalThis.clearInterval = (id) => {
-        clearedWith = id;
-      };
 
       try {
-        ctrl.birdInterval = 123;
+        globalThis.clearTimeout = (id) => {
+          clearedTimeouts.push(id);
+        };
+        globalThis.clearInterval = (id) => {
+          clearedIntervals.push(id);
+        };
+
+        // Simulate timers having been registered
+        ctrl.timeouts = [1, 2, 3];
+        ctrl.intervals = [10, 20];
+
         ctrl.cleanup();
 
-        assert.strictEqual(clearedWith, 123);
+        assert.deepEqual(clearedTimeouts, [1, 2, 3]);
+        assert.deepEqual(clearedIntervals, [10, 20]);
+        assert.deepEqual(ctrl.timeouts, []);
+        assert.deepEqual(ctrl.intervals, []);
       } finally {
+        globalThis.clearTimeout = origClearTimeout;
         globalThis.clearInterval = origClearInterval;
       }
     });
 
-    it('does not call clearInterval when birdInterval is undefined', () => {
+    it('does not call clearTimeout/clearInterval when there are no timers', () => {
       const ctrl = createController();
-      let called = false;
+      ctrl.timeouts = [];
+      ctrl.intervals = [];
 
+      let timeoutCalled = false;
+      let intervalCalled = false;
+
+      const origClearTimeout = globalThis.clearTimeout;
       const origClearInterval = globalThis.clearInterval;
-      globalThis.clearInterval = () => {
-        called = true;
-      };
 
       try {
-        ctrl.birdInterval = undefined;
+        globalThis.clearTimeout = () => {
+          timeoutCalled = true;
+        };
+        globalThis.clearInterval = () => {
+          intervalCalled = true;
+        };
+
         ctrl.cleanup();
 
-        assert.strictEqual(called, false);
+        assert.strictEqual(timeoutCalled, false);
+        assert.strictEqual(intervalCalled, false);
       } finally {
+        globalThis.clearTimeout = origClearTimeout;
         globalThis.clearInterval = origClearInterval;
       }
     });
