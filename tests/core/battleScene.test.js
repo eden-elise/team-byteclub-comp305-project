@@ -1,9 +1,23 @@
-// battleScene.test.js
+/**
+ * @fileoverview Unit and integration tests for BattleSceneController, covering
+ * entity initialization, turn-based combat UI, inventory management, and state
+ * transitions. Tests use JSDOM to simulate a browser environment and spies to
+ * verify audio and DOM interactions.
+ * @module tests/core/battleScene.test
+ */
+
+// ===========================================================================================
+// IMPORTS & TEST CONFIGURATION
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 
-// --- Module globals / shared state ---
+// ===========================================================================================
+// MODULE GLOBALS & SHARED STATE
+// ===========================================================================================
+
 let BattleSceneController;
 let TestBattleSceneController;
 let audioManager;
@@ -22,10 +36,21 @@ let activeTimeouts;
 let origSetTimeout;
 let origClearTimeout;
 
-// Simple DOM helpers
+/**
+ * Simple DOM helper to retrieve elements by ID. Avoids repeated getElementById calls.
+ * @param {string} id - The element ID to look up.
+ * @returns {Element|null} The matching element, or null if not found.
+ */
 const getById = (id) => globalThis.document.getElementById(id);
 
-// --- HTML template used for each test run ---
+// ===========================================================================================
+// HTML TEMPLATE & TEST FIXTURES
+// ===========================================================================================
+
+/**
+ * Standard HTML structure injected into JSDOM for each test run.
+ * Includes UI elements for player/enemy stats, actions, status icons, and combat log.
+ */
 const HTML_TEMPLATE = `<!doctype html>
 <html>
   <head></head>
@@ -52,10 +77,19 @@ const HTML_TEMPLATE = `<!doctype html>
   </body>
 </html>`;
 
-// --- Test-only helpers & mocks ---
+// ===========================================================================================
+// TEST HELPERS & MOCK FACTORIES
+// ===========================================================================================
 
 /**
- * Minimal mock entity with the fields used by BattleSceneController
+ * Creates a minimal mock entity with all fields required by BattleSceneController.
+ * Includes stats, moves, and lifecycle methods (isAlive, processStatusEffects).
+ *
+ * @param {string} name - Entity display name.
+ * @param {number} [maxHP=100] - Maximum health points.
+ * @param {Object} [stats={}] - Attack/defend/speed/luck stats; merged with defaults.
+ * @param {string[]} [moves=[]] - List of attack move names; defaults to standard moves.
+ * @returns {Object} A mock entity object ready for use in battle tests.
  */
 function makeMockEntity(name, maxHP = 100, stats = {}, moves = []) {
   const entity = {
@@ -82,8 +116,15 @@ function makeMockEntity(name, maxHP = 100, stats = {}, moves = []) {
 }
 
 /**
- * Factory to create a controller instance under test.
- * Uses a subclass that suppresses auto-start and tracks next-turn calls.
+ * Factory to create a controller instance under test. Uses a custom subclass that
+ * suppresses automatic battle startup and exposes necessary internal hooks for testing.
+ *
+ * @param {Object} player - The player entity mock.
+ * @param {Object} enemy - The enemy entity mock.
+ * @param {string} [background=''] - Optional background image path.
+ * @param {Array} [inventory=[]] - Optional inventory items array.
+ * @param {Function} [onBattleEnd=()=>{}] - Battle completion callback.
+ * @returns {TestBattleSceneController} A controller instance ready for unit testing.
  */
 function createController(player, enemy, background = '', inventory = [], onBattleEnd = () => {}) {
   const ctrl = new TestBattleSceneController(player, enemy, background, inventory, onBattleEnd);
@@ -91,10 +132,15 @@ function createController(player, enemy, background = '', inventory = [], onBatt
   return ctrl;
 }
 
-// --- Test lifecycle setup/teardown ---
+// ===========================================================================================
+// TEST LIFECYCLE: SETUP & TEARDOWN
+// ===========================================================================================
 
 beforeEach(async () => {
-  // 1. JSDOM & globals
+  /**
+   * Step 1: Initialize JSDOM with test HTML and bind to global scope.
+   * This creates a simulated browser environment with required DOM elements.
+   */
   dom = new JSDOM(HTML_TEMPLATE, { url: 'http://localhost/' });
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
@@ -102,7 +148,11 @@ beforeEach(async () => {
   globalThis.customElements = dom.window.customElements;
   globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 
-  // 2. Timer tracking to guarantee async cleanup
+  /**
+   * Step 2: Set up timeout tracking to ensure all async work is cleaned up.
+   * We track active timeouts to clear them safely in afterEach, preventing
+   * async leaks and ensuring tests remain isolated.
+   */
   activeTimeouts = new Set();
   origSetTimeout = globalThis.setTimeout;
   origClearTimeout = globalThis.clearTimeout;
@@ -120,7 +170,11 @@ beforeEach(async () => {
 
   globalThis.requestAnimationFrame = (cb) => globalThis.setTimeout(cb, 0);
 
-  // 3. Mock typewriter controller on #combat-log-text
+  /**
+   * Step 3: Mock the typewriter textbox element behavior on #combat-log-text.
+   * The controller expects to call init(), queue(), getQueueLength(), and isActive()
+   * on this element. We simulate its state without loading the actual component.
+   */
   const logEl = getById('combat-log-text');
   let queueLength = 0;
   let active = false;
@@ -140,26 +194,29 @@ beforeEach(async () => {
   logEl.getQueueLength = () => queueLength;
   logEl.isActive = () => active;
 
-  // 4. Dynamic imports after DOM is ready
+  /**
+   * Step 4: Dynamically import modules after DOM and globals are ready.
+   * Avoids import-time errors due to missing browser APIs.
+   */
   const sceneModules = await import('../../src/client/scenes/battleScene.js');
   BattleSceneController = sceneModules.BattleSceneController;
 
   const audioModules = await import('../../src/client/utils/AudioManager.js');
   audioManager = audioModules.audioManager;
 
-  // 5. Test subclass that:
-  //    - suppresses auto-start in constructor
-  //    - exposes startBattleReal() for explicit control
-  //    - tracks processNextTurn calls without doing the full async flow
+  /**
+   * Step 5: Create a test subclass that prevents the constructor from auto-starting
+   * the battle loop. This allows unit tests to explicitly control the battle flow
+   * rather than being driven by automatic turn progression.
+   */
   class _TestBattleSceneController extends BattleSceneController {
     constructor(...args) {
       super(...args);
       this._nextTurnCalls = 0;
     }
 
-    // Prevent the base constructor from kicking off the battle loop automatically
     startBattle() {
-      // no-op
+      // Suppress automatic battle startup in tests
     }
 
     async startBattleReal() {
@@ -173,18 +230,23 @@ beforeEach(async () => {
 
   TestBattleSceneController = _TestBattleSceneController;
 
-  // 6. Audio spies
+  /**
+   * Step 6: Install audio spies to track play/stop calls without side effects.
+   * Each call is recorded but does not trigger actual audio loading or playback.
+   */
   audioPlayCalls = [];
   origAudioPlay = audioManager.play;
   origAudioStop = audioManager.stop;
 
   audioManager.play = (name, loop) => {
     audioPlayCalls.push(name);
-    // no need to call through; AudioManager behavior is tested separately
   };
   audioManager.stop = () => {};
 
-  // 7. Fresh entities per test
+  /**
+   * Step 7: Create fresh entity mocks for each test to avoid cross-test pollution.
+   * Both entities start alive and fully healthy.
+   */
   mockPlayer = makeMockEntity('Hero', 100, { SPEED: 15 });
   mockEnemy = makeMockEntity('Dragon', 80, { SPEED: 10 });
 
@@ -192,16 +254,22 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  // If a cleanup method is ever added to the controller, use it
+  /**
+   * Clean up controller if it exists. Some controllers may implement a cleanup()
+   * method for tearing down resources; we call it if available.
+   */
   if (controller && typeof controller.cleanup === 'function') {
     controller.cleanup();
   }
 
-  // Restore audio manager
+  // Restore original audio manager methods
   audioManager.play = origAudioPlay;
   audioManager.stop = origAudioStop;
 
-  // Clear remaining timeouts to avoid async work after DOM teardown
+  /**
+   * Clean up all pending timeouts to prevent async work from running after
+   * test completion. This prevents memory leaks and test interference.
+   */
   if (activeTimeouts) {
     for (const id of activeTimeouts) {
       origClearTimeout(id);
@@ -209,11 +277,11 @@ afterEach(() => {
     activeTimeouts.clear();
   }
 
-  // Restore timers
+  // Restore original timer functions
   globalThis.setTimeout = origSetTimeout;
   globalThis.clearTimeout = origClearTimeout;
 
-  // Remove globals
+  // Remove all injected globals
   delete globalThis.window;
   delete globalThis.document;
   delete globalThis.HTMLElement;
@@ -225,12 +293,14 @@ afterEach(() => {
   controller = undefined;
 });
 
-// --- UNIT TESTS ---
+// ===========================================================================================
+// UNIT TESTS: CONSTRUCTOR, UI STATE, & BATTLE FLOW
+// ===========================================================================================
 
 describe('BattleSceneController (unit)', () => {
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // Constructor & initialization
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('constructs with player and enemy', () => {
     const ctrl = createController(mockPlayer, mockEnemy);
@@ -257,9 +327,9 @@ describe('BattleSceneController (unit)', () => {
     assert.strictEqual(ctrl.inventory[0].quantity, 2, 'first item should have quantity 2');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // updateEntityStats - UI text updates
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('updateEntityStats sets player name and HP text', () => {
     const ctrl = createController(mockPlayer, mockEnemy);
@@ -285,9 +355,9 @@ describe('BattleSceneController (unit)', () => {
     assert.ok(enemyHPText.textContent.includes(String(mockEnemy.currentHP)), 'enemy HP text should show current HP');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // addLogEntry - battle log
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('addLogEntry queues message on typewriter', () => {
     const ctrl = createController(mockPlayer, mockEnemy);
@@ -301,9 +371,9 @@ describe('BattleSceneController (unit)', () => {
     assert.ok(queueLengthAfter >= queueLengthBefore, 'message should be queued');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // showActionButtons - UI state and buttons
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('showActionButtons creates attack and inventory buttons', () => {
     const ctrl = createController(mockPlayer, mockEnemy);
@@ -327,9 +397,9 @@ describe('BattleSceneController (unit)', () => {
     assert.strictEqual(ctrl.uiState, 'actions', 'uiState should be "actions"');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // disableActionButtons & enableActionButtons
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('disableActionButtons disables all buttons in action-container', () => {
     const ctrl = createController(mockPlayer, mockEnemy);
@@ -364,9 +434,9 @@ describe('BattleSceneController (unit)', () => {
     assert.ok(buttons.length > 0, 'buttons should exist in container');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // showInventory - inventory UI
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('showInventory sets uiState to inventory', () => {
     const inventory = [{ name: 'Health Potion', quantity: 1 }];
@@ -398,9 +468,9 @@ describe('BattleSceneController (unit)', () => {
     assert.ok(text.includes('Health Potion'), 'inventory item name should appear');
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // Inventory back button (returns to actions)
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   it('inventory back button returns to action buttons', () => {
     const inventory = [{ name: 'Health Potion', quantity: 1 }];

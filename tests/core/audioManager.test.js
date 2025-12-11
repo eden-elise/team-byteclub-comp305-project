@@ -1,8 +1,24 @@
+/**
+ * @fileoverview Unit tests for AudioManager, covering sound loading, playback,
+ * volume management, and integration scenarios. These tests use a mock Audio API
+ * to verify sound lifecycle and volume scaling behavior.
+ * @module tests/core/audioManager.test
+ */
+
 import { strict as assert } from 'assert';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 
 import { AudioManager, audioManager } from '../../src/client/utils/AudioManager.js';
 
+/**
+ * Compares two numbers for approximate equality, accounting for floating-point
+ * precision errors. Fails the assertion if the absolute difference exceeds epsilon.
+ *
+ * @param {number} actual - The actual computed value.
+ * @param {number} expected - The expected target value.
+ * @param {string} message - The assertion error message.
+ * @param {number} [epsilon=1e-10] - Maximum acceptable difference; defaults to 1e-10.
+ */
 function assertApproxEqual(actual, expected, message, epsilon = 1e-10) {
   assert.ok(
     Math.abs(actual - expected) < epsilon,
@@ -19,7 +35,11 @@ describe('AudioManager (unit)', () => {
   beforeEach(() => {
     mockAudioInstances = [];
 
-    // Minimal mock for the browser Audio API
+    /**
+     * Minimal mock for the browser Audio API. Simulates essential Audio behavior:
+     * src assignment, volume control, playback state, and promise-based play method.
+     * This avoids actual audio file loading in tests.
+     */
     globalThis.Audio = class MockAudio {
       constructor(src) {
         this.src = src;

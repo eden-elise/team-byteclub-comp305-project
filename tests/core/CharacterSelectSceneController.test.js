@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Unit tests for CharacterSelectSceneController, covering character
+ * card rendering, selection tracking, audio management, and game start callbacks.
+ * Tests use JSDOM and spy on the audio manager to verify sound interactions.
+ * @module tests/core/CharacterSelectSceneController.test
+ */
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -12,7 +19,10 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
   let origStop;
 
   beforeEach(() => {
-    // fresh DOM with required elements
+    /**
+     * Set up a fresh DOM environment with required elements for the character
+     * select scene. This includes character list container and info panel elements.
+     */
     dom = new JSDOM(
       `<!doctype html><html><head></head><body>
         <div id="character-list"></div>
@@ -27,15 +37,21 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       { url: 'http://localhost/' },
     );
 
-    // bind globals used by the controller
+    /**
+     * Bind globals required by the controller. These include window, document,
+     * and localStorage for persisting user selections.
+     */
     globalThis.window = dom.window;
     globalThis.document = dom.window.document;
     globalThis.localStorage = dom.window.localStorage;
 
-    // spy audioManager methods
+    /**
+     * Install audio spies to track play and stop calls without triggering actual
+     * audio playback. We record each call for assertion in test specs.
+     */
     calls = [];
 
-    // save originals
+    // Save original methods before replacing
     origPlay = audioManager.play;
     origStop = audioManager.stop;
 
@@ -48,28 +64,40 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
   });
 
   afterEach(() => {
-    // restore audioManager
+    /**
+     * Restore the original audio manager methods to avoid pollution
+     * of subsequent tests. Only restore if the spy was installed.
+     */
     if (origPlay) audioManager.play = origPlay;
     if (origStop) audioManager.stop = origStop;
 
-    // cleanup globals
+    /**
+     * Clean up all injected globals to ensure test isolation.
+     * Each test should start with a fresh global state.
+     */
     delete globalThis.window;
     delete globalThis.document;
     delete globalThis.localStorage;
   });
 
   it('initializes and plays character-choice audio and stops loading-screen', () => {
-    // init runs in constructor
+    /**
+     * The controller constructor triggers initialization, which includes
+     * stopping the loading screen music and starting character selection music.
+     */
     // eslint-disable-next-line no-new
     new CharacterSelectSceneController(() => {});
 
-    // loading-screen should be stopped
+    // Verify loading-screen was stopped during init
     assert.ok(
       calls.find((c) => c.method === 'stop' && c.name === 'loading-screen'),
       'loading-screen should be stopped on init',
     );
 
-    // character-choice should be played (looped)
+    /**
+     * Character choice music should be played in a loop to provide
+     * continuous background audio during character selection.
+     */
     const playChoice = calls.find(
       (c) => c.method === 'play' && c.name === 'character-choice',
     );
@@ -99,13 +127,19 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
     const firstCard = container.querySelector('.character-card');
     assert.ok(firstCard, 'first card exists');
 
-    // clear initial audio calls (loading-screen + character-choice)
+    /**
+     * Clear the initialization audio calls so we only inspect what happens
+     * when a card is clicked. This isolates the click behavior from setup noise.
+     */
     calls = [];
 
-    // simulate click
+    // Simulate user click on character card
     firstCard.dispatchEvent(new dom.window.Event('click', { bubbles: true }));
 
-    // selectedCharacter should be set to first character
+    /**
+     * After selecting a character, the controller should update internal state
+     * and populate the info panel with character details and stats.
+     */
     assert.ok(controller.selectedCharacter, 'selectedCharacter should be set');
     assert.equal(
       controller.selectedCharacter.id,
@@ -113,7 +147,7 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       'selectedCharacter should match first character',
     );
 
-    // info elements updated
+    // Verify info panel elements were populated
     const name = document.getElementById('info-name').textContent;
     const desc = document.getElementById('info-description').textContent;
     const sprite = document.getElementById('info-sprite').src;
@@ -133,7 +167,10 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       'stats panel should contain Attack label',
     );
 
-    // button-click should have been played when selecting character
+    /**
+     * A button-click sound should play when the user selects a character
+     * to provide immediate audio feedback.
+     */
     const buttonClick = calls.find(
       (c) => c.method === 'play' && c.name === 'button-click',
     );
@@ -149,7 +186,10 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       picked.push(c),
     );
 
-    // no selection yet
+    /**
+     * Before a character is selected, clicking the start button should
+     * have no effect. The callback should not fire.
+     */
     controller.handleStartGame();
     assert.equal(
       picked.length,
@@ -157,27 +197,33 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       'callback should not be called if no character selected',
     );
 
-    // select first character
+    // Select first character
     const container = document.getElementById('character-list');
     const firstCard = container.querySelector('.character-card');
     assert.ok(firstCard, 'first card exists');
 
     firstCard.dispatchEvent(new dom.window.Event('click', { bubbles: true }));
 
-    // clear calls so we only inspect start-game behavior
+    /**
+     * Reset call tracking so we only see the behavior triggered by the
+     * start button click, not the previous selection click.
+     */
     calls = [];
 
-    // click start button to trigger selection confirmation
+    // Click start button to trigger selection confirmation
     const startBtn = document.getElementById('btn-start-game');
     startBtn.click();
 
-    // audio stop should have been called for character-choice when starting
+    /**
+     * When the start button is clicked, the character choice music should
+     * stop and the selection callback should be invoked with the chosen character.
+     */
     const stopChoice = calls.find(
       (c) => c.method === 'stop' && c.name === 'character-choice',
     );
     assert.ok(stopChoice, 'stop character-choice should be called');
 
-    // button-click should be played when pressing start
+    // Audio feedback should play for the button press
     const buttonClick = calls.find(
       (c) => c.method === 'play' && c.name === 'button-click',
     );
@@ -186,7 +232,10 @@ describe('CharacterSelectSceneController (node:test + jsdom)', () => {
       'button-click sound should be played when clicking start button',
     );
 
-    // callback invoked with character data
+    /**
+     * The selection callback should be invoked exactly once with the
+     * character data that was selected.
+     */
     assert.equal(picked.length, 1, 'selection callback should be called once');
     assert.equal(
       picked[0].id,

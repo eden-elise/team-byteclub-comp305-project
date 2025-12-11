@@ -1,10 +1,22 @@
+/**
+ * @fileoverview Unit tests for GameState, covering save/load mechanics, character
+ * entity hydration, and persistent storage integration. Tests use mocks for localStorage
+ * to isolate game state behavior from actual browser storage.
+ * @module tests/core/gameState.test
+ */
+
 import { strict as assert } from 'assert';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 
 import { GameState, gameState } from '../../src/gameplay/state/GameState.js';
 import { createNewSave } from '../../src/gameplay/state/SaveSchema.js';
 
-// Simple in-memory localStorage mock
+/**
+ * Factory to create an in-memory localStorage mock. This allows tests to verify
+ * persistence logic without touching actual browser storage or affecting other tests.
+ *
+ * @returns {Object} A mock localStorage with getItem, setItem, removeItem, and clear methods.
+ */
 function createMockLocalStorage() {
   let store = {};
   return {
@@ -24,20 +36,33 @@ function createMockLocalStorage() {
 }
 
 describe('GameState (unit)', () => {
-  let gs; // local GameState instance for isolation
+  /**
+   * Fresh GameState instance for each test to prevent singleton pollution.
+   * Using a new instance allows tests to run in isolation without shared state.
+   */
+  let gs;
   let originalLocalStorage;
 
   beforeEach(() => {
-    // Save any existing localStorage and replace with mock
+    /**
+     * Save the original localStorage reference (if it exists) and replace it
+     * with our mock. This ensures the test uses a clean, isolated storage.
+     */
     originalLocalStorage = globalThis.localStorage;
     globalThis.localStorage = createMockLocalStorage();
 
-    // fresh GameState for each test to avoid singleton pollution
+    /**
+     * Create a fresh GameState instance for this test run.
+     * This prevents test pollution where one test's mutations affect others.
+     */
     gs = new GameState();
   });
 
   afterEach(() => {
-    // cleanup mock localStorage
+    /**
+     * Restore the original localStorage reference. If there was no localStorage
+     * before the test, delete it entirely to restore the original state.
+     */
     if (originalLocalStorage === undefined) {
       delete globalThis.localStorage;
     } else {

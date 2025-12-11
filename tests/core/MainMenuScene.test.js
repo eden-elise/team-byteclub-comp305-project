@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Unit tests for MainMenuSceneController, covering initialization,
+ * button interactions, save file checking, user input detection, and cleanup.
+ * Tests use JSDOM to simulate a browser environment and spies for audio and
+ * animation control.
+ * @module tests/core/MainMenuScene.test
+ */
+
+// ===========================================================================================
+// IMPORTS & CONFIGURATION
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -42,25 +54,42 @@ const MAIN_MENU_HTML = `<!doctype html>
   </body>
 </html>`;
 
+// ===========================================================================================
+// TEST STATE & HELPERS
+// ===========================================================================================
 
 let dom;
-let controller; // shared instance for cleanup
+/**
+ * Shared controller instance across tests. Held for proper cleanup in afterEach.
+ */
+let controller;
 
 let origGetFullSaveData;
 let origAudioPlay;
 let origAudioStop;
 let origWindowClose;
-let origStartAnimationSequence; // <--- stubbed in tests
+/**
+ * Prevents animation sequence timers from running in tests.
+ * Tests run too fast for animation to meaningfully complete.
+ */
+let origStartAnimationSequence;
 
 let audioPlayCalls;
 let audioStopCalls;
 
+/**
+ * Default callback stubs passed to controller constructor.
+ * Individual tests override these as needed.
+ */
 const defaultCallbacks = {
   onNewGame: () => {},
   onContinue: () => {},
   onLoadFile: () => {},
 };
 
+/**
+ * Set up the JSDOM environment with the main menu HTML template.
+ */
 function setupDom() {
   dom = new JSDOM(MAIN_MENU_HTML, { url: 'http://localhost/' });
   globalThis.window = dom.window;
@@ -68,6 +97,9 @@ function setupDom() {
   globalThis.localStorage = dom.window.localStorage;
 }
 
+/**
+ * Tear down the JSDOM environment and clean globals.
+ */
 function teardownDom() {
   delete globalThis.window;
   delete globalThis.document;
@@ -75,6 +107,10 @@ function teardownDom() {
   dom = undefined;
 }
 
+/**
+ * Install audio manager spies to track play and stop calls.
+ * Calls are recorded without triggering actual audio playback.
+ */
 function installAudioSpies() {
   origAudioPlay = audioManager.play;
   origAudioStop = audioManager.stop;
@@ -89,24 +125,52 @@ function installAudioSpies() {
   };
 }
 
+/**
+ * Restore original audio manager methods after test completion.
+ */
 function restoreAudio() {
   audioManager.play = origAudioPlay;
   audioManager.stop = origAudioStop;
 }
 
+/**
+ * Check if a specific audio track was played, optionally with a predicate.
+ *
+ * @param {string} name - The audio track name.
+ * @param {Function} [predicate=()=>true] - Optional filter function.
+ * @returns {boolean} True if the audio was played matching the predicate.
+ */
 function audioPlayed(name, predicate = () => true) {
   return audioPlayCalls.some((c) => c.name === name && predicate(c));
 }
 
+/**
+ * Check if a specific audio track was stopped.
+ *
+ * @param {string} name - The audio track name.
+ * @returns {boolean} True if the audio was stopped.
+ */
 function audioStopped(name) {
   return audioStopCalls.some((c) => c.name === name);
 }
 
+/**
+ * Factory to create a controller instance with optional callback overrides.
+ *
+ * @param {Object} [overrides={}] - Optional callback overrides.
+ * @returns {MainMenuSceneController} A controller instance ready for testing.
+ */
 function createController(overrides = {}) {
   controller = new MainMenuSceneController({ ...defaultCallbacks, ...overrides });
   return controller;
 }
 
+/**
+ * Helper to dispatch a DOM click event on an element by ID.
+ *
+ * @param {string} id - The element ID to click.
+ * @param {string} [type='click'] - The event type (click, change, etc.).
+ */
 function click(id, type = 'click') {
   const el = document.getElementById(id);
   assert.ok(el, `Expected element #${id} to exist`);
@@ -118,33 +182,49 @@ describe('MainMenuSceneController (unit)', () => {
     setupDom();
     localStorage.clear();
 
+    /**
+     * Save original gameState.getFullSaveData method to spy on it during tests.
+     */
     origGetFullSaveData = gameState.getFullSaveData;
 
     installAudioSpies();
 
+    /**
+     * Mock window.close to track exit attempts without actually closing the window.
+     */
     origWindowClose = window.close;
     window.close = () => {
       window.close.called = true;
     };
     window.close.called = false;
 
-    // *** Prevent animation timers from running in tests ***
+    /**
+     * Suppress animation timers during tests. Animations run asynchronously and
+     * tests complete faster than animations can finish. We replace with a no-op
+     * to prevent timeout-related test failures and unnecessary delays.
+     */
     origStartAnimationSequence =
       MainMenuSceneController.prototype.startAnimationSequence;
     MainMenuSceneController.prototype.startAnimationSequence = function () {
-      // no-op in tests
+      // Intentionally disabled for test speed and isolation
     };
 
     controller = undefined;
   });
 
   afterEach(() => {
-    // Best-effort cleanup for any interval the test might set on the instance
+    /**
+     * Call cleanup on the controller if it exists. This clears timers and
+     * intervals to prevent async work from running after test completion.
+     */
     if (controller && typeof controller.cleanup === 'function') {
       controller.cleanup();
     }
     controller = undefined;
 
+    /**
+     * Restore all patched prototype methods and globals to their original state.
+     */
     MainMenuSceneController.prototype.startAnimationSequence =
       origStartAnimationSequence;
 
@@ -154,9 +234,9 @@ describe('MainMenuSceneController (unit)', () => {
     teardownDom();
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // constructor / init
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('constructor', () => {
     it('stores callbacks and initializes flags', () => {
@@ -189,9 +269,9 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // checkSaveFile
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('checkSaveFile()', () => {
     it('hides continue container when no save exists', () => {
@@ -222,9 +302,9 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // Buttons
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('button handlers', () => {
     it('Play button calls showSecondaryMenu and plays button-click audio', () => {
@@ -412,9 +492,9 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // User input detection
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('setupUserInputDetection()', () => {
     it('first user input sets userInterrupted and calls skipToButtons once', () => {
@@ -455,9 +535,9 @@ describe('MainMenuSceneController (unit)', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
   // cleanup
-  // ---------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
 
   describe('cleanup()', () => {
     it('clears all stored timeouts and intervals', () => {

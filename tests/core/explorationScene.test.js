@@ -1,4 +1,15 @@
-// explorationScene.test.js
+/**
+ * @fileoverview Unit tests for ExplorationSceneController, covering dialogue flow,
+ * character interactions, cutscene progression, and branching choice systems.
+ * Tests use JSDOM with mocked components (typewriter textbox) to verify scene logic
+ * without loading full game infrastructure.
+ * @module tests/core/explorationScene.test
+ */
+
+// ===========================================================================================
+// IMPORTS & TEST SETUP
+// ===========================================================================================
+
 import { strict as assert } from 'assert';
 import { JSDOM } from 'jsdom';
 import { describe, it, beforeEach, afterEach } from 'node:test';
@@ -12,7 +23,10 @@ let origStartRoom;
 
 describe('ExplorationSceneController (unit)', () => {
   beforeEach(async () => {
-    // 1. Set up a minimal DOM BEFORE importing controller / components
+    /**
+     * Step 1: Create a minimal DOM environment with all elements the controller
+     * expects. This is set up before module imports to avoid browser API errors.
+     */
     const html = `<!doctype html><html><head></head><body>
       <div id="exploration-header" style="background-image: url('old.png')"></div>
 
@@ -35,6 +49,10 @@ describe('ExplorationSceneController (unit)', () => {
 
     dom = new JSDOM(html, { url: 'http://localhost/' });
 
+    /**
+     * Step 2: Bind browser globals required by the controller and game state.
+     * These must be set up before importing modules that use them.
+     */
     globalThis.window = dom.window;
     globalThis.document = dom.window.document;
     globalThis.HTMLElement = dom.window.HTMLElement;
@@ -42,7 +60,10 @@ describe('ExplorationSceneController (unit)', () => {
     globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
     globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 0);
 
-    // 2. Polyfill localStorage for GameState (browser-only API)
+    /**
+     * Step 3: Provide a mock localStorage implementation for GameState.
+     * This is a browser-only API that Node.js lacks natively.
+     */
     if (!globalThis.localStorage) {
       const store = {};
       globalThis.localStorage = {
@@ -61,20 +82,31 @@ describe('ExplorationSceneController (unit)', () => {
       };
     }
 
-    // 3. Dynamically import modules AFTER DOM + localStorage exist
+    /**
+     * Step 4: Dynamically import modules after DOM and browser APIs are ready.
+     * This avoids import-time errors from missing globals.
+     */
     const sceneModule = await import('../../src/client/scenes/explorationScene.js');
     ExplorationSceneController = sceneModule.ExplorationSceneController;
 
     const stateModule = await import('../../src/gameplay/state/GameState.js');
     gameState = stateModule.gameState;
 
-    // 4. Prevent constructor from auto-running room events (we want unit tests, not full flows)
+    /**
+     * Step 5: Replace the startRoom method with a no-op. In unit tests, we don't
+     * want the constructor to automatically run the full room event sequence.
+     * Individual tests can call startRoom explicitly if needed.
+     */
     origStartRoom = ExplorationSceneController.prototype.startRoom;
     ExplorationSceneController.prototype.startRoom = async function () {
-      // no-op in tests; individual specs can call processNextEvent/startRoom if needed
+      // Intentionally disabled for unit test isolation
     };
 
-    // 5. Mock <typewriter-textbox> so we get a simple test double
+    /**
+     * Step 6: Mock the custom <typewriter-textbox> element so we have a test
+     * double that tracks method calls without loading the actual custom element.
+     * This allows us to verify typewriter integration without browser complications.
+     */
     origCreateElement = document.createElement.bind(document);
     document.createElement = (tagName) => {
       const tag = String(tagName).toLowerCase();
@@ -83,7 +115,10 @@ describe('ExplorationSceneController (unit)', () => {
         el.id = 'dialogue-text';
         el.className = 'dialogue-panel__text';
 
-        // Minimal API used by the controller
+        /**
+         * Minimal API that the controller uses. Each method is stubbed
+         * to simulate the real component's behavior without side effects.
+         */
         el.init = () => {};
         el.queue = (_text, opts = {}) => {
           if (opts.onComplete) setTimeout(opts.onComplete, 0);
@@ -98,14 +133,20 @@ describe('ExplorationSceneController (unit)', () => {
       return origCreateElement(tagName);
     };
 
-    // 6. Keep GameState neutral across tests if supported
+    /**
+     * Step 7: Reset GameState to a clean slate if the method exists.
+     * This ensures tests don't interfere with each other via singleton state.
+     */
     if (gameState && typeof gameState.clearSave === 'function') {
       gameState.clearSave();
     }
   });
 
   afterEach(() => {
-    // Restore patched methods
+    /**
+     * Restore all patched prototype methods to prevent pollution
+     * of subsequent tests or module state.
+     */
     if (ExplorationSceneController && origStartRoom) {
       ExplorationSceneController.prototype.startRoom = origStartRoom;
     }
@@ -113,15 +154,16 @@ describe('ExplorationSceneController (unit)', () => {
       document.createElement = origCreateElement;
     }
 
-    // Clean globals
+    /**
+     * Clean up all injected globals. This ensures each test starts
+     * with a fresh, isolated environment.
+     */
     delete globalThis.window;
     delete globalThis.document;
     delete globalThis.HTMLElement;
     delete globalThis.customElements;
     delete globalThis.getComputedStyle;
     delete globalThis.requestAnimationFrame;
-    // Keep localStorage around or delete it if you want total isolation:
-    // delete globalThis.localStorage;
 
     dom = undefined;
     ExplorationSceneController = undefined;
@@ -130,9 +172,9 @@ describe('ExplorationSceneController (unit)', () => {
     origStartRoom = undefined;
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // initializeUI
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('initializeUI()', () => {
     it('hides player & npc sections and creates a typewriter controller', () => {
@@ -180,9 +222,9 @@ describe('ExplorationSceneController (unit)', () => {
     });
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // showDialogue
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('showDialogue()', () => {
     it('queues text on the typewriter and resolves when complete', async () => {
@@ -206,9 +248,9 @@ describe('ExplorationSceneController (unit)', () => {
     });
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // showChoices & handleChoiceClick
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('showChoices() & handleChoiceClick()', () => {
     it('renders choice buttons and runs callback + processNextEvent on click', async () => {
@@ -244,9 +286,9 @@ describe('ExplorationSceneController (unit)', () => {
     });
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // entityEnter
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('entityEnter()', () => {
     it('populates NPC name/sprite and runs animation on right side', async () => {
@@ -275,9 +317,9 @@ describe('ExplorationSceneController (unit)', () => {
     });
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // skipCutscene
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('skipCutscene()', () => {
     it('advances to next battle, clears dialogue and choices, and calls processNextEvent', async () => {
@@ -325,9 +367,9 @@ describe('ExplorationSceneController (unit)', () => {
     });
   });
 
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
   // addCustomChoices & clearChoices
-  // ───────────────────────────────────────────────
+  // ------------------------------------------------------------------------------------
 
   describe('addCustomChoices() & clearChoices()', () => {
     it('adds custom choice buttons and runs callbacks, then clearChoices empties container', async () => {

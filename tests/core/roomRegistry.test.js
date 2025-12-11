@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Unit tests for roomRegistry module, covering room lookup,
+ * registry queries, and availability checks. Tests verify the registry's
+ * ability to consistently retrieve room instances and report room existence.
+ * @module tests/core/roomRegistry.test
+ */
+
 import { strict as assert } from 'assert';
 import { describe, it } from 'node:test';
 
