@@ -79,27 +79,10 @@ export class AudioManager {
    */
   play(name, loop = false) {
     const sound = this.sounds[name];
-    if (!sound || !sound.audio) {
-      return;
-    }
-
-    const { audio } = sound;
-    audio.currentTime = 0;
-    audio.loop = loop;
-
-    try {
-      const playResult = audio.play();
-
-      // Some browsers return a Promise; some return undefined.
-      if (playResult && typeof playResult.catch === 'function') {
-        playResult.catch((err) => {
-          // Log the rejection once, but do not rethrow
-          console.error(`[AudioManager] Audio.play() rejected for sound "${name}"`, err);
-        });
-      }
-    } catch (err) {
-      // Fallback in case play() throws synchronously
-      console.error(`[AudioManager] Audio.play() threw synchronously for sound "${name}"`, err);
+    if (sound && sound.audio) {
+      sound.audio.currentTime = 0;
+      sound.audio.loop = loop;
+      sound.audio.play().catch((e) => console.log('Audio playback blocked:', e));
     }
   }
 
